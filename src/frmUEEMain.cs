@@ -111,7 +111,6 @@ namespace UEEditor
 		public long LockedPriceCode = -1;
 		public long LockedSynonym = -1;
 		public frmProgress f = null;
-		public byte PrStep = 0;
 		public int SynonymCount = 0; 
 		public int SynonymFirmCrCount = 0;
 		public int SynonymCurrencyCount = 0;
@@ -162,13 +161,11 @@ namespace UEEditor
 		private DevExpress.XtraGrid.GridControl CatalogGridControl;
 		private System.Data.DataTable dtOldFirms;
 		private System.Windows.Forms.ImageList imageList1;
-		private System.Data.DataColumn JEMail2;
 		private System.Data.DataColumn JMinReq;
 		private System.Data.DataTable dtRegions;
 		private System.Data.DataColumn RRegion;
 		private System.Data.DataColumn JWholeSale;
 		private System.Data.DataColumn JPriceCode;
-		private System.Data.DataColumn JEMail1;
 		private System.Windows.Forms.Panel pnlBottom2;
 		private DevExpress.XtraGrid.GridControl UnrecExpGridControl;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEColumn1;
@@ -295,6 +292,8 @@ namespace UEEditor
 		private System.Data.DataColumn LVPriceName;
 		private DevExpress.XtraGrid.Columns.GridColumn colLVPriceName;
 		private System.Windows.Forms.Timer tmLogs;
+		private System.Windows.Forms.StatusBarPanel sbpAll;
+		private System.Windows.Forms.StatusBarPanel sbpCurrent;
 		private MySqlDataAdapter daJobs;
 
 		public frmUEEMain()
@@ -348,9 +347,6 @@ namespace UEEditor
 //			now2 = DateTime.Now;
 //			str += string.Format(" Читаем настройки формы формы {0} \r\n", now2.Subtract(now1));
 
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
 #if DEBUG
 			MyCn.ConnectionString = "server=testdb; user id=system; password=123; database=farm;";
 #endif
@@ -460,8 +456,6 @@ namespace UEEditor
 			this.JJobDate = new System.Data.DataColumn();
 			this.JBlockBy = new System.Data.DataColumn();
 			this.JPhone = new System.Data.DataColumn();
-			this.JEMail1 = new System.Data.DataColumn();
-			this.JEMail2 = new System.Data.DataColumn();
 			this.JMinReq = new System.Data.DataColumn();
 			this.JWholeSale = new System.Data.DataColumn();
 			this.JParentSynonym = new System.Data.DataColumn();
@@ -548,6 +542,8 @@ namespace UEEditor
 			this.colCName = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.statusBarPanel1 = new System.Windows.Forms.StatusBarPanel();
 			this.statusBar1 = new System.Windows.Forms.StatusBar();
+			this.sbpAll = new System.Windows.Forms.StatusBarPanel();
+			this.sbpCurrent = new System.Windows.Forms.StatusBarPanel();
 			this.panel3 = new System.Windows.Forms.Panel();
 			this.tcMain = new System.Windows.Forms.TabControl();
 			this.tpJobs = new System.Windows.Forms.TabPage();
@@ -699,6 +695,8 @@ namespace UEEditor
 			((System.ComponentModel.ISupportInitialize)(this.dtSections)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatalog)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpAll)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpCurrent)).BeginInit();
 			this.panel3.SuspendLayout();
 			this.tcMain.SuspendLayout();
 			this.tpJobs.SuspendLayout();
@@ -734,6 +732,7 @@ namespace UEEditor
 			// 
 			// gvCatForm
 			// 
+			this.gvCatForm.Appearance.HideSelectionRow.Options.UseBackColor = true;
 			this.gvCatForm.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
 																							 this.colFForm});
 			this.gvCatForm.GridControl = this.CatalogGridControl;
@@ -746,6 +745,7 @@ namespace UEEditor
 			this.gvCatForm.OptionsMenu.EnableColumnMenu = false;
 			this.gvCatForm.OptionsMenu.EnableFooterMenu = false;
 			this.gvCatForm.OptionsMenu.EnableGroupPanelMenu = false;
+			this.gvCatForm.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvCatForm.OptionsView.ShowFilterPanel = false;
 			this.gvCatForm.OptionsView.ShowGroupPanel = false;
 			this.gvCatForm.SortInfo.AddRange(new DevExpress.XtraGrid.Columns.GridColumnSortInfo[] {
@@ -753,6 +753,10 @@ namespace UEEditor
 			// 
 			// colFForm
 			// 
+			this.colFForm.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(204)));
+			this.colFForm.AppearanceCell.Options.UseFont = true;
+			this.colFForm.AppearanceHeader.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(204)));
+			this.colFForm.AppearanceHeader.Options.UseFont = true;
 			this.colFForm.Caption = "Форма выпуска";
 			this.colFForm.FieldName = "FForm";
 			this.colFForm.Name = "colFForm";
@@ -817,8 +821,6 @@ namespace UEEditor
 																		  this.JJobDate,
 																		  this.JBlockBy,
 																		  this.JPhone,
-																		  this.JEMail1,
-																		  this.JEMail2,
 																		  this.JMinReq,
 																		  this.JWholeSale,
 																		  this.JParentSynonym,
@@ -868,14 +870,6 @@ namespace UEEditor
 			// JPhone
 			// 
 			this.JPhone.ColumnName = "JPhone";
-			// 
-			// JEMail1
-			// 
-			this.JEMail1.ColumnName = "JEMail1";
-			// 
-			// JEMail2
-			// 
-			this.JEMail2.ColumnName = "JEMail2";
 			// 
 			// JMinReq
 			// 
@@ -1027,7 +1021,6 @@ namespace UEEditor
 			// 
 			this.UECodeCr.Caption = "Код производителя";
 			this.UECodeCr.ColumnName = "UECodeCr";
-			this.UECodeCr.DataType = typeof(long);
 			// 
 			// UEName1
 			// 
@@ -1350,6 +1343,7 @@ namespace UEEditor
 			// 
 			// gvCatalog
 			// 
+			this.gvCatalog.Appearance.HideSelectionRow.Options.UseBackColor = true;
 			this.gvCatalog.ChildGridLevelName = "gvCatForm";
 			this.gvCatalog.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
 																							 this.colCName});
@@ -1359,11 +1353,14 @@ namespace UEEditor
 			this.gvCatalog.OptionsMenu.EnableColumnMenu = false;
 			this.gvCatalog.OptionsMenu.EnableFooterMenu = false;
 			this.gvCatalog.OptionsMenu.EnableGroupPanelMenu = false;
+			this.gvCatalog.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvCatalog.OptionsView.ShowFilterPanel = false;
 			this.gvCatalog.OptionsView.ShowGroupPanel = false;
 			// 
 			// colCName
 			// 
+			this.colCName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(204)));
+			this.colCName.AppearanceCell.Options.UseFont = true;
 			this.colCName.Caption = "Наименование";
 			this.colCName.FieldName = "CName";
 			this.colCName.Name = "colCName";
@@ -1375,18 +1372,30 @@ namespace UEEditor
 			// statusBarPanel1
 			// 
 			this.statusBarPanel1.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
-			this.statusBarPanel1.Width = 704;
+			this.statusBarPanel1.Width = 234;
 			// 
 			// statusBar1
 			// 
 			this.statusBar1.Location = new System.Drawing.Point(0, 775);
 			this.statusBar1.Name = "statusBar1";
 			this.statusBar1.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
-																						  this.statusBarPanel1});
+																						  this.statusBarPanel1,
+																						  this.sbpAll,
+																						  this.sbpCurrent});
 			this.statusBar1.ShowPanels = true;
 			this.statusBar1.Size = new System.Drawing.Size(720, 22);
 			this.statusBar1.TabIndex = 1;
 			this.statusBar1.Text = "statusBar1";
+			// 
+			// sbpAll
+			// 
+			this.sbpAll.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
+			this.sbpAll.Width = 234;
+			// 
+			// sbpCurrent
+			// 
+			this.sbpCurrent.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
+			this.sbpCurrent.Width = 234;
 			// 
 			// panel3
 			// 
@@ -1504,6 +1513,8 @@ namespace UEEditor
 			// 
 			// colJName
 			// 
+			this.colJName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(204)));
+			this.colJName.AppearanceCell.Options.UseFont = true;
 			this.colJName.Caption = "Фирма (прайс-лист)";
 			this.colJName.FieldName = "JName";
 			this.colJName.Name = "colJName";
@@ -1741,6 +1752,7 @@ namespace UEEditor
 			this.gvLogs.Name = "gvLogs";
 			this.gvLogs.OptionsCustomization.AllowColumnMoving = false;
 			this.gvLogs.OptionsCustomization.AllowGroup = false;
+			this.gvLogs.OptionsCustomization.AllowSort = false;
 			this.gvLogs.OptionsMenu.EnableColumnMenu = false;
 			this.gvLogs.OptionsMenu.EnableFooterMenu = false;
 			this.gvLogs.OptionsMenu.EnableGroupPanelMenu = false;
@@ -2072,7 +2084,6 @@ namespace UEEditor
 			this.gvUnrecExp.OptionsMenu.EnableFooterMenu = false;
 			this.gvUnrecExp.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvUnrecExp.OptionsSelection.EnableAppearanceFocusedCell = false;
-			this.gvUnrecExp.OptionsSelection.EnableAppearanceFocusedRow = false;
 			this.gvUnrecExp.OptionsView.ShowGroupPanel = false;
 			this.gvUnrecExp.SortInfo.AddRange(new DevExpress.XtraGrid.Columns.GridColumnSortInfo[] {
 																									   new DevExpress.XtraGrid.Columns.GridColumnSortInfo(this.colUEAlready, DevExpress.Data.ColumnSortOrder.Ascending)});
@@ -2817,6 +2828,8 @@ namespace UEEditor
 			((System.ComponentModel.ISupportInitialize)(this.dtSections)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatalog)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpAll)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpCurrent)).EndInit();
 			this.panel3.ResumeLayout(false);
 			this.tcMain.ResumeLayout(false);
 			this.tpJobs.ResumeLayout(false);
@@ -2936,22 +2949,17 @@ namespace UEEditor
 					PriceFmt As JPriceFMT, 
 					firmsegment, 
 					CD.Phone As JPhone, 
-					PD.MinReq As JMinReq, 
-					r.AdminMail As JEMail1, 
-					r.TmpMail As JEMail2
+					PD.MinReq As JMinReq
 				FROM 
 					usersettings.ClientsData AS CD, 
 					FormRules, 
 					usersettings.pricesdata AS PD, 
-					regions, 
-					usersettings.regionaldata r
+					regions
                     left join blockedprice bp on bp.PriceCode = PD.PriceCode
 				WHERE 
 				    FormRules.firmcode=PD.pricecode 
 				and CD.firmcode=PD.firmcode 
 				and regions.regioncode=CD.regioncode 
-				and regions.regioncode=r.regioncode 
-				and r.FirmCode=PD.Firmcode 
 				and pd.agencyenabled=1 
 				and exists(select * from UnrecExp un where un.FirmCode = PD.PriceCode)
 				GROUP BY PD.pricecode", 
@@ -3098,12 +3106,7 @@ namespace UEEditor
 				  Status As UEStatus,
                   Already As UEAlready, 
 				  Junk As UEJunk,
-				  HandMade As UEHandMade,
-				  UPPER(LEFT(Name1,LEAST(
-				    IF(LOCATE(' ', Name1)=0,999,LOCATE(' ', Name1)), 
-					IF(LOCATE('-', Name1)=0,999,LOCATE('-', Name1)), 
-					IF(LOCATE(',', Name1)=0,999,LOCATE(',', Name1)) )-1)) AS Name4, 
-				  UPPER(LEFT(Name1, 5)) AS Name5 
+				  HandMade As UEHandMade
 				  FROM UnrecExp 
 				  WHERE FirmCode= ?LockedPriceCode ORDER BY Name1";
 
@@ -3182,14 +3185,18 @@ namespace UEEditor
 			MyCmd.Parameters.Clear();
 			MyCmd.Parameters.Add("?LastLogTime", lt);
 
+			//Trace.WriteLine(DateTime.Now.ToString() + "BeginUpdate");
 			LogsViewGridControl.BeginUpdate();
 			try
 			{
+				//Trace.WriteLine(DateTime.Now.ToString() + "BeginFill");
 				MyDA.Fill(dtLogsView);
+				//Trace.WriteLine(DateTime.Now.ToString() + "EndFill");
 			}
 			finally
 			{
 				LogsViewGridControl.EndUpdate();
+				//Trace.WriteLine(DateTime.Now.ToString() + "EndUpdate");
 			}
 			if (!(gvLogs.IsFocusedView))
 				gvLogs.MoveLast();
@@ -3249,6 +3256,7 @@ namespace UEEditor
 		private void CatalogNameGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
 		{
 			//dataSet1.Tables["CatalogNameGrid"].Clear();
+			dtCatalogName.Clear();
 			MyCmd.CommandText = 
 				@"SELECT 
 					ShortCode As CCode, 
@@ -3265,6 +3273,7 @@ namespace UEEditor
 		private void CatalogFirmCrGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
 		{
 			//dataSet1.Tables["CatalogFirmCrGrid"].Clear();
+			dtCatalogFirmCr.Clear();
 			MyCmd.CommandText = 
 				@"SELECT 
 					CodeFirmCr As CCode, 
@@ -3281,11 +3290,13 @@ namespace UEEditor
 		{
 			//DataRow dr = ((GridView)UnrecExpGridControl.DefaultView).GetDataRow(((GridView)UnrecExpGridControl.DefaultView).FocusedRowHandle);
 			//	dataSet1.Tables["FormGrid"].Clear();
+			dtForm.Clear();
 			MyCmd.CommandText = 
 				@"SELECT
 					ShortCode AS FShortCode,
 					FullCode As FFullCode, 
-					Form AS FForm
+					Form AS FForm,
+                    Name As FName
 				FROM
 					Catalog
 				WHERE
@@ -3296,6 +3307,23 @@ namespace UEEditor
 			//MyCmd.Parameters.Add("?TmpFullCode", dr[UETmpFullCode]);
 
 			MyDA.Fill(dtForm);
+		}
+
+		private void UpdateCatalog()
+		{
+			CatalogGridControl.BeginUpdate();
+			try
+			{
+				dtForm.Clear();
+				CurrencyGridFill(MyCmd, MyDA);
+				CatalogFirmCrGridFill(MyCmd, MyDA);
+				CatalogNameGridFill(MyCmd, MyDA);
+				FormGridFill(MyCmd, MyDA);
+			}
+			finally
+			{
+				CatalogGridControl.EndUpdate();
+			}
 		}
 
 		private void btnDelJob_Click(object sender, System.EventArgs e)
@@ -3432,18 +3460,28 @@ namespace UEEditor
 			return (m & FormMask.MarkForb) == FormMask.MarkForb;
 		}
 
+		private string GetFilterString(string Value)
+		{
+			string[] flt = Value.Split(' ');
+			ArrayList newflt = new ArrayList();
+			for(int i=0;i<flt.Length;i++)
+			{
+				if (flt[i].Length >=4)
+					newflt.Add( PrepareArg( flt[i].Substring(0, 4).Replace("'", "''") ) );
+			}
+			string[] flt2 = new string[newflt.Count];
+			newflt.CopyTo(flt2);
+			return "[CName] like '" + String.Join("%' or [CName] like '", flt2) + "%'";
+		}
+
 		private void ShowCatalog(int FocusedRowHandle)
 		{
 			DataRow dr=gvUnrecExp.GetDataRow(FocusedRowHandle);
 			grpBoxCatalog2.Text = "Каталог товаров";
 			CatalogGridControl.DataMember = "CatalogNameGrid";
-			string[] flt = (GetFullUnrecName(FocusedRowHandle)).Split(' ');
-			for(int i=0;i<flt.Length;i++)
-			{
-				flt[i] = flt[i].Replace("'", "''");
-			}
+
 			gvCatalog.ActiveFilter.Clear();
-			gvCatalog.ActiveFilter.Add(gvCatalog.Columns["CName"], new ColumnFilterInfo("[CName] in ('" + String.Join("', '", flt) + "')", ""));
+			gvCatalog.ActiveFilter.Add(gvCatalog.Columns["CName"], new ColumnFilterInfo( GetFilterString( GetFullUnrecName(FocusedRowHandle) ) , ""));
 			if (gvCatalog.DataRowCount == 0)
 				gvCatalog.ActiveFilter.Clear();
 		}
@@ -3454,15 +3492,10 @@ namespace UEEditor
 			grpBoxCatalog2.Text = "Каталог фирм производителей";
 			CatalogGridControl.DataMember = "CatalogFirmCrGrid";
 			
-			if (dr["UEFirmCr"].ToString() != "")
+			if (dr["UEFirmCr"].ToString() != String.Empty)
 			{
-				string[] flt = (dr["UEFirmCr"].ToString()).Split(' ');
-				for(int i=0;i<flt.Length;i++)
-				{
-					flt[i] = flt[i].Replace("'", "''");
-				}
 				gvCatalog.ActiveFilter.Clear();
-				gvCatalog.ActiveFilter.Add(gvCatalog.Columns["CName"], new ColumnFilterInfo("[CName] in ('" + String.Join("', '", flt) + "')", ""));
+				gvCatalog.ActiveFilter.Add(gvCatalog.Columns["CName"], new ColumnFilterInfo(GetFilterString( dr["UEFirmCr"].ToString() ), ""));
 				if (gvCatalog.DataRowCount == 0)
 					gvCatalog.ActiveFilter.Clear();
 			}
@@ -3527,23 +3560,51 @@ namespace UEEditor
 							UnmarkUnrecExpAsForbidden(gvUnrecExp.FocusedRowHandle);
 							return;
 						}
-					else
+						else
 							return;
 
 					if ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.NameForm) == FormMask.NameForm)
-						if(MessageBox.Show("Отменить сопоставление по наименованию?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+					{
+						DataRow drUN = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
+						if (drUN != null)
 						{
-							UnmarkUnrecExpAsNameForm(gvUnrecExp.FocusedRowHandle);
-							SetReserved("",gvUnrecExp.FocusedRowHandle);
-							flag = true;
+							DataRow[] drFM = dtForm.Select("FFullCode = " + drUN[UETmpFullCode].ToString());
+							if (drFM.Length > 0)
+							{
+								string Mess = String.Format("Наименование: {0}\r\nФорма: {1}\r\nОтменить сопоставление по наименованию?", drFM[0]["FName"], drFM[0][FForm]);
+								if(MessageBox.Show(Mess, "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+								{
+									UnmarkUnrecExpAsNameForm(gvUnrecExp.FocusedRowHandle);
+									SetReserved(null,gvUnrecExp.FocusedRowHandle);
+									flag = true;
+								}
+							}
 						}
+					}
 
 					if ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm)
-						if(MessageBox.Show("Отменить сопоставление по производителю?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+					{
+						DataRow drUN = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
+						if (drUN != null)
 						{
-							UnmarkUnrecExpAsFirmForm(gvUnrecExp.FocusedRowHandle);
-							flag = true;
+							string FirmName = String.Empty;
+							if ((Int64)drUN[UETmpCodeFirmCr] == 1)
+								FirmName = "-";
+							else
+							{
+								DataRow[] drFM = dtCatalogFirmCr.Select("CCode = " + drUN[UETmpCodeFirmCr].ToString());
+								if (drFM.Length > 0)
+								{
+									FirmName = drFM[0]["CName"].ToString();
+								}
+							}
+							if(FirmName != String.Empty && MessageBox.Show("Производитель: " + FirmName+ "\r\nОтменить сопоставление по производителю?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+							{
+								UnmarkUnrecExpAsFirmForm(gvUnrecExp.FocusedRowHandle);
+								flag = true;
+							}
 						}
+					}
 
 					if ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.CurrForm) == FormMask.CurrForm)
 						if(MessageBox.Show("Отменить сопоставление по валюте?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
@@ -3570,7 +3631,7 @@ namespace UEEditor
 		private void SetReserved(string reserved, int FocusedRowHandle)
 		{
 			DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-			drUnrecExp["UEJunk"]="";
+			drUnrecExp["UEJunk"]=reserved;
 		}
 
 		private void UnmarkUnrecExpAsNameForm(int FocusedRowHandle)
@@ -3654,12 +3715,14 @@ namespace UEEditor
 			}
 		}
 
-		private void MarkUnrecExpAsNameForm(DataRow drUnrecExp)
+		private void MarkUnrecExpAsNameForm(DataRow drUnrecExp, bool MarkAsJUNK)
 		{
 			if (((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) &  FormMask.NameForm) != FormMask.NameForm)
 			{
 				//TODO: Здесь потребуется завести дополнительный столбец в таблицу нераспознанных выражений
 				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) | FormMask.NameForm);
+				if (MarkAsJUNK)
+					drUnrecExp["UEJunk"] = JUNK;
 				GridView bv = (GridView)gvCatalog.GetDetailView(gvCatalog.FocusedRowHandle,0);
 				drUnrecExp["UETmpFullCode"] = bv.GetDataRow(bv.FocusedRowHandle)["FFullCode"];
 				drUnrecExp["UETmpShortCode"] = bv.GetDataRow(bv.FocusedRowHandle)["FShortCode"];
@@ -3692,8 +3755,32 @@ namespace UEEditor
 				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) | FormMask.MarkForb);
 		}
 
+
+		private string PrepareArg(string source)
+		{
+			string res = String.Empty;
+			foreach(char c in source)
+			{
+				if (c == '*' || c == '%' || c == '[' || c == ']')
+					res += String.Format("[{0}]", c);
+				else
+					res += Char.ToUpper(c).ToString();
+			}
+			return res;
+		}
+
 		private void CatalogGridControl_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
+			//Снимаем фильтр при поиске
+			if ( (e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets || 
+				e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes || 
+				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion)
+			{
+				if (CatalogGridControl.FocusedView.LevelName == String.Empty)
+					gvCatalog.ActiveFilter.Clear();
+				else
+					gvCatForm.ActiveFilter.Clear();
+			}
 			if (CatalogGridControl.DataMember == "CatalogNameGrid")
 			{
 				if (CatalogGridControl.FocusedView.LevelName == String.Empty)
@@ -3711,14 +3798,16 @@ namespace UEEditor
 							for(int i=0;i<flt.Length;i++)
 							{
 								if (flt[i] != null && flt[i] != String.Empty)
-									newflt.Add( flt[i].Replace("'", "''") );
+									newflt.Add( PrepareArg( flt[i].Replace("'", "''") ) );
 							}
 							string[] flt2 = new string[newflt.Count];
 							newflt.CopyTo(flt2);
 							gvCatForm.ActiveFilter.Clear();					
 							gvCatForm.ActiveFilter.Add(gvCatForm.Columns["FForm"], new ColumnFilterInfo("[FForm] like '%" + String.Join("%' or [FForm] like '%", flt2) + "%'", ""));
-							if (gvCatForm.DataRowCount == 0)
+							//if (gvCatForm.DataRowCount == 0)
 								gvCatForm.ActiveFilter.Clear();
+							DataRow dr = gvCatalog.GetDataRow(gvCatalog.FocusedRowHandle);
+							colFForm.Caption = dr[colCName.FieldName].ToString();
 						}
 
 					if (e.KeyCode == Keys.Escape)
@@ -3753,11 +3842,9 @@ namespace UEEditor
 					{
 						if (((GridView)CatalogGridControl.FocusedView).FocusedRowHandle != GridControl.InvalidRowHandle)
 						{
-							DoSynonym();
+							DoSynonym(e.Shift);
 							ChangeBigName(gvUnrecExp.FocusedRowHandle);
 						}
-						if(e.KeyCode == Keys.Shift)
-							SetReserved(JUNK, gvUnrecExp.FocusedRowHandle);
 					}
 				}
 			}
@@ -3825,7 +3912,7 @@ namespace UEEditor
 			MoveToCatalog();
 		}
 
-		private void DoSynonym()
+		private void DoSynonym(bool MarkAsJUNK)
 		{
 			int CurrentFocusHandle = gvUnrecExp.FocusedRowHandle;
 			string TmpName = GetFullUnrecName(CurrentFocusHandle);
@@ -3837,7 +3924,7 @@ namespace UEEditor
 					string drName = GetFullUnrecName(i);
 					if (drName == TmpName)
 					{
-						MarkUnrecExpAsNameForm(dr);
+						MarkUnrecExpAsNameForm(dr, MarkAsJUNK);
 
 						if (String.Empty == dr["UEFirmCr"].ToString())
 						{
@@ -3929,9 +4016,8 @@ namespace UEEditor
 					break;
 
 					//Обновляем таблицу заданий вручную
-				case Keys.R:
-					if (e.Control)
-						JobsGridFill();
+				case Keys.F5:
+					JobsGridFill();
 					break;
 			}
 		}
@@ -3999,6 +4085,7 @@ namespace UEEditor
 					gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
 					gvUnrecExp.FocusedRowHandle = 0;
 					GoToNextUnrecExp(0);
+					sbpAll.Text = String.Format("Общее количество: {0}", dtUnrecExp.Rows.Count);
 				}
 			}
 		}
@@ -4038,6 +4125,8 @@ namespace UEEditor
 					dtUnrecExp.Clear();
 					//Обновляем таблицу заданий
 					JobsGridFill();
+					sbpAll.Text = String.Empty;
+					sbpCurrent.Text = String.Empty;
 					Text = "Редактор нераспознанных выражений";
 					return;
 				}
@@ -4061,9 +4150,9 @@ namespace UEEditor
 			}
 			catch(Exception e)
 			{
-				f.Error = String.Format("Поймали исключение : {0}", e.ToString());
+				if (f != null)
+					f.Error = String.Format("Поймали исключение : {0}", e.ToString());
 			}
-
 		}
 
 		delegate bool ShowRetransPriceDelegate();
@@ -4080,9 +4169,25 @@ namespace UEEditor
 			bool res = false;
 			DateTime now = DateTime.Now;
 			f.Status = "Подготовка таблиц...";
+
+			SynonymCount = 0; 
+			SynonymFirmCrCount = 0;
+			SynonymCurrencyCount = 0;
+			ForbiddenCount = 0;
+
+			//Кол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводится
+			int DelCount = 0;
 			
 			f.Pr = 1;
 			//Заполнение таблиц перед вставкой
+
+			//Заполнили таблицу нераспознанных наименований для обновления
+			MySqlDataAdapter daUnrecUpdate = new MySqlDataAdapter("select * from UnrecExp where FirmCode = ?FirmCode", MyCn);
+			MySqlCommandBuilder cbUnrecUpdate = new MySqlCommandBuilder(daUnrecUpdate);
+			daUnrecUpdate.SelectCommand.Parameters.Add("?FirmCode", LockedPriceCode);
+			DataTable dtUnrecUpdate = new DataTable();
+			daUnrecUpdate.Fill(dtUnrecUpdate);
+			dtUnrecUpdate.Constraints.Add("UnicNameCode", dtUnrecUpdate.Columns["RowID"], true);
 
 			//Заполнили таблицу синонимов наименований
 			MySqlDataAdapter daSynonym = new MySqlDataAdapter("select * from Synonym where FirmCode = ?FirmCode limit 0", MyCn);
@@ -4120,28 +4225,28 @@ namespace UEEditor
 
 			f.Pr += 1;
 			//Заполнили таблицу логов синонимов наименований
-			MySqlDataAdapter daSynonymLogs = new MySqlDataAdapter("select * from SynonymLogs limit 0", MyCn);
+			MySqlDataAdapter daSynonymLogs = new MySqlDataAdapter("select * from logs.SynonymLogs limit 0", MyCn);
 			MySqlCommandBuilder cbSynonymLogs = new MySqlCommandBuilder(daSynonymLogs);
 			DataTable dtSynonymLogs = new DataTable();
 			daSynonymLogs.Fill(dtSynonymLogs);
 
 			f.Pr += 1;
 			//Заполнили таблицу логов синонимов производителей
-			MySqlDataAdapter daSynonymFirmCrLogs = new MySqlDataAdapter("select * from SynonymFirmCrLogs limit 0", MyCn);
+			MySqlDataAdapter daSynonymFirmCrLogs = new MySqlDataAdapter("select * from logs.SynonymFirmCrLogs limit 0", MyCn);
 			MySqlCommandBuilder cbSynonymFirmCrLogs = new MySqlCommandBuilder(daSynonymFirmCrLogs);
 			DataTable dtSynonymFirmCrLogs = new DataTable();
 			daSynonymFirmCrLogs.Fill(dtSynonymFirmCrLogs);
 
 			f.Pr += 1;
 			//Заполнили таблицу логов синонимов валют
-			MySqlDataAdapter daSynonymCurrencyLogs = new MySqlDataAdapter("select * from SynonymCurrencyLogs limit 0", MyCn);
+			MySqlDataAdapter daSynonymCurrencyLogs = new MySqlDataAdapter("select * from logs.SynonymCurrencyLogs limit 0", MyCn);
 			MySqlCommandBuilder cbSynonymCurrencyLogs = new MySqlCommandBuilder(daSynonymCurrencyLogs);
 			DataTable dtSynonymCurrencyLogs = new DataTable();
 			daSynonymCurrencyLogs.Fill(dtSynonymCurrencyLogs);
 
 			f.Pr += 1;
 			//Заполнили таблицу логов запрещённых выражений
-			MySqlDataAdapter daForbiddenLogs = new MySqlDataAdapter("select * from ForbiddenLogs limit 0", MyCn);
+			MySqlDataAdapter daForbiddenLogs = new MySqlDataAdapter("select * from logs.ForbiddenLogs limit 0", MyCn);
 			MySqlCommandBuilder cbForbiddenLogs = new MySqlCommandBuilder(daForbiddenLogs);
 			DataTable dtForbiddenLogs = new DataTable();
 			daForbiddenLogs.Fill(dtForbiddenLogs);
@@ -4153,6 +4258,8 @@ namespace UEEditor
 				if (i != GridControl.InvalidRowHandle)
 				{
 					DataRow dr = gvUnrecExp.GetDataRow(i);
+
+					DelCount += UpDateUnrecExp(dtUnrecUpdate, dr);
 					
 					//Вставили новую запись в таблицу запрещённых выражений
 					if (!MarkForbidden(i, "UEAlready") && MarkForbidden(i, "UEStatus"))
@@ -4183,8 +4290,6 @@ namespace UEEditor
 							newDR["ShortCode"] = dr[UETmpShortCode];
 							newDR["Code"] = dr[UECode];
 							newDR["Junk"] = dr[UEJunk];
-							newDR["Date"] = now;
-							newDR["UserName"] = Environment.UserName;
 							try
 							{
 								dtSynonym.Rows.Add(newDR);
@@ -4203,8 +4308,6 @@ namespace UEEditor
 							newDR["FirmCode"] = LockedSynonym;
 							newDR["CodeFirmCr"] = dr[UETmpCodeFirmCr];
 							newDR["Synonym"] = GetFirmCr(i);
-							newDR["Date"] = now;
-							newDR["UserName"] = Environment.UserName;
 							try
 							{
 								dtSynonymFirmCr.Rows.Add(newDR);
@@ -4223,8 +4326,6 @@ namespace UEEditor
 							newDR["FirmCode"] = LockedSynonym;
 							newDR["Currency"] = dr[UETmpCurrency];
 							newDR["Synonym"] = GetCurrency(i);
-							newDR["Date"] = now;
-							newDR["UserName"] = Environment.UserName;
 							try
 							{
 								dtSynonymCurrency.Rows.Add(newDR);
@@ -4257,6 +4358,7 @@ namespace UEEditor
 					{
 						DataRow drNewSynonymLogs = dtSynonymLogs.NewRow();
 						drNewSynonymLogs["OperatorName"] = Environment.UserName;
+						drNewSynonymLogs["OperatorHost"] = Environment.MachineName;
 						drNewSynonymLogs["LogTime"] = now;
 						drNewSynonymLogs["Operation"] = 0;
 						drNewSynonymLogs["PriceCode"] = drSynonymCopy["FirmCode"];
@@ -4267,7 +4369,6 @@ namespace UEEditor
 						dtSynonymLogs.Rows.Add(drNewSynonymLogs);
 					}
 					daSynonymLogs.SelectCommand.Transaction = tran;
-					daSynonymLogs.Update(dtSynonymLogs);
 
 					f.Pr += 10;
                     
@@ -4281,6 +4382,7 @@ namespace UEEditor
 					{
 						DataRow drNewSynonymFirmCrLogs = dtSynonymFirmCrLogs.NewRow();
 						drNewSynonymFirmCrLogs["OperatorName"] = Environment.UserName;
+						drNewSynonymFirmCrLogs["OperatorHost"] = Environment.MachineName;
 						drNewSynonymFirmCrLogs["LogTime"] = now;
 						drNewSynonymFirmCrLogs["Operation"] = 0;
 						drNewSynonymFirmCrLogs["SynonymFirmCrCode"] = drSynonymFirmCrCopy["SynonymFirmCrCode"];
@@ -4290,7 +4392,6 @@ namespace UEEditor
 						dtSynonymFirmCrLogs.Rows.Add(drNewSynonymFirmCrLogs);
 					}
 					daSynonymFirmCrLogs.SelectCommand.Transaction = tran;
-					daSynonymFirmCrLogs.Update(dtSynonymFirmCrLogs);
 
 					f.Pr += 10;
 
@@ -4304,6 +4405,7 @@ namespace UEEditor
 					{
 						DataRow drNewSynonymCurrencyLogs = dtSynonymCurrencyLogs.NewRow();
 						drNewSynonymCurrencyLogs["OperatorName"] = Environment.UserName;
+						drNewSynonymCurrencyLogs["OperatorHost"] = Environment.MachineName;
 						drNewSynonymCurrencyLogs["LogTime"] = now;
 						drNewSynonymCurrencyLogs["Operation"] = 0;
 						drNewSynonymCurrencyLogs["Currency"] = drSynonymCurrencyCopy["Currency"];
@@ -4312,7 +4414,6 @@ namespace UEEditor
 						dtSynonymCurrencyLogs.Rows.Add(drNewSynonymCurrencyLogs);
 					}
 					daSynonymCurrencyLogs.SelectCommand.Transaction = tran;
-					daSynonymCurrencyLogs.Update(dtSynonymCurrencyLogs);
 
 					f.Pr += 10;
 					
@@ -4326,6 +4427,7 @@ namespace UEEditor
 					{
 						DataRow drNewForbiddenLogs = dtForbiddenLogs.NewRow();
 						drNewForbiddenLogs["OperatorName"] = Environment.UserName;
+						drNewForbiddenLogs["OperatorHost"] = Environment.MachineName;
 						drNewForbiddenLogs["LogTime"] = now;
 						drNewForbiddenLogs["Operation"] = 0;
 						drNewForbiddenLogs["Forbidden"] = drForbiddenCopy["Forbidden"];
@@ -4333,11 +4435,29 @@ namespace UEEditor
 						dtForbiddenLogs.Rows.Add(drNewForbiddenLogs);
 					}
 					daForbiddenLogs.SelectCommand.Transaction = tran;
-					daForbiddenLogs.Update(dtForbiddenLogs);
+
+					//Применяем логи отдельно, т.к. требуется сменить базу данных
+					try
+					{
+						MyCn.ChangeDatabase("logs");
+						daSynonymLogs.Update(dtSynonymLogs);
+						daSynonymFirmCrLogs.Update(dtSynonymFirmCrLogs);
+						daSynonymCurrencyLogs.Update(dtSynonymCurrencyLogs);
+						daForbiddenLogs.Update(dtForbiddenLogs);
+					}
+					finally
+					{
+						MyCn.ChangeDatabase("farm");
+					}
 
 					f.Pr += 10;
                    
-					UpDateUnrecExp(tran);
+					//Обновление таблицы нераспознанных выражений
+					daUnrecUpdate.SelectCommand.Transaction = tran;
+					DataTable dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
+					daUnrecUpdate.Update(dtUnrecUpdateCopy);
+
+					//DelCount = UpDateUnrecExp(tran);
 
 					tran.Commit();
 					res = true;
@@ -4351,6 +4471,7 @@ namespace UEEditor
 					catch{}
 					f.Error = String.Format("При обновлении синонимов произошла ошибка : {0}\r\n", ex);
 					f.Pr = 50;
+					Thread.Sleep(500);
 				}
 				finally
 				{
@@ -4367,7 +4488,9 @@ namespace UEEditor
 			f.Status = String.Empty;
 			f.Error = String.Empty;
 
-			bool S = (bool)f.Invoke( new ShowRetransPriceDelegate( ShowRetransPrice ) );
+			bool S = DelCount == dtUnrecExp.Rows.Count;
+			if (!S)
+				S = (bool)f.Invoke( new ShowRetransPriceDelegate( ShowRetransPrice ) );
 
 			if (res &&  S)
 			{
@@ -4385,7 +4508,7 @@ namespace UEEditor
 				string ext = String.Empty;
 				for(int i = Ext.GetLowerBound(1); i<=Ext.GetUpperBound(1); i++)
 				{
-					if (Ext[0, i] == PriceFMT)
+					if (Ext[0, i] == PriceFMT.ToUpper())
 					{
 						ext = Ext[1, i];
 						break;
@@ -4398,13 +4521,17 @@ namespace UEEditor
 					f.Pr = 80;
 					try
 					{
-						File.Copy(rootpath + "Base\\" + LockedPriceCode.ToString() + ext, rootpath + "Inbound0\\" + LockedPriceCode.ToString() + ext);
+						if (File.Exists(rootpath + "Base\\" + LockedPriceCode.ToString() + ext))
+						{
+							File.Copy(rootpath + "Base\\" + LockedPriceCode.ToString() + ext, rootpath + "Inbound0\\" + LockedPriceCode.ToString() + ext);
+							PricesRetrans(now);
+						}
 						copyOk = true;
-						PricesRetrans(now);
 					}
 					catch(Exception e)
 					{
 						f.Error = String.Format("При копировании файла возникла ошибка : {0}\r\n", e);
+						Thread.Sleep(500);
 					}
 				}
 				while(!copyOk);
@@ -4439,75 +4566,67 @@ namespace UEEditor
 			mcInsert.ExecuteNonQuery();
 		}
 
-		private void UpDateUnrecExp(MySqlTransaction tran)
+		private int UpDateUnrecExp(DataTable dtUnrecExpUpdate, DataRow drUpdated)
 		{
-			string UpdateSQL = 
-						@"UPDATE UnrecExp
-							SET Status = ?UEStatus,
-								Already = ?UEStatus,
-								TmpFullCode = ?UETmpFullCode,
-								TmpShortCode = ?UETmpShortCode,
-								TmpCodeFirmCr = ?UETmpCodeFirmCr,
-								TmpCurrency = ?UETmpCurrency,
-                                HandMade = ?HandMade
-						WHERE RowID = ?UERowID";
-
-			MySqlCommand Cmd = new MySqlCommand(UpdateSQL, MyCn, tran);
+			int DelCount = 0;
 
 			int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm | FormMask.CurrForm);
 
-			for(int i = 0; i < gvUnrecExp.RowCount; i++)
+			//DataRow[] drs = dtUnrecExpUpdate.Select("RowID = " + drUpdated["UERowID"].ToString());
+			DataRow drNew = dtUnrecExpUpdate.Rows.Find( Convert.ToUInt32( drUpdated["UERowID"] ) );
+
+			if (drNew != null)
 			{
-				if (i != GridControl.InvalidRowHandle)
+				if ((int)drUpdated["UEStatus"] == FULLFORM)
 				{
-					DataRow dr = gvUnrecExp.GetDataRow(i);
-					Cmd.Parameters.Clear();
-					if ((int)dr["UEStatus"] == FULLFORM)
+					drNew.Delete();
+					DelCount++;
+				}
+				else
+				{
+					drNew["Status"] = drUpdated["UEStatus"];
+					drNew["TmpFullCode"] = drUpdated["UETmpFullCode"];
+					drNew["TmpShortCode"] = drUpdated["UETmpShortCode"];
+					drNew["TmpCodeFirmCr"] = drUpdated["UETmpCodeFirmCr"];
+					drNew["TmpCurrency"] = drUpdated["UETmpCurrency"];
+					drNew["RowID"] = drUpdated["UERowID"];
+					if ((byte)drUpdated["UEHandMade"] == 0)
 					{
-						Cmd.CommandText = "delete from UnrecExp where RowID = ?UERowID";
-						Cmd.Parameters.Add("?UERowID", dr["UERowID"]);
-					}
-					else
-					{
-						Cmd.CommandText = UpdateSQL;
-						Cmd.Parameters.Add("?UEStatus", dr["UEStatus"].ToString());
-						Cmd.Parameters.Add("?UETmpFullCode", dr["UETmpFullCode"].ToString());
-						Cmd.Parameters.Add("?UETmpShortCode", dr["UETmpShortCode"].ToString());
-						Cmd.Parameters.Add("?UETmpCodeFirmCr", dr["UETmpCodeFirmCr"].ToString());
-						Cmd.Parameters.Add("?UETmpCurrency", dr["UETmpCurrency"].ToString());
-						Cmd.Parameters.Add("?UERowID", dr["UERowID"].ToString());
-						if ((byte)dr["UEHandMade"] == 0)
+						int r = (int)drUpdated["UEStatus"] ^ (int)drUpdated["UEAlready"];
+						if ( (r > 0 && (r & (int)FormMask.MarkForb) == 0))
 						{
-							int r = (int)dr["UEStatus"] ^ (int)dr["UEAlready"];
-							if ( (r > 0 && (r & (int)FormMask.MarkForb) == 0))
-							{
-								Cmd.Parameters.Add("?HandMade", 1);
-							}
-							else
-							{
-								Cmd.Parameters.Add("?HandMade", 0);
-							}
+							drNew["HandMade"] = 1;
 						}
 						else
-							Cmd.Parameters.Add("?HandMade", 1);
+						{
+							drNew["HandMade"] = 0;
+						}
 					}
-					Cmd.ExecuteNonQuery();
+					else
+						drNew["HandMade"] = 1;
 				}
+
 			}
+
+			return DelCount;
 		}
 
 		private void frmUEEMain_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			switch(e.KeyCode)
 			{
-					//Если нажали Ctrl-S на вкладке нераспознанные выражения, то завершаем распознование
-				case Keys.S:
-					if (e.Control && tcMain.SelectedTab == tpUnrecExp)
+					//Если нажали F12 на вкладке нераспознанные выражения, то завершаем распознование
+				case Keys.F12:
+					if (tcMain.SelectedTab == tpUnrecExp)
 					{
 						DialogResult DRes;
 						DRes = MessageBox.Show("Сохранить результаты?" , "Вопрос", MessageBoxButtons.YesNoCancel);
 						UnlockJob(DRes);
 					}
+					break;
+
+				case Keys.F11:
+					UpdateCatalog();
 					break;
 			}
 		}
@@ -4558,8 +4677,13 @@ namespace UEEditor
 					BigNameLabel2.Text = GetFirmCr(FocusedRowHandle);
 				else
 					BigNameLabel2.Text = GetFullUnrecName(FocusedRowHandle);
+
+				sbpCurrent.Text = String.Format("Текущая позиция: {0}", FocusedRowHandle+1);
 			}
+			else
+				sbpCurrent.Text = String.Empty;
 		}
+
 		private void gvUnrecExp_FocusedRowChanged(object sender, DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs e)
 		{
 			ChangeBigName(e.FocusedRowHandle);
@@ -4696,6 +4820,7 @@ namespace UEEditor
 			 * 
 			 * 
 			 * */
+
 			if (e.RowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow dr = gvLogs.GetDataRow(e.RowHandle);
@@ -4998,13 +5123,13 @@ namespace UEEditor
 					else
 					{
 						if (7 == (int)UEdr["UEStatus"])
-							e.Appearance.BackColor = Color.PaleGreen;
+							e.Appearance.BackColor = Color.Lime;
 						else
 							if (((GetMask(i, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb))
 							e.Appearance.BackColor = SystemColors.GrayText;
 						else
 							if (((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
-							e.Appearance.BackColor = SystemColors.Info;
+							e.Appearance.BackColor = Color.PaleGreen;
 					}
 				}
 			}

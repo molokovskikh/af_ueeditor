@@ -79,32 +79,27 @@
   <ItemGroup>
     <Reference Include="DevExpress.Data3">
       <Name>DevExpress.Data3</Name>
-      <HintPath>..\..\..\..\..\..\Program Files\Common Files\DevExpress\.NET.v3\DevExpress.Data3.dll</HintPath>
-      <AssemblyFolderKey>hklm\devexpress.net.v3</AssemblyFolderKey>
+      <HintPath>Y:\NET_UEEditor\DevExpress.Data3.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DevExpress.Utils3">
       <Name>DevExpress.Utils3</Name>
-      <HintPath>..\..\..\..\..\..\Program Files\Common Files\DevExpress\.NET.v3\DevExpress.Utils3.dll</HintPath>
-      <AssemblyFolderKey>hklm\devexpress.net.v3</AssemblyFolderKey>
+      <HintPath>Y:\NET_UEEditor\DevExpress.Utils3.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DevExpress.XtraEditors3">
       <Name>DevExpress.XtraEditors3</Name>
-      <HintPath>..\..\..\..\..\..\Program Files\Common Files\DevExpress\.NET.v3\DevExpress.XtraEditors3.dll</HintPath>
-      <AssemblyFolderKey>hklm\devexpress.net.v3</AssemblyFolderKey>
+      <HintPath>Y:\NET_UEEditor\DevExpress.XtraEditors3.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DevExpress.XtraGrid3">
-      <Name>devexpress.xtragrid3</Name>
-      <HintPath>..\..\..\..\..\..\program files\common files\devexpress\.net.v3\devexpress.xtragrid3.dll</HintPath>
-      <AssemblyFolderKey>hklm\devexpress.net.v3</AssemblyFolderKey>
+      <Name>DevExpress.XtraGrid3</Name>
+      <HintPath>Y:\NET_UEEditor\DevExpress.XtraGrid3.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MySql.Data">
       <Name>MySql.Data</Name>
-      <HintPath>..\..\..\Program Files\MySQL\MySQL Connector Net 1.0.4\bin\.NET 1.1\MySql.Data.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>lib\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
