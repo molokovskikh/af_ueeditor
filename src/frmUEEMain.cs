@@ -348,7 +348,7 @@ namespace UEEditor
 //			str += string.Format(" Читаем настройки формы формы {0} \r\n", now2.Subtract(now1));
 
 #if DEBUG
-			MyCn.ConnectionString = "server=testdb; user id=system; password=123; database=farm;";
+			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=123; database=farm;";
 #endif
 			MyCn.Open();
 			MyDA = new MySqlDataAdapter(MyCmd);
@@ -2951,10 +2951,12 @@ namespace UEEditor
 					CD.Phone As JPhone, 
 					PD.MinReq As JMinReq
 				FROM 
+                    (
 					usersettings.ClientsData AS CD, 
 					FormRules, 
 					usersettings.pricesdata AS PD, 
 					regions
+                    )
                     left join blockedprice bp on bp.PriceCode = PD.PriceCode
 				WHERE 
 				    FormRules.firmcode=PD.pricecode 
