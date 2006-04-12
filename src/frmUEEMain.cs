@@ -18,7 +18,7 @@ using System.Diagnostics;
 
 
 
-[assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, All = "HKEY_CURRENT_USER")]
+[assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
 namespace UEEditor
 {
 
@@ -4962,7 +4962,7 @@ namespace UEEditor
 
 				foreach(DataRow UEdr in dtUnrecExp.Rows)
 				{
-					if ( ((FormMask)Convert.ToByte(UEdr["UEStatus"]) & FormMask.NameForm) != FormMask.NameForm )
+					if ( ((FormMask)Convert.ToByte(UEdr["UEStatus"]) & FormMask.MarkForb) == FormMask.MarkForb )
 					{
 	
 						string tmp = (UEdr["UEName1"].ToString() + " " + UEdr["UEFirmCr"].ToString()).Trim();
@@ -4979,22 +4979,11 @@ namespace UEEditor
 				Clipboard.SetDataObject(UnrecName);
 
 				string body = "";
-				body = 
-					@"Здравствуйте. %0D%0A%0D%0A
-При обработке прайс-листа {0} не опубликован ряд 
-позиций, которые не удалось соотнести с торговыми наименованиями нашего каталога по причинам описанным ниже: %0D%0A%0D%0A
-{1}%0D%0A%0D%0A%0D%0A
-Просьба внести изменения в написание указанных позиций Вашего прайс-листа.%0D%0A%0D%0A
-Уведомляем Вас, что до внесения изменений или получения нами информации по этому вопросу 
-перечисленные позиции будут блокированы.%0D%0A%0D%0A
-Вы можете контролировать процесс обработки Вашего прайс-листа, используя интерфейс управления(раздел %22Прайс-листы%22 - ссылка %22Дополнительные сведения%22).%0D%0A%0D%0A
-С уважением,%0D%0AАналитическая Компания %22Инфорум%22 г.Воронеж %0D%0A
-Тел.: +7 0732 206000%0D%0A
-%0D%0AEmail: pharm@analit.net%0D%0Ahttp://www.analit.net";
+                body = UEEditor.Properties.Settings.Default.AboutNamesBody;
 
 				body = String.Format(body, dr["JName"], "");
 
-				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", dr["JOrderManagerMail"], GetEmails(LockedPriceCode.ToString()), String.Format("Уведомление%20для%20{0}%20о%20нераспознанных%20изготовителях", dr["JName"]), body));
+                System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", dr["JOrderManagerMail"], GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["JName"]), body));
 			}
 		}
 
@@ -5025,22 +5014,11 @@ namespace UEEditor
 				Clipboard.SetDataObject(UnrecFirmCr);
 
 				string body = "";
-				body = 
-					@"Здравствуйте. %0D%0A%0D%0A
-При обработке прайс-листа {0}
- не удалось соотнести наименования некоторых изготовителей с нашим каталогом по причинам описанным ниже: %0D%0A%0D%0A
-{1}%0D%0A%0D%0A%0D%0A
-Просьба внести изменения в написание указанных изготовителей в Вашем прайс-листе.%0D%0A%0D%0A
-До внесения изменений или получения нами информации по этому вопросу 
-перечисленные изготовители не будут указываться в Вашем прайс-листе.%0D%0A%0D%0A
-Вы можете контролировать процесс обработки Вашего прайс-листа, используя интерфейс управления(раздел %22Прайс-листы%22 - ссылка %22Дополнительные сведения%22).%0D%0A%0D%0A
-С уважением,%0D%0AАналитическая Компания %22Инфорум%22 г.Воронеж%0D%0A
-Тел.: +7 0732 206000%0D%0A
-%0D%0AEmail: pharm@analit.net%0D%0Ahttp://www.analit.net";
+                body = UEEditor.Properties.Settings.Default.AboutFirmBody;
 			
 				body = String.Format(body, dr["JName"], "");
 
-				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", dr["JOrderManagerMail"], GetEmails(LockedPriceCode.ToString()), String.Format("Уведомление%20для%20{0}%20о%20нераспознанных%20изготовителях", dr["JName"]), body));
+				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", dr["JOrderManagerMail"], GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["JName"]), body));
 			}
 		}
 
