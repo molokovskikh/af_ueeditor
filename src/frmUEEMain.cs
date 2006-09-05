@@ -134,8 +134,7 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colZQuantity;
 		private DevExpress.XtraGrid.Columns.GridColumn colZPeriod;
 		private DevExpress.XtraGrid.Columns.GridColumn colZJunk;
-		private DevExpress.XtraGrid.GridControl OldFirmsGridControl;
-		private DevExpress.XtraGrid.Columns.GridColumn colOFPriceCode;
+        private DevExpress.XtraGrid.GridControl OldFirmsGridControl;
 		private DevExpress.XtraGrid.Columns.GridColumn colOFName;
 		private DevExpress.XtraGrid.Columns.GridColumn colOFRest;
 		private DevExpress.XtraGrid.Columns.GridColumn colOFDateCurPrice;
@@ -247,8 +246,7 @@ namespace UEEditor
 		private System.Windows.Forms.ColorDialog cdLegend;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private DevExpress.XtraGrid.GridControl JobsGridControl;
-		private DevExpress.XtraGrid.Views.Grid.GridView gvJobs;
-		private DevExpress.XtraGrid.Columns.GridColumn colJPriceCode;
+        private DevExpress.XtraGrid.Views.Grid.GridView gvJobs;
 		private DevExpress.XtraGrid.Columns.GridColumn colJName;
 		private DevExpress.XtraGrid.Columns.GridColumn colJBlockBy;
 		private DevExpress.XtraGrid.Columns.GridColumn colJRegion;
@@ -298,6 +296,10 @@ namespace UEEditor
         private GridColumn colLVFirmSegment;
         private ContextMenuStrip cmsCopy;
         private ToolStripMenuItem itemCopy;
+        private DataColumn OFRegion;
+        private DataColumn OFFirmSegment;
+        private GridColumn colOFFirmSegment;
+        private GridColumn colOFRegion;
 		private MySqlDataAdapter daJobs;
 
 		public frmUEEMain()
@@ -533,6 +535,8 @@ namespace UEEditor
             this.OFMaxOld = new System.Data.DataColumn();
             this.OFOrderManagerMail = new System.Data.DataColumn();
             this.OFFlag = new System.Data.DataColumn();
+            this.OFRegion = new System.Data.DataColumn();
+            this.OFFirmSegment = new System.Data.DataColumn();
             this.dtRegions = new System.Data.DataTable();
             this.RRegion = new System.Data.DataColumn();
             this.dtCatalogFirmCr = new System.Data.DataTable();
@@ -555,10 +559,7 @@ namespace UEEditor
             this.pnlCenter1 = new System.Windows.Forms.Panel();
             this.pnlTop1 = new System.Windows.Forms.Panel();
             this.JobsGridControl = new DevExpress.XtraGrid.GridControl();
-            this.cmsCopy = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.itemCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.gvJobs = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colJPriceCode = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJBlockBy = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJRegion = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -580,6 +581,8 @@ namespace UEEditor
             this.spltBottom1 = new System.Windows.Forms.Splitter();
             this.pnlBottom1 = new System.Windows.Forms.Panel();
             this.LogsViewGridControl = new DevExpress.XtraGrid.GridControl();
+            this.cmsCopy = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.itemCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.gvLogs = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colLVLogTime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLVShortName = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -653,12 +656,13 @@ namespace UEEditor
             this.tpClients = new System.Windows.Forms.TabPage();
             this.OldFirmsGridControl = new DevExpress.XtraGrid.GridControl();
             this.gvOldFirms = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colOFPriceCode = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFRest = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFDateCurPrice = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFMaxOld = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFFlag = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colOFFirmSegment = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colOFRegion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.grpBox5 = new System.Windows.Forms.GroupBox();
             this.btnOldPrice20 = new System.Windows.Forms.Button();
             this.btnOldPrice3 = new System.Windows.Forms.Button();
@@ -711,12 +715,12 @@ namespace UEEditor
             this.pnlCenter1.SuspendLayout();
             this.pnlTop1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.JobsGridControl)).BeginInit();
-            this.cmsCopy.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvJobs)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.pnlWithButton1.SuspendLayout();
             this.pnlBottom1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LogsViewGridControl)).BeginInit();
+            this.cmsCopy.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvLogs)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.tpUnrecExp.SuspendLayout();
@@ -1262,7 +1266,9 @@ namespace UEEditor
             this.OFDateCurPrice,
             this.OFMaxOld,
             this.OFOrderManagerMail,
-            this.OFFlag});
+            this.OFFlag,
+            this.OFRegion,
+            this.OFFirmSegment});
             this.dtOldFirms.TableName = "OldFirmsGrid";
             // 
             // OFPriceCode
@@ -1296,6 +1302,14 @@ namespace UEEditor
             // OFFlag
             // 
             this.OFFlag.ColumnName = "OFFlag";
+            // 
+            // OFRegion
+            // 
+            this.OFRegion.ColumnName = "OFRegion";
+            // 
+            // OFFirmSegment
+            // 
+            this.OFFirmSegment.ColumnName = "OFFirmSegment";
             // 
             // dtRegions
             // 
@@ -1487,25 +1501,10 @@ namespace UEEditor
             this.JobsGridControl.DoubleClick += new System.EventHandler(this.JobsGridControl_DoubleClick);
             this.JobsGridControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.JobsGridControl_KeyDown);
             // 
-            // cmsCopy
-            // 
-            this.cmsCopy.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemCopy});
-            this.cmsCopy.Name = "cmsCopy";
-            this.cmsCopy.Size = new System.Drawing.Size(138, 26);
-            this.cmsCopy.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsCopy_ItemClicked);
-            // 
-            // itemCopy
-            // 
-            this.itemCopy.Name = "itemCopy";
-            this.itemCopy.Size = new System.Drawing.Size(137, 22);
-            this.itemCopy.Text = "Копировать";
-            // 
             // gvJobs
             // 
             this.gvJobs.Appearance.FocusedCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
             this.gvJobs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colJPriceCode,
             this.colJName,
             this.colJBlockBy,
             this.colJRegion,
@@ -1519,28 +1518,15 @@ namespace UEEditor
             this.gvJobs.Name = "gvJobs";
             this.gvJobs.OptionsBehavior.AllowIncrementalSearch = true;
             this.gvJobs.OptionsCustomization.AllowColumnMoving = false;
+            this.gvJobs.OptionsLayout.StoreVisualOptions = false;
             this.gvJobs.OptionsMenu.EnableColumnMenu = false;
             this.gvJobs.OptionsMenu.EnableFooterMenu = false;
             this.gvJobs.OptionsMenu.EnableGroupPanelMenu = false;
             this.gvJobs.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.gvJobs.OptionsView.ShowGroupPanel = false;
-            this.gvJobs.SortInfo.AddRange(new DevExpress.XtraGrid.Columns.GridColumnSortInfo[] {
-            new DevExpress.XtraGrid.Columns.GridColumnSortInfo(this.colJPriceCode, DevExpress.Data.ColumnSortOrder.Ascending)});
             this.gvJobs.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvJobs_RowStyle);
             this.gvJobs.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvJobs_CustomDrawRowIndicator);
             this.gvJobs.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvJobs_CustomColumnDisplayText);
-            // 
-            // colJPriceCode
-            // 
-            this.colJPriceCode.Caption = "Код прайса";
-            this.colJPriceCode.FieldName = "JPriceCode";
-            this.colJPriceCode.Name = "colJPriceCode";
-            this.colJPriceCode.OptionsColumn.AllowEdit = false;
-            this.colJPriceCode.OptionsColumn.AllowFocus = false;
-            this.colJPriceCode.OptionsColumn.AllowIncrementalSearch = false;
-            this.colJPriceCode.OptionsColumn.ReadOnly = true;
-            this.colJPriceCode.Visible = true;
-            this.colJPriceCode.VisibleIndex = 0;
             // 
             // colJName
             // 
@@ -1552,7 +1538,7 @@ namespace UEEditor
             this.colJName.OptionsColumn.AllowEdit = false;
             this.colJName.OptionsColumn.ReadOnly = true;
             this.colJName.Visible = true;
-            this.colJName.VisibleIndex = 1;
+            this.colJName.VisibleIndex = 0;
             // 
             // colJBlockBy
             // 
@@ -1564,7 +1550,7 @@ namespace UEEditor
             this.colJBlockBy.OptionsColumn.AllowIncrementalSearch = false;
             this.colJBlockBy.OptionsColumn.ReadOnly = true;
             this.colJBlockBy.Visible = true;
-            this.colJBlockBy.VisibleIndex = 6;
+            this.colJBlockBy.VisibleIndex = 5;
             // 
             // colJRegion
             // 
@@ -1576,7 +1562,7 @@ namespace UEEditor
             this.colJRegion.OptionsColumn.AllowIncrementalSearch = false;
             this.colJRegion.OptionsColumn.ReadOnly = true;
             this.colJRegion.Visible = true;
-            this.colJRegion.VisibleIndex = 2;
+            this.colJRegion.VisibleIndex = 1;
             // 
             // colJPos
             // 
@@ -1588,7 +1574,7 @@ namespace UEEditor
             this.colJPos.OptionsColumn.AllowIncrementalSearch = false;
             this.colJPos.OptionsColumn.ReadOnly = true;
             this.colJPos.Visible = true;
-            this.colJPos.VisibleIndex = 3;
+            this.colJPos.VisibleIndex = 2;
             // 
             // colJNamePos
             // 
@@ -1600,7 +1586,7 @@ namespace UEEditor
             this.colJNamePos.OptionsColumn.AllowIncrementalSearch = false;
             this.colJNamePos.OptionsColumn.ReadOnly = true;
             this.colJNamePos.Visible = true;
-            this.colJNamePos.VisibleIndex = 4;
+            this.colJNamePos.VisibleIndex = 3;
             // 
             // colJJobDate
             // 
@@ -1612,7 +1598,7 @@ namespace UEEditor
             this.colJJobDate.OptionsColumn.AllowIncrementalSearch = false;
             this.colJJobDate.OptionsColumn.ReadOnly = true;
             this.colJJobDate.Visible = true;
-            this.colJJobDate.VisibleIndex = 5;
+            this.colJJobDate.VisibleIndex = 4;
             // 
             // colJWholeSale
             // 
@@ -1626,7 +1612,7 @@ namespace UEEditor
             this.colJWholeSale.OptionsColumn.AllowIncrementalSearch = false;
             this.colJWholeSale.OptionsColumn.ReadOnly = true;
             this.colJWholeSale.Visible = true;
-            this.colJWholeSale.VisibleIndex = 7;
+            this.colJWholeSale.VisibleIndex = 6;
             // 
             // imageList1
             // 
@@ -1775,6 +1761,20 @@ namespace UEEditor
             this.LogsViewGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvLogs});
             // 
+            // cmsCopy
+            // 
+            this.cmsCopy.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemCopy});
+            this.cmsCopy.Name = "cmsCopy";
+            this.cmsCopy.Size = new System.Drawing.Size(138, 26);
+            this.cmsCopy.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsCopy_ItemClicked);
+            // 
+            // itemCopy
+            // 
+            this.itemCopy.Name = "itemCopy";
+            this.itemCopy.Size = new System.Drawing.Size(137, 22);
+            this.itemCopy.Text = "Копировать";
+            // 
             // gvLogs
             // 
             this.gvLogs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
@@ -1802,6 +1802,7 @@ namespace UEEditor
             this.gvLogs.OptionsSelection.MultiSelect = true;
             this.gvLogs.OptionsView.ShowGroupPanel = false;
             this.gvLogs.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvLogs_RowStyle);
+            this.gvLogs.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvLogs_CustomColumnDisplayText);
             // 
             // colLVLogTime
             // 
@@ -2602,8 +2603,9 @@ namespace UEEditor
             // gvOldFirms
             // 
             this.gvOldFirms.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colOFPriceCode,
             this.colOFName,
+            this.colOFRegion,
+            this.colOFFirmSegment,
             this.colOFRest,
             this.colOFDateCurPrice,
             this.colOFMaxOld,
@@ -2617,15 +2619,7 @@ namespace UEEditor
             this.gvOldFirms.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.gvOldFirms.OptionsView.ShowGroupPanel = false;
             this.gvOldFirms.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvOldFirms_RowStyle);
-            // 
-            // colOFPriceCode
-            // 
-            this.colOFPriceCode.Caption = "Код";
-            this.colOFPriceCode.FieldName = "OFPriceCode";
-            this.colOFPriceCode.Name = "colOFPriceCode";
-            this.colOFPriceCode.OptionsColumn.AllowEdit = false;
-            this.colOFPriceCode.Visible = true;
-            this.colOFPriceCode.VisibleIndex = 0;
+            this.gvOldFirms.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvOldFirms_CustomColumnDisplayText);
             // 
             // colOFName
             // 
@@ -2634,7 +2628,7 @@ namespace UEEditor
             this.colOFName.Name = "colOFName";
             this.colOFName.OptionsColumn.AllowEdit = false;
             this.colOFName.Visible = true;
-            this.colOFName.VisibleIndex = 1;
+            this.colOFName.VisibleIndex = 0;
             // 
             // colOFRest
             // 
@@ -2643,7 +2637,7 @@ namespace UEEditor
             this.colOFRest.Name = "colOFRest";
             this.colOFRest.OptionsColumn.AllowEdit = false;
             this.colOFRest.Visible = true;
-            this.colOFRest.VisibleIndex = 2;
+            this.colOFRest.VisibleIndex = 3;
             // 
             // colOFDateCurPrice
             // 
@@ -2652,7 +2646,7 @@ namespace UEEditor
             this.colOFDateCurPrice.Name = "colOFDateCurPrice";
             this.colOFDateCurPrice.OptionsColumn.AllowEdit = false;
             this.colOFDateCurPrice.Visible = true;
-            this.colOFDateCurPrice.VisibleIndex = 3;
+            this.colOFDateCurPrice.VisibleIndex = 4;
             // 
             // colOFMaxOld
             // 
@@ -2661,13 +2655,31 @@ namespace UEEditor
             this.colOFMaxOld.Name = "colOFMaxOld";
             this.colOFMaxOld.OptionsColumn.AllowEdit = false;
             this.colOFMaxOld.Visible = true;
-            this.colOFMaxOld.VisibleIndex = 4;
+            this.colOFMaxOld.VisibleIndex = 5;
             // 
             // colOFFlag
             // 
             this.colOFFlag.Caption = "OFFlag";
             this.colOFFlag.FieldName = "OFFlag";
             this.colOFFlag.Name = "colOFFlag";
+            // 
+            // colOFFirmSegment
+            // 
+            this.colOFFirmSegment.Caption = "Сегмент";
+            this.colOFFirmSegment.FieldName = "OFFirmSegment";
+            this.colOFFirmSegment.Name = "colOFFirmSegment";
+            this.colOFFirmSegment.OptionsColumn.AllowEdit = false;
+            this.colOFFirmSegment.Visible = true;
+            this.colOFFirmSegment.VisibleIndex = 2;
+            // 
+            // colOFRegion
+            // 
+            this.colOFRegion.Caption = "Регион";
+            this.colOFRegion.FieldName = "OFRegion";
+            this.colOFRegion.Name = "colOFRegion";
+            this.colOFRegion.OptionsColumn.AllowEdit = false;
+            this.colOFRegion.Visible = true;
+            this.colOFRegion.VisibleIndex = 1;
             // 
             // grpBox5
             // 
@@ -2908,12 +2920,12 @@ namespace UEEditor
             this.pnlCenter1.ResumeLayout(false);
             this.pnlTop1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.JobsGridControl)).EndInit();
-            this.cmsCopy.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gvJobs)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.pnlWithButton1.ResumeLayout(false);
             this.pnlBottom1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.LogsViewGridControl)).EndInit();
+            this.cmsCopy.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gvLogs)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.tpUnrecExp.ResumeLayout(false);
@@ -3106,7 +3118,7 @@ namespace UEEditor
 					0 As LVAppCode, 
 					LogTime AS LVLogTime, 
 					ClientsData.ShortName As LVShortName,
-                    ClientsData.RegionName As LVRegion,
+                    regions.Region As LVRegion,
                     ClientsData.FirmSegment As LVFirmSegment,
 					PricesData.PriceName as LVPriceName,
 					pricesdata.PriceCode As LVPriceCode, 
@@ -3120,9 +3132,11 @@ namespace UEEditor
 				FROM
 					logs.formlogs as logs, 
 					usersettings.clientsdata, 
-					usersettings.pricesdata 
+					usersettings.pricesdata,
+                    farm.regions
 				WHERE 
 					logs.pricecode=pricesdata.pricecode
+                and regions.regioncode=clientsdata.regioncode
 				and clientsdata.firmcode=pricesdata.firmcode
 				and (TO_DAYS(NOW())-TO_DAYS(LogTime)<2) 
 				UNION 
@@ -3130,7 +3144,7 @@ namespace UEEditor
 					1 As LVAppCode, 
 					LogTime AS LVLogTime, 
 					clientsdata.ShortName As LVShortName,
-                    ClientsData.RegionName As LVRegion,
+                    regions.Region As LVRegion,
                     ClientsData.FirmSegment As LVFirmSegment,
 					PricesData.PriceName as LVPriceName,
 					pricesdata.PriceCode As LVPriceCode,  
@@ -3144,9 +3158,11 @@ namespace UEEditor
 				FROM 
 					logs.downlogs as logs, 
 					usersettings.clientsdata, 
-					usersettings.pricesdata 
+					usersettings.pricesdata,
+                    farm.regions
 				WHERE 
 					logs.pricecode=pricesdata.pricecode 
+                and regions.regioncode=clientsdata.regioncode
 				and clientsdata.firmcode=pricesdata.firmcode 
 				and (TO_DAYS(NOW())-TO_DAYS(LogTime)<2) 
 					group by LVappcode,LVlogtime,LVPriceCode 
@@ -3214,11 +3230,13 @@ namespace UEEditor
 			else
 				lt = DateTime.Now;
 
-			MyCmd.CommandText = 
-				@"SELECT 
+			MyCmd.CommandText =
+                @"SELECT 
 					0 As LVAppCode, 
 					LogTime AS LVLogTime, 
 					ClientsData.ShortName As LVShortName,
+                    regions.Region As LVRegion,
+                    ClientsData.FirmSegment As LVFirmSegment,
 					PricesData.PriceName as LVPriceName,
 					pricesdata.PriceCode As LVPriceCode, 
 					if(Form is null, 0, Form) As LVForm, 
@@ -3231,9 +3249,11 @@ namespace UEEditor
 				FROM
 					logs.formlogs as logs, 
 					usersettings.clientsdata, 
-					usersettings.pricesdata 
+					usersettings.pricesdata,
+                    farm.regions
 				WHERE 
 					logs.pricecode=pricesdata.pricecode
+                and regions.regioncode=clientsdata.regioncode
 				and clientsdata.firmcode=pricesdata.firmcode
 				and LogTime > ?LastLogTime
 				UNION 
@@ -3241,6 +3261,8 @@ namespace UEEditor
 					1 As LVAppCode, 
 					LogTime AS LVLogTime, 
 					ClientsData.ShortName As LVShortName,
+                    regions.Region As LVRegion,
+                    ClientsData.FirmSegment As LVFirmSegment,
 					PricesData.PriceName as LVPriceName,
 					pricesdata.PriceCode As LVPriceCode,  
 					null as LVForm, 
@@ -3253,9 +3275,11 @@ namespace UEEditor
 				FROM 
 					logs.downlogs as logs, 
 					usersettings.clientsdata, 
-					usersettings.pricesdata 
+					usersettings.pricesdata,
+                    farm.regions
 				WHERE 
-					logs.pricecode=pricesdata.pricecode 
+					logs.pricecode=pricesdata.pricecode
+                and regions.regioncode=clientsdata.regioncode
 				and clientsdata.firmcode=pricesdata.firmcode 
 				and LogTime > ?LastLogTime
 					group by LVappcode,LVlogtime,LVpricecode 
@@ -3285,11 +3309,12 @@ namespace UEEditor
 		{
 			dtOldFirms.Clear();
 			
-			MyCmd.CommandText = 
-				@"SELECT 
+			MyCmd.CommandText =
+                @"SELECT 
 					pricesdata.pricecode As OFPriceCode, 
-					concat(ShortName, '(', pricename, ')') as OFName,  
-					Region,
+					concat(ShortName, '(', pricename, ')') as OFName, 
+                    ClientsData.FirmSegment As OFFirmSegment,
+					regions.Region as OFRegion,
 					CASE WHEN TO_DAYS(DateCurPrice)+MaxOld-TO_DAYS(NOW())<4 THEN 1 
 					WHEN TO_DAYS(NOW())-TO_DAYS(DateCurPrice)>19 THEN 2 END AS OFFlag, 
 					OrderManagerMail as OFOrderManagerMail, 
@@ -4714,9 +4739,18 @@ namespace UEEditor
 		{
 			if (JCode != -1)			
 			{
-				int rh = gvJobs.LocateByDisplayText(0, colJPriceCode, JCode.ToString());
-				if (rh != GridControl.InvalidRowHandle)
-					gvJobs.FocusedRowHandle = rh;
+                CurrencyManager cm = (CurrencyManager)BindingContext[gvJobs.DataSource];
+                for(int i = 0; i < ((DataView)cm.List).Count; i++)
+                {
+                    if (((DataView)cm.List)[i][JPriceCode.ColumnName].ToString() == JCode.ToString())
+                    {
+					    gvJobs.FocusedRowHandle = i;
+                        return;
+                    }
+                }
+                //int rh = gvJobs.LocateByDisplayText(0, colJPriceCode, JCode.ToString());
+                //if (rh != GridControl.InvalidRowHandle)
+                //    gvJobs.FocusedRowHandle = rh;
 			}
 		}
 
@@ -4865,13 +4899,13 @@ namespace UEEditor
 
 		private void gvJobs_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)
 		{
-			if (e.Column == colJWholeSale)
-			{
-				if (e.Value.ToString() == "0")
-					e.DisplayText = "Опт";
-				else
-					e.DisplayText = "Розница";
-			}
+		    if (e.Column == colJWholeSale)
+		    {
+			    if (e.Value.ToString() == "0")
+				    e.DisplayText = "Опт";
+			    else
+				    e.DisplayText = "Розница";
+		    }
 		}
 
 		private void UnrecExpGridControl_Click(object sender, System.EventArgs e)
@@ -5254,6 +5288,29 @@ namespace UEEditor
                 if(gvLogs.SelectedRowsCount > 0)
                     gvLogs.CopyToClipboard();
             }
+        }
+
+        private void gvLogs_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column == colLVFirmSegment)
+            {
+                if (e.Value.ToString() == "0")
+                    e.DisplayText = "Опт";
+                else
+                    e.DisplayText = "Розница";
+            }
+        }
+
+        private void gvOldFirms_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column == colOFFirmSegment)
+            {
+                if (e.Value.ToString() == "0")
+                    e.DisplayText = "Опт";
+                else
+                    e.DisplayText = "Розница";
+            }
+
         }
 	}
 
