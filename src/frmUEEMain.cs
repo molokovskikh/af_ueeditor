@@ -561,12 +561,12 @@ namespace UEEditor
             this.JobsGridControl = new DevExpress.XtraGrid.GridControl();
             this.gvJobs = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colJName = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colJBlockBy = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colJWholeSale = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJRegion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJPos = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJNamePos = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJJobDate = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colJWholeSale = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colJBlockBy = new DevExpress.XtraGrid.Columns.GridColumn();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnJobs50 = new System.Windows.Forms.Button();
@@ -587,8 +587,8 @@ namespace UEEditor
             this.colLVLogTime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLVShortName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLVPriceName = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colLVRegion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLVFirmSegment = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colLVRegion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLVForm = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLVUnform = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLVZero = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -657,12 +657,12 @@ namespace UEEditor
             this.OldFirmsGridControl = new DevExpress.XtraGrid.GridControl();
             this.gvOldFirms = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colOFName = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colOFFirmSegment = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colOFRegion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFRest = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFDateCurPrice = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFMaxOld = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colOFFlag = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colOFFirmSegment = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colOFRegion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.grpBox5 = new System.Windows.Forms.GroupBox();
             this.btnOldPrice20 = new System.Windows.Forms.Button();
             this.btnOldPrice3 = new System.Windows.Forms.Button();
@@ -1506,19 +1506,17 @@ namespace UEEditor
             this.gvJobs.Appearance.FocusedCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
             this.gvJobs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colJName,
-            this.colJBlockBy,
+            this.colJWholeSale,
             this.colJRegion,
             this.colJPos,
             this.colJNamePos,
             this.colJJobDate,
-            this.colJWholeSale});
+            this.colJBlockBy});
             this.gvJobs.GridControl = this.JobsGridControl;
             this.gvJobs.Images = this.imageList1;
             this.gvJobs.IndicatorWidth = 16;
             this.gvJobs.Name = "gvJobs";
             this.gvJobs.OptionsBehavior.AllowIncrementalSearch = true;
-            this.gvJobs.OptionsCustomization.AllowColumnMoving = false;
-            this.gvJobs.OptionsLayout.StoreVisualOptions = false;
             this.gvJobs.OptionsMenu.EnableColumnMenu = false;
             this.gvJobs.OptionsMenu.EnableFooterMenu = false;
             this.gvJobs.OptionsMenu.EnableGroupPanelMenu = false;
@@ -1540,66 +1538,6 @@ namespace UEEditor
             this.colJName.Visible = true;
             this.colJName.VisibleIndex = 0;
             // 
-            // colJBlockBy
-            // 
-            this.colJBlockBy.Caption = "Блокировано";
-            this.colJBlockBy.FieldName = "JBlockBy";
-            this.colJBlockBy.Name = "colJBlockBy";
-            this.colJBlockBy.OptionsColumn.AllowEdit = false;
-            this.colJBlockBy.OptionsColumn.AllowFocus = false;
-            this.colJBlockBy.OptionsColumn.AllowIncrementalSearch = false;
-            this.colJBlockBy.OptionsColumn.ReadOnly = true;
-            this.colJBlockBy.Visible = true;
-            this.colJBlockBy.VisibleIndex = 5;
-            // 
-            // colJRegion
-            // 
-            this.colJRegion.Caption = "Регион";
-            this.colJRegion.FieldName = "JRegion";
-            this.colJRegion.Name = "colJRegion";
-            this.colJRegion.OptionsColumn.AllowEdit = false;
-            this.colJRegion.OptionsColumn.AllowFocus = false;
-            this.colJRegion.OptionsColumn.AllowIncrementalSearch = false;
-            this.colJRegion.OptionsColumn.ReadOnly = true;
-            this.colJRegion.Visible = true;
-            this.colJRegion.VisibleIndex = 1;
-            // 
-            // colJPos
-            // 
-            this.colJPos.Caption = "Всего";
-            this.colJPos.FieldName = "JPos";
-            this.colJPos.Name = "colJPos";
-            this.colJPos.OptionsColumn.AllowEdit = false;
-            this.colJPos.OptionsColumn.AllowFocus = false;
-            this.colJPos.OptionsColumn.AllowIncrementalSearch = false;
-            this.colJPos.OptionsColumn.ReadOnly = true;
-            this.colJPos.Visible = true;
-            this.colJPos.VisibleIndex = 2;
-            // 
-            // colJNamePos
-            // 
-            this.colJNamePos.Caption = "Строго";
-            this.colJNamePos.FieldName = "JNamePos";
-            this.colJNamePos.Name = "colJNamePos";
-            this.colJNamePos.OptionsColumn.AllowEdit = false;
-            this.colJNamePos.OptionsColumn.AllowFocus = false;
-            this.colJNamePos.OptionsColumn.AllowIncrementalSearch = false;
-            this.colJNamePos.OptionsColumn.ReadOnly = true;
-            this.colJNamePos.Visible = true;
-            this.colJNamePos.VisibleIndex = 3;
-            // 
-            // colJJobDate
-            // 
-            this.colJJobDate.Caption = "Дата задания";
-            this.colJJobDate.FieldName = "JJobDate";
-            this.colJJobDate.Name = "colJJobDate";
-            this.colJJobDate.OptionsColumn.AllowEdit = false;
-            this.colJJobDate.OptionsColumn.AllowFocus = false;
-            this.colJJobDate.OptionsColumn.AllowIncrementalSearch = false;
-            this.colJJobDate.OptionsColumn.ReadOnly = true;
-            this.colJJobDate.Visible = true;
-            this.colJJobDate.VisibleIndex = 4;
-            // 
             // colJWholeSale
             // 
             this.colJWholeSale.AppearanceCell.Options.UseTextOptions = true;
@@ -1612,7 +1550,67 @@ namespace UEEditor
             this.colJWholeSale.OptionsColumn.AllowIncrementalSearch = false;
             this.colJWholeSale.OptionsColumn.ReadOnly = true;
             this.colJWholeSale.Visible = true;
-            this.colJWholeSale.VisibleIndex = 6;
+            this.colJWholeSale.VisibleIndex = 1;
+            // 
+            // colJRegion
+            // 
+            this.colJRegion.Caption = "Регион";
+            this.colJRegion.FieldName = "JRegion";
+            this.colJRegion.Name = "colJRegion";
+            this.colJRegion.OptionsColumn.AllowEdit = false;
+            this.colJRegion.OptionsColumn.AllowFocus = false;
+            this.colJRegion.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJRegion.OptionsColumn.ReadOnly = true;
+            this.colJRegion.Visible = true;
+            this.colJRegion.VisibleIndex = 2;
+            // 
+            // colJPos
+            // 
+            this.colJPos.Caption = "Всего";
+            this.colJPos.FieldName = "JPos";
+            this.colJPos.Name = "colJPos";
+            this.colJPos.OptionsColumn.AllowEdit = false;
+            this.colJPos.OptionsColumn.AllowFocus = false;
+            this.colJPos.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJPos.OptionsColumn.ReadOnly = true;
+            this.colJPos.Visible = true;
+            this.colJPos.VisibleIndex = 3;
+            // 
+            // colJNamePos
+            // 
+            this.colJNamePos.Caption = "Строго";
+            this.colJNamePos.FieldName = "JNamePos";
+            this.colJNamePos.Name = "colJNamePos";
+            this.colJNamePos.OptionsColumn.AllowEdit = false;
+            this.colJNamePos.OptionsColumn.AllowFocus = false;
+            this.colJNamePos.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJNamePos.OptionsColumn.ReadOnly = true;
+            this.colJNamePos.Visible = true;
+            this.colJNamePos.VisibleIndex = 4;
+            // 
+            // colJJobDate
+            // 
+            this.colJJobDate.Caption = "Дата задания";
+            this.colJJobDate.FieldName = "JJobDate";
+            this.colJJobDate.Name = "colJJobDate";
+            this.colJJobDate.OptionsColumn.AllowEdit = false;
+            this.colJJobDate.OptionsColumn.AllowFocus = false;
+            this.colJJobDate.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJJobDate.OptionsColumn.ReadOnly = true;
+            this.colJJobDate.Visible = true;
+            this.colJJobDate.VisibleIndex = 5;
+            // 
+            // colJBlockBy
+            // 
+            this.colJBlockBy.Caption = "Блокировано";
+            this.colJBlockBy.FieldName = "JBlockBy";
+            this.colJBlockBy.Name = "colJBlockBy";
+            this.colJBlockBy.OptionsColumn.AllowEdit = false;
+            this.colJBlockBy.OptionsColumn.AllowFocus = false;
+            this.colJBlockBy.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJBlockBy.OptionsColumn.ReadOnly = true;
+            this.colJBlockBy.Visible = true;
+            this.colJBlockBy.VisibleIndex = 6;
             // 
             // imageList1
             // 
@@ -1781,8 +1779,8 @@ namespace UEEditor
             this.colLVLogTime,
             this.colLVShortName,
             this.colLVPriceName,
-            this.colLVRegion,
             this.colLVFirmSegment,
+            this.colLVRegion,
             this.colLVForm,
             this.colLVUnform,
             this.colLVZero,
@@ -1791,7 +1789,6 @@ namespace UEEditor
             this.gvLogs.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
             this.gvLogs.GridControl = this.LogsViewGridControl;
             this.gvLogs.Name = "gvLogs";
-            this.gvLogs.OptionsCustomization.AllowColumnMoving = false;
             this.gvLogs.OptionsCustomization.AllowGroup = false;
             this.gvLogs.OptionsCustomization.AllowSort = false;
             this.gvLogs.OptionsMenu.EnableColumnMenu = false;
@@ -1813,7 +1810,6 @@ namespace UEEditor
             this.colLVLogTime.Name = "colLVLogTime";
             this.colLVLogTime.OptionsColumn.AllowEdit = false;
             this.colLVLogTime.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVLogTime.OptionsColumn.AllowMove = false;
             this.colLVLogTime.OptionsColumn.ReadOnly = true;
             this.colLVLogTime.Visible = true;
             this.colLVLogTime.VisibleIndex = 0;
@@ -1826,7 +1822,6 @@ namespace UEEditor
             this.colLVShortName.Name = "colLVShortName";
             this.colLVShortName.OptionsColumn.AllowEdit = false;
             this.colLVShortName.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVShortName.OptionsColumn.AllowMove = false;
             this.colLVShortName.OptionsColumn.ReadOnly = true;
             this.colLVShortName.Visible = true;
             this.colLVShortName.VisibleIndex = 1;
@@ -1839,24 +1834,10 @@ namespace UEEditor
             this.colLVPriceName.Name = "colLVPriceName";
             this.colLVPriceName.OptionsColumn.AllowEdit = false;
             this.colLVPriceName.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVPriceName.OptionsColumn.AllowMove = false;
             this.colLVPriceName.OptionsColumn.ReadOnly = true;
             this.colLVPriceName.Visible = true;
             this.colLVPriceName.VisibleIndex = 2;
             this.colLVPriceName.Width = 116;
-            // 
-            // colLVRegion
-            // 
-            this.colLVRegion.Caption = "Регион";
-            this.colLVRegion.FieldName = "LVRegion";
-            this.colLVRegion.Name = "colLVRegion";
-            this.colLVRegion.OptionsColumn.AllowEdit = false;
-            this.colLVRegion.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVRegion.OptionsColumn.AllowMove = false;
-            this.colLVRegion.OptionsColumn.ReadOnly = true;
-            this.colLVRegion.Visible = true;
-            this.colLVRegion.VisibleIndex = 3;
-            this.colLVRegion.Width = 64;
             // 
             // colLVFirmSegment
             // 
@@ -1865,11 +1846,22 @@ namespace UEEditor
             this.colLVFirmSegment.Name = "colLVFirmSegment";
             this.colLVFirmSegment.OptionsColumn.AllowEdit = false;
             this.colLVFirmSegment.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVFirmSegment.OptionsColumn.AllowMove = false;
             this.colLVFirmSegment.OptionsColumn.ReadOnly = true;
             this.colLVFirmSegment.Visible = true;
-            this.colLVFirmSegment.VisibleIndex = 4;
+            this.colLVFirmSegment.VisibleIndex = 3;
             this.colLVFirmSegment.Width = 76;
+            // 
+            // colLVRegion
+            // 
+            this.colLVRegion.Caption = "Регион";
+            this.colLVRegion.FieldName = "LVRegion";
+            this.colLVRegion.Name = "colLVRegion";
+            this.colLVRegion.OptionsColumn.AllowEdit = false;
+            this.colLVRegion.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
+            this.colLVRegion.OptionsColumn.ReadOnly = true;
+            this.colLVRegion.Visible = true;
+            this.colLVRegion.VisibleIndex = 4;
+            this.colLVRegion.Width = 64;
             // 
             // colLVForm
             // 
@@ -1878,7 +1870,6 @@ namespace UEEditor
             this.colLVForm.Name = "colLVForm";
             this.colLVForm.OptionsColumn.AllowEdit = false;
             this.colLVForm.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVForm.OptionsColumn.AllowMove = false;
             this.colLVForm.OptionsColumn.ReadOnly = true;
             this.colLVForm.Visible = true;
             this.colLVForm.VisibleIndex = 5;
@@ -1891,7 +1882,6 @@ namespace UEEditor
             this.colLVUnform.Name = "colLVUnform";
             this.colLVUnform.OptionsColumn.AllowEdit = false;
             this.colLVUnform.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVUnform.OptionsColumn.AllowMove = false;
             this.colLVUnform.OptionsColumn.ReadOnly = true;
             this.colLVUnform.Visible = true;
             this.colLVUnform.VisibleIndex = 6;
@@ -1904,7 +1894,6 @@ namespace UEEditor
             this.colLVZero.Name = "colLVZero";
             this.colLVZero.OptionsColumn.AllowEdit = false;
             this.colLVZero.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVZero.OptionsColumn.AllowMove = false;
             this.colLVZero.OptionsColumn.ReadOnly = true;
             this.colLVZero.Visible = true;
             this.colLVZero.VisibleIndex = 7;
@@ -1917,7 +1906,6 @@ namespace UEEditor
             this.colLVForb.Name = "colLVForb";
             this.colLVForb.OptionsColumn.AllowEdit = false;
             this.colLVForb.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVForb.OptionsColumn.AllowMove = false;
             this.colLVForb.OptionsColumn.ReadOnly = true;
             this.colLVForb.Visible = true;
             this.colLVForb.VisibleIndex = 8;
@@ -1930,7 +1918,6 @@ namespace UEEditor
             this.colLVAddition.Name = "colLVAddition";
             this.colLVAddition.OptionsColumn.AllowEdit = false;
             this.colLVAddition.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
-            this.colLVAddition.OptionsColumn.AllowMove = false;
             this.colLVAddition.OptionsColumn.ReadOnly = true;
             this.colLVAddition.Visible = true;
             this.colLVAddition.VisibleIndex = 9;
@@ -2147,10 +2134,8 @@ namespace UEEditor
             this.gvUnrecExp.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
             this.gvUnrecExp.GridControl = this.UnrecExpGridControl;
             this.gvUnrecExp.Name = "gvUnrecExp";
-            this.gvUnrecExp.OptionsCustomization.AllowColumnMoving = false;
             this.gvUnrecExp.OptionsCustomization.AllowSort = false;
             this.gvUnrecExp.OptionsDetail.EnableMasterViewMode = false;
-            this.gvUnrecExp.OptionsLayout.StoreDataSettings = false;
             this.gvUnrecExp.OptionsMenu.EnableColumnMenu = false;
             this.gvUnrecExp.OptionsMenu.EnableFooterMenu = false;
             this.gvUnrecExp.OptionsMenu.EnableGroupPanelMenu = false;
@@ -2604,8 +2589,8 @@ namespace UEEditor
             // 
             this.gvOldFirms.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colOFName,
-            this.colOFRegion,
             this.colOFFirmSegment,
+            this.colOFRegion,
             this.colOFRest,
             this.colOFDateCurPrice,
             this.colOFMaxOld,
@@ -2629,6 +2614,24 @@ namespace UEEditor
             this.colOFName.OptionsColumn.AllowEdit = false;
             this.colOFName.Visible = true;
             this.colOFName.VisibleIndex = 0;
+            // 
+            // colOFFirmSegment
+            // 
+            this.colOFFirmSegment.Caption = "Сегмент";
+            this.colOFFirmSegment.FieldName = "OFFirmSegment";
+            this.colOFFirmSegment.Name = "colOFFirmSegment";
+            this.colOFFirmSegment.OptionsColumn.AllowEdit = false;
+            this.colOFFirmSegment.Visible = true;
+            this.colOFFirmSegment.VisibleIndex = 1;
+            // 
+            // colOFRegion
+            // 
+            this.colOFRegion.Caption = "Регион";
+            this.colOFRegion.FieldName = "OFRegion";
+            this.colOFRegion.Name = "colOFRegion";
+            this.colOFRegion.OptionsColumn.AllowEdit = false;
+            this.colOFRegion.Visible = true;
+            this.colOFRegion.VisibleIndex = 2;
             // 
             // colOFRest
             // 
@@ -2662,24 +2665,6 @@ namespace UEEditor
             this.colOFFlag.Caption = "OFFlag";
             this.colOFFlag.FieldName = "OFFlag";
             this.colOFFlag.Name = "colOFFlag";
-            // 
-            // colOFFirmSegment
-            // 
-            this.colOFFirmSegment.Caption = "Сегмент";
-            this.colOFFirmSegment.FieldName = "OFFirmSegment";
-            this.colOFFirmSegment.Name = "colOFFirmSegment";
-            this.colOFFirmSegment.OptionsColumn.AllowEdit = false;
-            this.colOFFirmSegment.Visible = true;
-            this.colOFFirmSegment.VisibleIndex = 2;
-            // 
-            // colOFRegion
-            // 
-            this.colOFRegion.Caption = "Регион";
-            this.colOFRegion.FieldName = "OFRegion";
-            this.colOFRegion.Name = "colOFRegion";
-            this.colOFRegion.OptionsColumn.AllowEdit = false;
-            this.colOFRegion.Visible = true;
-            this.colOFRegion.VisibleIndex = 1;
             // 
             // grpBox5
             // 
