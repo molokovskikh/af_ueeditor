@@ -3664,7 +3664,7 @@ namespace UEEditor
 								if(MessageBox.Show(Mess, "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 								{
 									UnmarkUnrecExpAsNameForm(gvUnrecExp.FocusedRowHandle);
-									SetReserved(null,gvUnrecExp.FocusedRowHandle);
+									SetReserved(String.Empty, gvUnrecExp.FocusedRowHandle);
 									flag = true;
 								}
 							}
@@ -4435,7 +4435,7 @@ namespace UEEditor
 				MySqlTransaction tran = null;
 				try
 				{
-					tran = MyCn.BeginTransaction();
+					tran = MyCn.BeginTransaction(IsolationLevel.RepeatableRead);
 
 					//Заполнили таблицу логов для синонимов наименований
 					daSynonym.SelectCommand.Transaction = tran;
@@ -4724,18 +4724,15 @@ namespace UEEditor
 		{
 			if (JCode != -1)			
 			{
-                CurrencyManager cm = (CurrencyManager)BindingContext[gvJobs.DataSource];
-                for(int i = 0; i < ((DataView)cm.List).Count; i++)
-                {
-                    if (((DataView)cm.List)[i][JPriceCode.ColumnName].ToString() == JCode.ToString())
-                    {
-					    gvJobs.FocusedRowHandle = i;
-                        return;
-                    }
-                }
-                //int rh = gvJobs.LocateByDisplayText(0, colJPriceCode, JCode.ToString());
-                //if (rh != GridControl.InvalidRowHandle)
-                //    gvJobs.FocusedRowHandle = rh;
+				for (int i = 0; i < gvJobs.RowCount; i++)
+				{
+					DataRow dr = gvJobs.GetDataRow(i);
+					if (dr[JPriceCode.ColumnName].ToString() == JCode.ToString())
+					{
+						gvJobs.FocusedRowHandle = i;
+						return;
+					}
+				}
 			}
 		}
 
