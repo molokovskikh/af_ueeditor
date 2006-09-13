@@ -300,6 +300,12 @@ namespace UEEditor
         private DataColumn OFFirmSegment;
         private GridColumn colOFFirmSegment;
         private GridColumn colOFRegion;
+        private DataColumn JNeedRetrans;
+        private DataColumn JRetranced;
+        private GridColumn colJRetranced;
+        private GridColumn colJNeedRetrans;
+        private DataColumn JParentName;
+        private GridColumn colJParentName;
 		private MySqlDataAdapter daJobs;
 
 		public frmUEEMain()
@@ -447,7 +453,7 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
             this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -467,6 +473,9 @@ namespace UEEditor
             this.JParentSynonym = new System.Data.DataColumn();
             this.JPriceFMT = new System.Data.DataColumn();
             this.JOrderManagerMail = new System.Data.DataColumn();
+            this.JNeedRetrans = new System.Data.DataColumn();
+            this.JRetranced = new System.Data.DataColumn();
+            this.JParentName = new System.Data.DataColumn();
             this.dtLogsView = new System.Data.DataTable();
             this.LVLogTime = new System.Data.DataColumn();
             this.LVShortName = new System.Data.DataColumn();
@@ -561,8 +570,11 @@ namespace UEEditor
             this.JobsGridControl = new DevExpress.XtraGrid.GridControl();
             this.gvJobs = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colJName = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colJParentName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJWholeSale = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJRegion = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colJNeedRetrans = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colJRetranced = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJPos = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJNamePos = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colJJobDate = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -787,10 +799,10 @@ namespace UEEditor
             // 
             this.CatalogGridControl.EmbeddedNavigator.Name = "";
             this.CatalogGridControl.Enabled = false;
-            gridLevelNode1.LevelTemplate = this.gvCatForm;
-            gridLevelNode1.RelationName = "Relation1";
+            gridLevelNode2.LevelTemplate = this.gvCatForm;
+            gridLevelNode2.RelationName = "Relation1";
             this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1});
+            gridLevelNode2});
             this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
             this.CatalogGridControl.MainView = this.gvCatalog;
             this.CatalogGridControl.Name = "CatalogGridControl";
@@ -838,7 +850,10 @@ namespace UEEditor
             this.JWholeSale,
             this.JParentSynonym,
             this.JPriceFMT,
-            this.JOrderManagerMail});
+            this.JOrderManagerMail,
+            this.JNeedRetrans,
+            this.JRetranced,
+            this.JParentName});
             this.dtJobs.TableName = "JobsGrid";
             // 
             // JPriceCode
@@ -906,6 +921,20 @@ namespace UEEditor
             // JOrderManagerMail
             // 
             this.JOrderManagerMail.ColumnName = "JOrderManagerMail";
+            // 
+            // JNeedRetrans
+            // 
+            this.JNeedRetrans.ColumnName = "JNeedRetrans";
+            this.JNeedRetrans.DataType = typeof(int);
+            // 
+            // JRetranced
+            // 
+            this.JRetranced.ColumnName = "JRetranced";
+            this.JRetranced.DataType = typeof(int);
+            // 
+            // JParentName
+            // 
+            this.JParentName.ColumnName = "JParentName";
             // 
             // dtLogsView
             // 
@@ -1506,8 +1535,11 @@ namespace UEEditor
             this.gvJobs.Appearance.FocusedCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
             this.gvJobs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colJName,
+            this.colJParentName,
             this.colJWholeSale,
             this.colJRegion,
+            this.colJNeedRetrans,
+            this.colJRetranced,
             this.colJPos,
             this.colJNamePos,
             this.colJJobDate,
@@ -1538,6 +1570,18 @@ namespace UEEditor
             this.colJName.Visible = true;
             this.colJName.VisibleIndex = 0;
             // 
+            // colJParentName
+            // 
+            this.colJParentName.Caption = "Родитель";
+            this.colJParentName.FieldName = "JParentName";
+            this.colJParentName.Name = "colJParentName";
+            this.colJParentName.OptionsColumn.AllowEdit = false;
+            this.colJParentName.OptionsColumn.AllowFocus = false;
+            this.colJParentName.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJParentName.OptionsColumn.ReadOnly = true;
+            this.colJParentName.Visible = true;
+            this.colJParentName.VisibleIndex = 1;
+            // 
             // colJWholeSale
             // 
             this.colJWholeSale.AppearanceCell.Options.UseTextOptions = true;
@@ -1550,7 +1594,7 @@ namespace UEEditor
             this.colJWholeSale.OptionsColumn.AllowIncrementalSearch = false;
             this.colJWholeSale.OptionsColumn.ReadOnly = true;
             this.colJWholeSale.Visible = true;
-            this.colJWholeSale.VisibleIndex = 1;
+            this.colJWholeSale.VisibleIndex = 2;
             // 
             // colJRegion
             // 
@@ -1562,7 +1606,33 @@ namespace UEEditor
             this.colJRegion.OptionsColumn.AllowIncrementalSearch = false;
             this.colJRegion.OptionsColumn.ReadOnly = true;
             this.colJRegion.Visible = true;
-            this.colJRegion.VisibleIndex = 2;
+            this.colJRegion.VisibleIndex = 3;
+            // 
+            // colJNeedRetrans
+            // 
+            this.colJNeedRetrans.Caption = "Требуется формализация";
+            this.colJNeedRetrans.FieldName = "JNeedRetrans";
+            this.colJNeedRetrans.Name = "colJNeedRetrans";
+            this.colJNeedRetrans.OptionsColumn.AllowEdit = false;
+            this.colJNeedRetrans.OptionsColumn.AllowFocus = false;
+            this.colJNeedRetrans.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJNeedRetrans.OptionsColumn.ReadOnly = true;
+            this.colJNeedRetrans.ToolTip = "Требуется формализация";
+            this.colJNeedRetrans.Visible = true;
+            this.colJNeedRetrans.VisibleIndex = 4;
+            // 
+            // colJRetranced
+            // 
+            this.colJRetranced.Caption = "В очереди";
+            this.colJRetranced.FieldName = "JRetranced";
+            this.colJRetranced.Name = "colJRetranced";
+            this.colJRetranced.OptionsColumn.AllowEdit = false;
+            this.colJRetranced.OptionsColumn.AllowFocus = false;
+            this.colJRetranced.OptionsColumn.AllowIncrementalSearch = false;
+            this.colJRetranced.OptionsColumn.ReadOnly = true;
+            this.colJRetranced.ToolTip = "В очереди";
+            this.colJRetranced.Visible = true;
+            this.colJRetranced.VisibleIndex = 5;
             // 
             // colJPos
             // 
@@ -1574,7 +1644,7 @@ namespace UEEditor
             this.colJPos.OptionsColumn.AllowIncrementalSearch = false;
             this.colJPos.OptionsColumn.ReadOnly = true;
             this.colJPos.Visible = true;
-            this.colJPos.VisibleIndex = 3;
+            this.colJPos.VisibleIndex = 6;
             // 
             // colJNamePos
             // 
@@ -1586,7 +1656,7 @@ namespace UEEditor
             this.colJNamePos.OptionsColumn.AllowIncrementalSearch = false;
             this.colJNamePos.OptionsColumn.ReadOnly = true;
             this.colJNamePos.Visible = true;
-            this.colJNamePos.VisibleIndex = 4;
+            this.colJNamePos.VisibleIndex = 7;
             // 
             // colJJobDate
             // 
@@ -1598,7 +1668,7 @@ namespace UEEditor
             this.colJJobDate.OptionsColumn.AllowIncrementalSearch = false;
             this.colJJobDate.OptionsColumn.ReadOnly = true;
             this.colJJobDate.Visible = true;
-            this.colJJobDate.VisibleIndex = 5;
+            this.colJJobDate.VisibleIndex = 8;
             // 
             // colJBlockBy
             // 
@@ -1610,7 +1680,7 @@ namespace UEEditor
             this.colJBlockBy.OptionsColumn.AllowIncrementalSearch = false;
             this.colJBlockBy.OptionsColumn.ReadOnly = true;
             this.colJBlockBy.Visible = true;
-            this.colJBlockBy.VisibleIndex = 6;
+            this.colJBlockBy.VisibleIndex = 9;
             // 
             // imageList1
             // 
@@ -3002,24 +3072,27 @@ namespace UEEditor
 		private void DAJobsCreate()
 		{
 			daJobs = new MySqlDataAdapter(
-				@"SELECT 
+                @"SELECT 
 					PD.FirmCode, 
 					PD.PriceCode As JPriceCode,  
-					concat(CD.ShortName, '(', PriceName, ')') as JName, 
+					concat(CD.ShortName, '(', pd.PriceName, ')') as JName, 
 					regions.region As JRegion, 
-					DateCurPrice AS JPriceDate, 
-					MaxOld, 
-					OrderManagerMail AS JOrderManagerMail, 
+					FormRules.DateCurPrice AS JPriceDate, 
+					FormRules.MaxOld, 
+					cd.OrderManagerMail AS JOrderManagerMail, 
 					0 AS JPos, 
 					0 AS JNamePos, 
 					'' AS JJobDate, 
 					CD.FirmSegment As JWholeSale, 
 					bp.BlockBy As JBlockBy, 
                     FormRules.ParentSynonym as JParentSynonym,
-					PriceFmt As JPriceFMT, 
-					firmsegment, 
+					FormRules.PriceFmt As JPriceFMT, 
 					CD.Phone As JPhone, 
-					PD.MinReq As JMinReq
+					PD.MinReq As JMinReq,
+                    0 AS JNeedRetrans,
+                    0 AS JRetranced,
+                    FormRules.DateLastForm AS JDateLastForm,
+                    if(FormRules.ParentSynonym is null, '', concat(pcd.ShortName, '(', ppd.PriceName, ')')) as JParentName
 				FROM 
                     (
 					usersettings.ClientsData AS CD, 
@@ -3028,6 +3101,8 @@ namespace UEEditor
 					regions
                     )
                     left join blockedprice bp on bp.PriceCode = PD.PriceCode
+                    left join usersettings.pricesdata ppd on FormRules.ParentSynonym=ppd.pricecode
+                    left join usersettings.clientsdata pcd on pcd.FirmCode = ppd.firmcode
 				WHERE 
 				    FormRules.firmcode=PD.pricecode 
 				and CD.firmcode=PD.firmcode 
@@ -3060,6 +3135,8 @@ namespace UEEditor
 				foreach(DataRow dr in dtJobs.Rows)
 				{
 					dt.Clear();
+                    MyCmd.Parameters.Clear();
+                    MyCmd.Parameters.Add("?JPriceCode", dr["JPriceCode"]);
 			
 					MyCmd.CommandText = 
 						@"SELECT 
@@ -3071,9 +3148,6 @@ namespace UEEditor
 						WHERE FirmCode = ?JPriceCode 
 							GROUP BY FirmCode";
 
-					MyCmd.Parameters.Clear();
-					MyCmd.Parameters.Add("?JPriceCode", dr["JPriceCode"]);
-
 					MyDA.Fill(dt);
 
 					if (dt.Rows.Count > 0 )
@@ -3082,7 +3156,77 @@ namespace UEEditor
 						dr["JNamePos"] = dt.Rows[0]["JNamePos"];
 						dr["JJobDate"] = dt.Rows[0]["JJobDate"];
 					}
-				}
+
+                    dt.Clear();
+
+                    MyCmd.CommandText =
+                        @"SELECT 
+							MAX(LogTime) AS JSynonymDate
+						FROM 
+							logs.synonymlogs 
+						WHERE PriceCode = ?JPriceCode";
+
+                    object JSynonymDate = MyCmd.ExecuteScalar();
+
+                    MyCmd.CommandText =
+                        @"SELECT 
+							MAX(LogTime) AS JSynonymFirmCrDate
+						FROM 
+							logs.synonymfirmcrlogs 
+						WHERE PriceCode = ?JPriceCode";
+
+                    object JSynonymFirmCrDate = MyCmd.ExecuteScalar();
+
+                    MyCmd.CommandText =
+                        @"SELECT 
+							MAX(LogTime) AS JPricesRetrans
+						FROM 
+							logs.pricesretrans 
+						WHERE PriceCode = ?JPriceCode";
+
+                    object JPricesRetrans = MyCmd.ExecuteScalar();
+
+                    //if (dt.Rows.Count > 0)
+                    //{
+                        try
+                        {
+                            if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JPricesRetrans))
+                                dr["JRetranced"] = 1;
+                        }
+                        catch (Exception e) 
+                        {
+                            dr["JRetranced"] = 0;
+                        }
+
+                        if ((JSynonymDate is DBNull) && (JSynonymFirmCrDate is DBNull))
+                        {
+                            dr["JNeedRetrans"] = 0;
+                        }
+                        else
+                        {
+                            if (!(JSynonymDate is DBNull) && !(JSynonymFirmCrDate is DBNull))
+                            {
+                                if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymFirmCrDate))
+                                    dr["JNeedRetrans"] = 1;
+                                if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymDate))
+                                    dr["JNeedRetrans"] = 1;
+                            }
+                            else
+                            {
+                                if (!(JSynonymDate is DBNull))
+                                {
+                                    if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymDate))
+                                        dr["JNeedRetrans"] = 1;
+                                }
+                                else if (!(JSynonymFirmCrDate is DBNull))
+                                {
+                                    if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymFirmCrDate))
+                                        dr["JNeedRetrans"] = 1;
+                                }
+                            }
+                        }
+                    }
+				//}
 			}
 			}
 			finally
@@ -4888,6 +5032,13 @@ namespace UEEditor
 			    else
 				    e.DisplayText = "Розница";
 		    }
+            if ((e.Column == colJNeedRetrans)||(e.Column == colJRetranced))
+            {
+                if (e.Value.ToString() == "1")
+                    e.DisplayText = "Да";
+                else
+                    e.DisplayText = "Нет";
+            }
 		}
 
 		private void UnrecExpGridControl_Click(object sender, System.EventArgs e)
