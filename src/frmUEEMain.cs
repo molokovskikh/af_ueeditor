@@ -362,7 +362,7 @@ namespace UEEditor
 //			str += string.Format(" Читаем настройки формы формы {0} \r\n", now2.Subtract(now1));
 
 #if DEBUG
-			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=123; database=farm;";
+			MyCn.ConnectionString = "server=sql.analit.net; user id=system; password=123; database=farm;";
 #endif
 			MyCn.Open();
 			MyDA = new MySqlDataAdapter(MyCmd);
