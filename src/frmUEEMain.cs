@@ -106,8 +106,9 @@ namespace UEEditor
 		private System.Data.DataTable dtUnrecExp;
 		private System.ComponentModel.IContainer components;
 
-		public string PriceFMT = String.Empty;
-		public string JUNK = "срок";
+        public string PriceFMT = String.Empty;
+        public string FileExt = String.Empty;
+        public string JUNK = "срок";
 		public long LockedPriceCode = -1;
 		public long LockedSynonym = -1;
 		public frmProgress f = null;
@@ -187,7 +188,7 @@ namespace UEEditor
 		private System.Data.DataTable dtCatalogFirmCr;
 		private System.Windows.Forms.Timer MainTimer;
 
-		private	MySqlConnection MyCn = new MySqlConnection("server=sql.analit.net; user id=system; password=123; database=farm;");
+		private	MySqlConnection MyCn = new MySqlConnection("server=testsql.analit.net; user id=system; password=123; database=farm;");
 		private MySqlCommand MyCmd = new MySqlCommand();
 		private DevExpress.XtraGrid.Views.Grid.GridView gvUnrecExp;
 		private DevExpress.XtraGrid.Views.Grid.GridView gvCatalog;
@@ -306,6 +307,7 @@ namespace UEEditor
         private GridColumn colJNeedRetrans;
         private DataColumn JParentName;
         private GridColumn colJParentName;
+        private DataColumn JExt;
 		private MySqlDataAdapter daJobs;
 
 		public frmUEEMain()
@@ -453,8 +455,8 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
             this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
             this.CatalogGridControl = new DevExpress.XtraGrid.GridControl();
@@ -702,6 +704,7 @@ namespace UEEditor
             this.MainTimer = new System.Windows.Forms.Timer(this.components);
             this.cdLegend = new System.Windows.Forms.ColorDialog();
             this.tmLogs = new System.Windows.Forms.Timer(this.components);
+            this.JExt = new System.Data.DataColumn();
             ((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
@@ -774,7 +777,7 @@ namespace UEEditor
             this.gvCatForm.OptionsView.ShowFilterPanel = false;
             this.gvCatForm.OptionsView.ShowGroupPanel = false;
             this.gvCatForm.SortInfo.AddRange(new DevExpress.XtraGrid.Columns.GridColumnSortInfo[] {
-            new DevExpress.XtraGrid.Columns.GridColumnSortInfo(this.colFForm, DevExpress.Data.ColumnSortOrder.Ascending)});
+            ((DevExpress.XtraGrid.Columns.GridColumnSortInfo)(resources.GetObject("gvCatForm.SortInfo")))});
             // 
             // colFForm
             // 
@@ -799,10 +802,10 @@ namespace UEEditor
             // 
             this.CatalogGridControl.EmbeddedNavigator.Name = "";
             this.CatalogGridControl.Enabled = false;
-            gridLevelNode2.LevelTemplate = this.gvCatForm;
-            gridLevelNode2.RelationName = "Relation1";
+            gridLevelNode1.LevelTemplate = this.gvCatForm;
+            gridLevelNode1.RelationName = "Relation1";
             this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode2});
+            gridLevelNode1});
             this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
             this.CatalogGridControl.MainView = this.gvCatalog;
             this.CatalogGridControl.Name = "CatalogGridControl";
@@ -853,7 +856,8 @@ namespace UEEditor
             this.JOrderManagerMail,
             this.JNeedRetrans,
             this.JRetranced,
-            this.JParentName});
+            this.JParentName,
+            this.JExt});
             this.dtJobs.TableName = "JobsGrid";
             // 
             // JPriceCode
@@ -2212,7 +2216,7 @@ namespace UEEditor
             this.gvUnrecExp.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.gvUnrecExp.OptionsView.ShowGroupPanel = false;
             this.gvUnrecExp.SortInfo.AddRange(new DevExpress.XtraGrid.Columns.GridColumnSortInfo[] {
-            new DevExpress.XtraGrid.Columns.GridColumnSortInfo(this.colUEAlready, DevExpress.Data.ColumnSortOrder.Ascending)});
+            ((DevExpress.XtraGrid.Columns.GridColumnSortInfo)(resources.GetObject("gvUnrecExp.SortInfo")))});
             this.gvUnrecExp.RowCellStyle += new DevExpress.XtraGrid.Views.Grid.RowCellStyleEventHandler(this.gvUnrecExp_RowCellStyle);
             this.gvUnrecExp.CustomDrawCell += new DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventHandler(this.gvUnrecExp_CustomDrawCell);
             this.gvUnrecExp.FocusedRowChanged += new DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventHandler(this.gvUnrecExp_FocusedRowChanged);
@@ -2935,6 +2939,10 @@ namespace UEEditor
             this.tmLogs.Interval = 15000;
             this.tmLogs.Tick += new System.EventHandler(this.tmLogs_Tick);
             // 
+            // JExt
+            // 
+            this.JExt.ColumnName = "JExt";
+            // 
             // frmUEEMain
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -3072,22 +3080,24 @@ namespace UEEditor
 		private void DAJobsCreate()
 		{
 			daJobs = new MySqlDataAdapter(
-                @"SELECT 
-					PD.FirmCode, 
-					PD.PriceCode As JPriceCode,  
+                @"SELECT
+					PD.FirmCode,
+					PD.PriceCode As JPriceCode,
 					concat(CD.ShortName, '(', pd.PriceName, ')') as JName, 
-					regions.region As JRegion, 
+					regions.region As JRegion,
 					FormRules.DateCurPrice AS JPriceDate, 
-					FormRules.MaxOld, 
-					cd.OrderManagerMail AS JOrderManagerMail, 
+					FormRules.MaxOld,
+					cd.OrderManagerMail AS JOrderManagerMail,
 					0 AS JPos, 
-					0 AS JNamePos, 
-					'' AS JJobDate, 
+					0 AS JNamePos,
+					'' AS JJobDate,
 					CD.FirmSegment As JWholeSale, 
 					bp.BlockBy As JBlockBy, 
                     FormRules.ParentSynonym as JParentSynonym,
-					FormRules.PriceFmt As JPriceFMT, 
-					CD.Phone As JPhone, 
+					FormRules.PriceFmt As JPriceFMT,
+
+          pfmt.FileExtention as JExt,
+					CD.Phone As JPhone,
 					PD.MinReq As JMinReq,
                     0 AS JNeedRetrans,
                     0 AS JRetranced,
@@ -3096,19 +3106,21 @@ namespace UEEditor
 				FROM 
                     (
 					usersettings.ClientsData AS CD, 
-					FormRules, 
+					FormRules,
+          PriceFMTs as pfmt,
 					usersettings.pricesdata AS PD, 
 					regions
                     )
                     left join blockedprice bp on bp.PriceCode = PD.PriceCode
                     left join usersettings.pricesdata ppd on FormRules.ParentSynonym=ppd.pricecode
                     left join usersettings.clientsdata pcd on pcd.FirmCode = ppd.firmcode
-				WHERE 
-				    FormRules.firmcode=PD.pricecode 
-				and CD.firmcode=PD.firmcode 
-				and regions.regioncode=CD.regioncode 
-				and pd.agencyenabled=1 
-				and exists(select * from UnrecExp un where un.FirmCode = PD.PriceCode)
+				WHERE
+				    FormRules.firmcode=PD.pricecode
+        and FormRules.PriceFmt = pfmt.Format
+				and CD.firmcode=PD.firmcode
+				and regions.regioncode=CD.regioncode
+				and pd.agencyenabled=1
+  			and exists(select * from UnrecExp un where un.FirmCode = PD.PriceCode)
 				GROUP BY PD.pricecode", 
 				MyCn);
 		}
@@ -3498,7 +3510,8 @@ namespace UEEditor
 					Catalog
 				WHERE
 					Hide=0
-				Group by ShortCode";
+				Group by ShortCode
+";
 
 			MyDA.Fill(dtCatalogName);
 		}
@@ -4293,8 +4306,9 @@ namespace UEEditor
 				if (dr[colJBlockBy.FieldName].ToString() == String.Empty || dr[colJBlockBy.FieldName].ToString() == Environment.UserName)
 				{
 					LockedPriceCode = Convert.ToInt64(dr["JPriceCode"]);
-					PriceFMT = dr[JPriceFMT].ToString();
-					if (dr[JParentSynonym] is DBNull)
+                    PriceFMT = dr[JPriceFMT].ToString();
+                    FileExt = dr[JExt].ToString();
+                    if (dr[JParentSynonym] is DBNull)
 						LockedSynonym = LockedPriceCode;
 					else
 						LockedSynonym = Convert.ToInt64(dr[JParentSynonym]);
@@ -4352,8 +4366,9 @@ namespace UEEditor
 					LocateJobs(LockedPriceCode);
 					UnLockedInBlockedPrice(LockedPriceCode);
 					LockedPriceCode = -1;
-					PriceFMT = String.Empty;
-					LockedSynonym = -1;
+                    PriceFMT = String.Empty;
+                    FileExt = String.Empty;
+                    LockedSynonym = -1;
 					gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
 					dtUnrecExp.Clear();
 					//Обновляем таблицу заданий
@@ -4727,8 +4742,6 @@ namespace UEEditor
 
 			if (res &&  S)
 			{
-				int[,] myArray = {{1,2}, {3,4}, {5,6}, {7,8}};
-				string[,] Ext = {{"WIN", "DOS", "XLS", "DBF", "DB"}, {".txt", ".txt", ".xls", ".dbf", ".db"}};
 
 #if DEBUG
 				string rootpath = @"C:\Temp\";
@@ -4738,15 +4751,6 @@ namespace UEEditor
 
 				f.Status = "Перепроведение пpайса...";
 
-				string ext = String.Empty;
-				for(int i = Ext.GetLowerBound(1); i<=Ext.GetUpperBound(1); i++)
-				{
-					if (Ext[0, i] == PriceFMT.ToUpper())
-					{
-						ext = Ext[1, i];
-						break;
-					}
-				}
 
 				bool copyOk = false;
 				do
@@ -4754,9 +4758,9 @@ namespace UEEditor
 					f.Pr = 80;
 					try
 					{
-						if (File.Exists(rootpath + "Base\\" + LockedPriceCode.ToString() + ext))
+						if (File.Exists(rootpath + "Base\\" + LockedPriceCode.ToString() + FileExt))
 						{
-							File.Copy(rootpath + "Base\\" + LockedPriceCode.ToString() + ext, rootpath + "Inbound0\\" + LockedPriceCode.ToString() + ext);
+                            File.Copy(rootpath + "Base\\" + LockedPriceCode.ToString() + FileExt, rootpath + "Inbound0\\" + LockedPriceCode.ToString() + FileExt);
 							PricesRetrans(now);
 						}
 						copyOk = true;
