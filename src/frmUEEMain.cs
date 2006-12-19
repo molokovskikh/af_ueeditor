@@ -3193,7 +3193,7 @@ namespace UEEditor
                             if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JPricesRetrans))
                                 dr["JRetranced"] = 1;
                         }
-                        catch (Exception e) 
+                        catch
                         {
                             dr["JRetranced"] = 0;
                         }
