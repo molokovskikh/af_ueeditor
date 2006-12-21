@@ -188,7 +188,7 @@ namespace UEEditor
 		private System.Data.DataTable dtCatalogFirmCr;
 		private System.Windows.Forms.Timer MainTimer;
 
-		private	MySqlConnection MyCn = new MySqlConnection("server=testsql.analit.net; user id=system; password=123; database=farm;");
+		private	MySqlConnection MyCn = new MySqlConnection("server=sql.analit.net; user id=system; password=123; database=farm;");
 		private MySqlCommand MyCmd = new MySqlCommand();
 		private DevExpress.XtraGrid.Views.Grid.GridView gvUnrecExp;
 		private DevExpress.XtraGrid.Views.Grid.GridView gvCatalog;
@@ -362,7 +362,7 @@ namespace UEEditor
 //			str += string.Format(" Читаем настройки формы формы {0} \r\n", now2.Subtract(now1));
 
 #if DEBUG
-			MyCn.ConnectionString = "server=sql.analit.net; user id=system; password=123; database=farm;";
+			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=123; database=farm;";
 #endif
 			MyCn.Open();
 			MyDA = new MySqlDataAdapter(MyCmd);
