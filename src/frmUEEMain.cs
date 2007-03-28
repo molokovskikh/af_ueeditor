@@ -3,6 +3,7 @@ using System.IO;
 using System.Globalization;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
@@ -241,20 +242,11 @@ namespace UEEditor
 
 		public frmUEEMain()
 		{
-//			string str = "";
-//			DateTime now1, now2, all1, all2;
-//
-//			now1 = DateTime.Now;
-//			all1 = now1;
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
 
-//			now2 = DateTime.Now;
-//			str += string.Format(" Создаем компоненты формы {0} \r\n", now2.Subtract(now1));
-//
-//			now1 = DateTime.Now;
 			try
 			{
 				LoadColor(btnJobsBlock, btnJobsBlock.BackColor.ToArgb());
@@ -275,8 +267,6 @@ namespace UEEditor
 			catch
 			{
 			}
-//			now2 = DateTime.Now;
-//			str += string.Format(" Читаем настройки формы формы {0} \r\n", now2.Subtract(now1));
 
 #if DEBUG
 			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=123; database=farm;";
@@ -292,48 +282,23 @@ namespace UEEditor
 			//Создали ДатаАдаптер для таблицы заданий
 			DAJobsCreate();
 
-//			now1 = DateTime.Now;
 			//Заполняем таблицу заданий
 			JobsGridFill();
-//			now2 = DateTime.Now;
-//			str += string.Format(" Заполняем таблицу заданий {0} \r\n", now2.Subtract(now1));
 
 			//Запоняем каталожные таблицы
-//			now1 = DateTime.Now;
 			dtForm.Clear();
-//			now2 = DateTime.Now;
-//			str += string.Format(" Заполняем каталожные таблицы dtForm.Clear {0}  \r\n", now2.Subtract(now1));
 
-//			now1 = DateTime.Now;
 			CatalogFirmCrGridFill(MyCmd, MyDA);
-//			now2 = DateTime.Now;
-//			str += string.Format(" Заполняем каталожные таблицы CatalogFirmCr {0}  \r\n", now2.Subtract(now1));
 
-//			now1 = DateTime.Now;
 			CatalogNameGridFill(MyCmd, MyDA);
-//			now2 = DateTime.Now;
-//			str += string.Format(" Заполняем каталожные таблицы CatalogName {0}  \r\n", now2.Subtract(now1));
 
-//			now1 = DateTime.Now;
 			FormGridFill(MyCmd, MyDA);
-//			now2 = DateTime.Now;
-//			str += string.Format(" Заполняем каталожные таблицы Form {0}  \r\n", now2.Subtract(now1));
 
 			//Заполняем таблицу валют
-//			now1 = DateTime.Now;
 			CurrencyGridFill(MyCmd, MyDA);
-//			now2 = DateTime.Now;
-//			str += string.Format(" Заполняем таблицу валют {0}  \r\n", now2.Subtract(now1));
-
 
 			//
 			JobsGridControl.Select();
-//
-//			all2 = DateTime.Now;
-//
-//			str += string.Format("\r\n\r\n Все время {0}", all2.Subtract(all1));
-//
-//			MessageBox.Show(str);
 		}
 
 		/// <summary>
@@ -1130,7 +1095,7 @@ namespace UEEditor
 			// 
 			// statusBar1
 			// 
-			this.statusBar1.Location = new System.Drawing.Point(0, 775);
+			this.statusBar1.Location = new System.Drawing.Point(0, 731);
 			this.statusBar1.Name = "statusBar1";
 			this.statusBar1.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusBarPanel1,
@@ -1159,7 +1124,7 @@ namespace UEEditor
 			this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel3.Location = new System.Drawing.Point(0, 0);
 			this.panel3.Name = "panel3";
-			this.panel3.Size = new System.Drawing.Size(720, 775);
+			this.panel3.Size = new System.Drawing.Size(720, 731);
 			this.panel3.TabIndex = 2;
 			// 
 			// tcMain
@@ -1172,7 +1137,7 @@ namespace UEEditor
 			this.tcMain.Location = new System.Drawing.Point(0, 0);
 			this.tcMain.Name = "tcMain";
 			this.tcMain.SelectedIndex = 0;
-			this.tcMain.Size = new System.Drawing.Size(720, 775);
+			this.tcMain.Size = new System.Drawing.Size(720, 731);
 			this.tcMain.TabIndex = 0;
 			this.tcMain.SelectedIndexChanged += new System.EventHandler(this.tcMain_SelectedIndexChanged);
 			// 
@@ -1181,7 +1146,7 @@ namespace UEEditor
 			this.tpJobs.Controls.Add(this.pnlCenter1);
 			this.tpJobs.Location = new System.Drawing.Point(4, 22);
 			this.tpJobs.Name = "tpJobs";
-			this.tpJobs.Size = new System.Drawing.Size(712, 749);
+			this.tpJobs.Size = new System.Drawing.Size(712, 705);
 			this.tpJobs.TabIndex = 0;
 			this.tpJobs.Text = "Задания";
 			// 
@@ -1192,7 +1157,7 @@ namespace UEEditor
 			this.pnlCenter1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlCenter1.Location = new System.Drawing.Point(0, 0);
 			this.pnlCenter1.Name = "pnlCenter1";
-			this.pnlCenter1.Size = new System.Drawing.Size(712, 749);
+			this.pnlCenter1.Size = new System.Drawing.Size(712, 705);
 			this.pnlCenter1.TabIndex = 5;
 			// 
 			// pnlTop1
@@ -1202,7 +1167,7 @@ namespace UEEditor
 			this.pnlTop1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlTop1.Location = new System.Drawing.Point(0, 0);
 			this.pnlTop1.Name = "pnlTop1";
-			this.pnlTop1.Size = new System.Drawing.Size(712, 725);
+			this.pnlTop1.Size = new System.Drawing.Size(712, 681);
 			this.pnlTop1.TabIndex = 1;
 			// 
 			// JobsGridControl
@@ -1216,7 +1181,7 @@ namespace UEEditor
 			this.JobsGridControl.Location = new System.Drawing.Point(0, 0);
 			this.JobsGridControl.MainView = this.gvJobs;
 			this.JobsGridControl.Name = "JobsGridControl";
-			this.JobsGridControl.Size = new System.Drawing.Size(592, 725);
+			this.JobsGridControl.Size = new System.Drawing.Size(592, 681);
 			this.JobsGridControl.TabIndex = 4;
 			this.JobsGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvJobs});
@@ -1392,7 +1357,7 @@ namespace UEEditor
 			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Right;
 			this.groupBox1.Location = new System.Drawing.Point(592, 0);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(120, 725);
+			this.groupBox1.Size = new System.Drawing.Size(120, 681);
 			this.groupBox1.TabIndex = 3;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Легенда";
@@ -1455,7 +1420,7 @@ namespace UEEditor
 			// 
 			this.pnlWithButton1.Controls.Add(this.btnDelJob);
 			this.pnlWithButton1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.pnlWithButton1.Location = new System.Drawing.Point(0, 725);
+			this.pnlWithButton1.Location = new System.Drawing.Point(0, 681);
 			this.pnlWithButton1.Name = "pnlWithButton1";
 			this.pnlWithButton1.Size = new System.Drawing.Size(712, 24);
 			this.pnlWithButton1.TabIndex = 0;
@@ -2131,7 +2096,7 @@ namespace UEEditor
 			// frmUEEMain
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(720, 797);
+			this.ClientSize = new System.Drawing.Size(720, 753);
 			this.Controls.Add(this.panel3);
 			this.Controls.Add(this.statusBar1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -2244,7 +2209,7 @@ namespace UEEditor
 		private void DAJobsCreate()
 		{
 			daJobs = new MySqlDataAdapter(
-                @"SELECT
+				@"SELECT
 					PD.FirmCode,
 					PD.PriceCode As JPriceCode,
 					concat(CD.ShortName, '(', pd.PriceName, ')') as JName, 
@@ -2259,8 +2224,7 @@ namespace UEEditor
 					bp.BlockBy As JBlockBy, 
                     FormRules.ParentSynonym as JParentSynonym,
 					FormRules.PriceFmt As JPriceFMT,
-
-          pfmt.FileExtention as JExt,
+                    pfmt.FileExtention as JExt,
 					CD.Phone As JPhone,
 					PD.MinReq As JMinReq,
                     0 AS JNeedRetrans,
@@ -2271,20 +2235,20 @@ namespace UEEditor
                     (
 					usersettings.ClientsData AS CD, 
 					FormRules,
-          PriceFMTs as pfmt,
+                    PriceFMTs as pfmt,
 					usersettings.pricesdata AS PD, 
 					regions
                     )
                     left join blockedprice bp on bp.PriceCode = PD.PriceCode
-                    left join usersettings.pricesdata ppd on FormRules.ParentSynonym=ppd.pricecode
+                    left join usersettings.pricesdata ppd on ppd.pricecode = FormRules.ParentSynonym
                     left join usersettings.clientsdata pcd on pcd.FirmCode = ppd.firmcode
 				WHERE
 				    FormRules.firmcode=PD.pricecode
-        and FormRules.PriceFmt = pfmt.Format
+                and FormRules.PriceFmt = pfmt.Format
 				and CD.firmcode=PD.firmcode
 				and regions.regioncode=CD.regioncode
 				and pd.agencyenabled=1
-  			and exists(select * from UnrecExp un where un.FirmCode = PD.PriceCode)
+  			    and exists(select * from UnrecExp un where un.FirmCode = PD.PriceCode)
 				GROUP BY PD.pricecode", 
 				MyCn);
 		}
@@ -3321,8 +3285,11 @@ namespace UEEditor
 					Thread t = new Thread( new ThreadStart( ThreadMethod ) );
 					t.Start();
 
-					f.ShowDialog();
+					DialogResult dr = f.ShowDialog();
 					f = null;
+
+					if (dr == DialogResult.Cancel)
+						t.Abort();
 					
 					goto case DialogResult.No;
 				}
@@ -3386,8 +3353,68 @@ namespace UEEditor
 		private void ApplyChanges()
 		{
 			bool res = false;
+			//Имеются ли родительские синонимы
+			bool HasParentSynonym = LockedSynonym != LockedPriceCode;
+			long ParenSynonymCode;
 			DateTime now = DateTime.Now;
 			f.Status = "Подготовка таблиц...";
+
+			//Список прайсов, которые нужно перепровести
+			List<RetransedPrice> RetransedPriceList = new List<RetransedPrice>();
+
+			//Если прайс-лист уже имеет родительский синоним, то ищем FileExtention родителя
+			//и добавляем родителя первым в списке
+			if (LockedSynonym != LockedPriceCode)
+			{
+				string ParentFileExt = MySqlHelper.ExecuteScalar(MyCn, @"
+select 
+  pf.FileExtention 
+from 
+  farm.formrules fr, 
+  farm.pricefmts pf 
+where 
+    fr.FirmCode = ?LockedSynonym 
+and pf.Format = fr.PriceFmt", 
+							new MySqlParameter("LockedSynonym", LockedSynonym)).ToString();
+				//Первым в списке добавляем прайс-лист c родительскими синонимами
+				RetransedPriceList.Add(new RetransedPrice(LockedSynonym, ParentFileExt));
+			}
+			else
+				//Первым в списке добавляем сам прайс-лист
+				RetransedPriceList.Add(new RetransedPrice(LockedPriceCode, FileExt));
+
+			//Попытка найти всех потомков, которые используют родительские синонимы
+			DataSet dsInerPrices = MySqlHelper.ExecuteDataset(MyCn, @"
+select
+  pd.PriceCode,
+  pf.FileExtention
+from
+  farm.formrules fr,
+  usersettings.pricesdata pd,
+  usersettings.pricescosts pc,
+  usersettings.pricesdata parentpd,
+  farm.pricefmts pf
+where
+    fr.ParentSynonym = ?LockedSynonym
+and pd.PriceCode = fr.FirmCode
+and pf.Format = fr.PriceFmt
+and pd.AgencyEnabled = 1
+and pc.PriceCode = pd.PriceCode
+and parentpd.PriceCode = pc.ShowPriceCode
+and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
+",
+				new MySqlParameter("LockedSynonym", LockedSynonym));
+
+			//Если в наборе данных будут записи, то добавляем их в список
+			if (dsInerPrices.Tables[0].Rows.Count > 0)
+			{
+				HasParentSynonym = true;
+				foreach(DataRow drInerPrice in dsInerPrices.Tables[0].Rows)
+					RetransedPriceList.Add(
+						new RetransedPrice(
+							Convert.ToInt64(drInerPrice["PriceCode"]), 
+							drInerPrice["FileExtention"].ToString()));
+			}
 
 			SynonymCount = 0; 
 			SynonymFirmCrCount = 0;
@@ -3676,6 +3703,20 @@ namespace UEEditor
 					DataTable dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
 					daUnrecUpdate.Update(dtUnrecUpdateCopy);
 
+					if (HasParentSynonym)
+					{
+						foreach (RetransedPrice rp in RetransedPriceList)
+							MySqlHelper.ExecuteNonQuery(MyCn, @"
+delete
+from
+  farm.UnrecExp
+where
+  FirmCode = ?DeletePriceCode
+and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePriceCode and bp.BlockBy <> ?LockUserName)",
+										new MySqlParameter("DeletePriceCode", rp.PriceCode),
+										new MySqlParameter("LockUserName", Environment.UserName));
+					}
+
 					//DelCount = UpDateUnrecExp(tran);
 
 					tran.Commit();
@@ -3721,40 +3762,45 @@ namespace UEEditor
 #endif
 
 				f.Status = "Перепроведение пpайса...";
+				f.Pr = 80;
 
-
-				bool copyOk = false;
+				int CurrentPriceCode = 0;
+				string CurrentFileName;
 				do
 				{
-					f.Pr = 80;
+					CurrentFileName = RetransedPriceList[CurrentPriceCode].PriceCode.ToString() + RetransedPriceList[CurrentPriceCode].FileExt;
 					try
 					{
-						if (File.Exists(rootpath + "Base\\" + LockedPriceCode.ToString() + FileExt))
+						if (File.Exists(rootpath + "Base\\" + CurrentFileName))
 						{
-                            File.Copy(rootpath + "Base\\" + LockedPriceCode.ToString() + FileExt, rootpath + "Inbound0\\" + LockedPriceCode.ToString() + FileExt);
-							PricesRetrans(now);
+							File.Copy(rootpath + "Base\\" + CurrentFileName, rootpath + "Inbound0\\" + CurrentFileName);
+							PricesRetrans(now, RetransedPriceList[CurrentPriceCode].PriceCode);
 						}
-						copyOk = true;
+						RetransedPriceList.RemoveAt(CurrentPriceCode);
 					}
-					catch(Exception e)
+					catch (Exception e)
 					{
-						f.Error = String.Format("При копировании файла возникла ошибка : {0}\r\n", e);
+						if (f != null)
+							f.Error = String.Format("При копировании файла {1} возникла ошибка : {0}\r\n", e, CurrentFileName);
+						CurrentPriceCode++;
 						Thread.Sleep(500);
 					}
+					if (CurrentPriceCode >= RetransedPriceList.Count)
+						CurrentPriceCode = 0;
 				}
-				while(!copyOk);
+				while(RetransedPriceList.Count > 0);
 
 			}
 
 			f.Pr = 100;
 		}
 
-		private void PricesRetrans(DateTime now)
+		private void PricesRetrans(DateTime now, long RetransPriceCode)
 		{
 			MySqlCommand mcInsert = new MySqlCommand();
 			mcInsert.Connection = MyCn;
 			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.Add("?LockedPriceCode", LockedPriceCode);
+			mcInsert.Parameters.Add("?RetransPriceCode", RetransPriceCode);
 			mcInsert.Parameters.Add("?UserName", Environment.UserName);
 			mcInsert.Parameters.Add("?UserHost", Environment.MachineName);
 			mcInsert.Parameters.Add("?Now", now);
@@ -3769,7 +3815,7 @@ namespace UEEditor
 						(?Now,
 						?UserName,
 						?UserHost,
-						?LockedPriceCode)";
+						?RetransPriceCode)";
 	
 			mcInsert.ExecuteNonQuery();
 		}
@@ -4256,6 +4302,18 @@ namespace UEEditor
 			}
 		}
 
+	}
+
+	public class RetransedPrice
+	{
+		public long PriceCode;
+		public string FileExt;
+
+		public RetransedPrice(long APriceCode, string AFileExt)
+		{
+			this.PriceCode = APriceCode;
+			this.FileExt = AFileExt;
+		}
 	}
 
 }
