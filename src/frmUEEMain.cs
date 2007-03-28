@@ -3355,7 +3355,6 @@ namespace UEEditor
 			bool res = false;
 			//Имеются ли родительские синонимы
 			bool HasParentSynonym = LockedSynonym != LockedPriceCode;
-			long ParenSynonymCode;
 			DateTime now = DateTime.Now;
 			f.Status = "Подготовка таблиц...";
 
@@ -3441,7 +3440,7 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 			daSynonym.SelectCommand.Parameters.Add("?FirmCode", LockedSynonym);
 			DataTable dtSynonym = new DataTable();
 			daSynonym.Fill(dtSynonym);
-			dtSynonym.Constraints.Add("UnicNameCode", new DataColumn[] {dtSynonym.Columns["Synonym"], dtSynonym.Columns["Code"]}, false);
+			dtSynonym.Constraints.Add("UnicNameCode", dtSynonym.Columns["Synonym"], false);
 			
 			f.Pr += 1;
 			//Заполнили таблицу синонимов производителей
@@ -3534,12 +3533,11 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 							newDR["Synonym"] = GetFullUnrecName(i);
 							newDR["FullCode"] = dr[UETmpFullCode];
 							newDR["ShortCode"] = dr[UETmpShortCode];
-							newDR["Code"] = dr[UECode];
 							newDR["Junk"] = dr[UEJunk];
 							try
 							{
 								dtSynonym.Rows.Add(newDR);
-								SynonymCount +=1;
+								SynonymCount += 1;
 							}
 							catch(ConstraintException)
 							{
