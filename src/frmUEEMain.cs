@@ -2209,47 +2209,43 @@ namespace UEEditor
 		private void DAJobsCreate()
 		{
 			daJobs = new MySqlDataAdapter(
-				@"SELECT
-					PD.FirmCode,
-					PD.PriceCode As JPriceCode,
-					concat(CD.ShortName, '(', pd.PriceName, ')') as JName, 
-					regions.region As JRegion,
-					FormRules.DateCurPrice AS JPriceDate, 
-					FormRules.MaxOld,
-					cd.OrderManagerMail AS JOrderManagerMail,
-					0 AS JPos, 
-					0 AS JNamePos,
-					'' AS JJobDate,
-					CD.FirmSegment As JWholeSale, 
-					bp.BlockBy As JBlockBy, 
-                    FormRules.ParentSynonym as JParentSynonym,
-					FormRules.PriceFmt As JPriceFMT,
-                    pfmt.FileExtention as JExt,
-					CD.Phone As JPhone,
-					PD.MinReq As JMinReq,
-                    0 AS JNeedRetrans,
-                    0 AS JRetranced,
-                    FormRules.DateLastForm AS JDateLastForm,
-                    if(FormRules.ParentSynonym is null, '', concat(pcd.ShortName, '(', ppd.PriceName, ')')) as JParentName
-				FROM 
-                    (
-					usersettings.ClientsData AS CD, 
-					FormRules,
-                    PriceFMTs as pfmt,
-					usersettings.pricesdata AS PD, 
-					regions
-                    )
-                    left join blockedprice bp on bp.PriceCode = PD.PriceCode
-                    left join usersettings.pricesdata ppd on ppd.pricecode = FormRules.ParentSynonym
-                    left join usersettings.clientsdata pcd on pcd.FirmCode = ppd.firmcode
-				WHERE
-				    FormRules.firmcode=PD.pricecode
-                and FormRules.PriceFmt = pfmt.Format
-				and CD.firmcode=PD.firmcode
-				and regions.regioncode=CD.regioncode
-				and pd.agencyenabled=1
-  			    and exists(select * from UnrecExp un where un.FirmCode = PD.PriceCode)
-				GROUP BY PD.pricecode", 
+				@"
+SELECT  PD.FirmCode, 
+        PD.PriceCode                                                                                                         As JPriceCode, 
+        concat(CD.ShortName, '(', if(pc.PriceCode = pc.ShowPriceCode, pd.PriceName, concat('[Колонка] ', pc.CostName)), ')') as JName, 
+        regions.region                                                                                                       As JRegion, 
+        FormRules.DateCurPrice                                                                                               AS JPriceDate, 
+        FormRules.MaxOld, 
+        cd.OrderManagerMail                                                                     AS JOrderManagerMail, 
+        0                                                                                       AS JPos, 
+        0                                                                                       AS JNamePos, 
+        ''                                                                                      AS JJobDate, 
+        CD.FirmSegment                                                                          As JWholeSale, 
+        bp.BlockBy                                                                              As JBlockBy, 
+        FormRules.ParentSynonym                                                                 as JParentSynonym, 
+        FormRules.PriceFmt                                                                      As JPriceFMT, 
+        pfmt.FileExtention                                                                      as JExt, 
+        CD.Phone                                                                                As JPhone, 
+        PD.MinReq                                                                               As JMinReq, 
+        0                                                                                       AS JNeedRetrans, 
+        0                                                                                       AS JRetranced, 
+        FormRules.DateLastForm                                                                  AS JDateLastForm, 
+        if(FormRules.ParentSynonym is null, '', concat(pcd.ShortName, '(', ppd.PriceName, ')')) as JParentName 
+FROM ( usersettings.ClientsData AS CD, FormRules, PriceFMTs as pfmt, usersettings.pricesdata AS PD, regions, usersettings.pricescosts pc ) 
+LEFT JOIN blockedprice bp 
+ON      bp.PriceCode = PD.PriceCode 
+LEFT JOIN usersettings.pricesdata ppd 
+ON      ppd.pricecode = FormRules.ParentSynonym 
+LEFT JOIN usersettings.clientsdata pcd 
+ON      pcd.FirmCode       = ppd.firmcode 
+WHERE   FormRules.firmcode =PD.pricecode 
+    AND FormRules.PriceFmt = pfmt.Format 
+    AND CD.firmcode        =PD.firmcode 
+    AND regions.regioncode =CD.regioncode 
+    AND pd.agencyenabled   =1 
+    AND exists(SELECT * FROM UnrecExp un WHERE un.FirmCode = PD.PriceCode) 
+    AND pc.PriceCode = pd.PriceCode 
+GROUP BY PD.pricecode", 
 				MyCn);
 		}
 
