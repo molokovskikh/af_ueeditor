@@ -3767,8 +3767,11 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 					{
 						if (File.Exists(rootpath + "Base\\" + CurrentFileName))
 						{
-							File.Copy(rootpath + "Base\\" + CurrentFileName, rootpath + "Inbound0\\" + CurrentFileName);
-							PricesRetrans(now, RetransedPriceList[CurrentPriceCode].PriceCode);
+							if (!File.Exists(rootpath + "Inbound0\\" + CurrentFileName))
+							{
+								File.Copy(rootpath + "Base\\" + CurrentFileName, rootpath + "Inbound0\\" + CurrentFileName);
+								PricesRetrans(now, RetransedPriceList[CurrentPriceCode].PriceCode);
+							}
 						}
 						RetransedPriceList.RemoveAt(CurrentPriceCode);
 					}
