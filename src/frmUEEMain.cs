@@ -92,7 +92,8 @@ namespace UEEditor
 		public long LockedPriceCode = -1;
 		public long LockedSynonym = -1;
 		public frmProgress f = null;
-		public int SynonymCount = 0; 
+		public int SynonymCount = 0;
+		public int HideSynonymCount = 0;
 		public int SynonymFirmCrCount = 0;
 		public int SynonymCurrencyCount = 0;
 		public int ForbiddenCount = 0;
@@ -3342,7 +3343,16 @@ GROUP BY PD.pricecode",
 		private bool ShowRetransPrice()
 		{
 			string str = String.Empty;
-			str = String.Format("Создано:\r\n\tзапрещённых выражений - {0}\r\nСинонимов:\r\n\tпо наименованию - {1}\r\n\tпо производителю - {2}\r\n\tпо валюте - {3}\r\n\r\nПерепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, SynonymCurrencyCount);
+			str = String.Format(
+@"Создано:
+	запрещённых выражений - {0}
+Синонимов:
+	по наименованию - {1}
+	по производителю - {2}
+	по валюте - {3}
+Отклонено скрытых синонимов: {4}
+
+Перепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, SynonymCurrencyCount, HideSynonymCount);
 			return (MessageBox.Show(str, "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
 		}
 
@@ -3415,6 +3425,7 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 			SynonymFirmCrCount = 0;
 			SynonymCurrencyCount = 0;
 			ForbiddenCount = 0;
+			HideSynonymCount = 0;
 
 			//Кол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводится
 			int DelCount = 0;
@@ -3524,7 +3535,7 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 						if (NotNameForm(i, "UEAlready") && !NotNameForm(i, "UEStatus"))
 						{
 							DataRow newDR = dtSynonym.NewRow();
-								
+
 							newDR["FirmCode"] = LockedSynonym;
 							newDR["Synonym"] = GetFullUnrecName(i);
 							newDR["FullCode"] = dr[UETmpFullCode];
@@ -3535,7 +3546,7 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 								dtSynonym.Rows.Add(newDR);
 								SynonymCount += 1;
 							}
-							catch(ConstraintException)
+							catch (ConstraintException)
 							{
 							}
 						}
@@ -3823,11 +3834,22 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 
 			int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm | FormMask.CurrForm);
 
-			//DataRow[] drs = dtUnrecExpUpdate.Select("RowID = " + drUpdated["UERowID"].ToString());
+			//Производим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
+			bool HidedSynonym = Convert.ToBoolean(MySqlHelper.ExecuteScalar(MyCn, "select Hide from farm.catalog where FullCode = " + drUpdated[UETmpFullCode].ToString()));
+			if (HidedSynonym)
+			{
+				//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
+				drUpdated["UETmpFullCode"] = 0;
+				drUpdated["UETmpShortCode"] = 0;
+				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) - FormMask.NameForm);
+				HideSynonymCount++;
+			}
+
 			DataRow drNew = dtUnrecExpUpdate.Rows.Find( Convert.ToUInt32( drUpdated["UERowID"] ) );
 
 			if (drNew != null)
 			{
+
 				if ((int)drUpdated["UEStatus"] == FULLFORM)
 				{
 					drNew.Delete();
