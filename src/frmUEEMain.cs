@@ -3396,6 +3396,7 @@ select
 from
   farm.formrules fr,
   usersettings.pricesdata pd,
+  usersettings.clientsdata cd,
   usersettings.pricescosts pc,
   usersettings.pricesdata parentpd,
   farm.pricefmts pf
@@ -3404,6 +3405,9 @@ where
 and pd.PriceCode = fr.FirmCode
 and pf.Format = fr.PriceFmt
 and pd.AgencyEnabled = 1
+and cd.FirmCode = pd.FirmCode
+and cd.FirmStatus = 1
+and cd.BillingStatus = 1
 and pc.PriceCode = pd.PriceCode
 and parentpd.PriceCode = pc.ShowPriceCode
 and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
