@@ -88,7 +88,6 @@ namespace UEEditor
 
         public string PriceFMT = String.Empty;
         public string FileExt = String.Empty;
-        public string JUNK = "срок";
 		public long LockedPriceCode = -1;
 		public long LockedSynonym = -1;
 		public frmProgress f = null;
@@ -110,12 +109,10 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colZName;
 		private DevExpress.XtraGrid.Columns.GridColumn colZFirmCr;
 		private DevExpress.XtraGrid.Columns.GridColumn colZCurrency;
-		private DevExpress.XtraGrid.Columns.GridColumn colZBaseCost;
 		private DevExpress.XtraGrid.Columns.GridColumn colZUnit;
 		private DevExpress.XtraGrid.Columns.GridColumn colZVolume;
 		private DevExpress.XtraGrid.Columns.GridColumn colZQuantity;
 		private DevExpress.XtraGrid.Columns.GridColumn colZPeriod;
-		private DevExpress.XtraGrid.Columns.GridColumn colZJunk;
 		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn10;
 		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn11;
 		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn12;
@@ -325,7 +322,7 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -475,12 +472,10 @@ namespace UEEditor
 			this.colZName = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZFirmCr = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZCurrency = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colZBaseCost = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZUnit = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZVolume = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZQuantity = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZPeriod = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colZJunk = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.tpForb = new System.Windows.Forms.TabPage();
 			this.ForbGridControl = new DevExpress.XtraGrid.GridControl();
 			this.gvForb = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -590,10 +585,10 @@ namespace UEEditor
 			// 
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode1.LevelTemplate = this.gvCatForm;
-			gridLevelNode1.RelationName = "Relation1";
+			gridLevelNode2.LevelTemplate = this.gvCatForm;
+			gridLevelNode2.RelationName = "Relation1";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1});
+            gridLevelNode2});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.MainView = this.gvCatalog;
 			this.CatalogGridControl.Name = "CatalogGridControl";
@@ -828,8 +823,9 @@ namespace UEEditor
 			// 
 			// UEJunk
 			// 
-			this.UEJunk.Caption = "Призназ";
+			this.UEJunk.Caption = "Просроченный";
 			this.UEJunk.ColumnName = "UEJunk";
+			this.UEJunk.DataType = typeof(byte);
 			// 
 			// UEStatus
 			// 
@@ -991,6 +987,7 @@ namespace UEEditor
 			// ZJunk
 			// 
 			this.ZJunk.ColumnName = "ZJunk";
+			this.ZJunk.DataType = typeof(byte);
 			// 
 			// dtForb
 			// 
@@ -1459,7 +1456,7 @@ namespace UEEditor
 			this.tpUnrecExp.Controls.Add(this.pnlTop2);
 			this.tpUnrecExp.Location = new System.Drawing.Point(4, 22);
 			this.tpUnrecExp.Name = "tpUnrecExp";
-			this.tpUnrecExp.Size = new System.Drawing.Size(712, 749);
+			this.tpUnrecExp.Size = new System.Drawing.Size(712, 705);
 			this.tpUnrecExp.TabIndex = 1;
 			this.tpUnrecExp.Text = "Нераспознанные";
 			this.tpUnrecExp.Visible = false;
@@ -1488,7 +1485,7 @@ namespace UEEditor
 			this.pnlBottom2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlBottom2.Location = new System.Drawing.Point(0, 280);
 			this.pnlBottom2.Name = "pnlBottom2";
-			this.pnlBottom2.Size = new System.Drawing.Size(712, 469);
+			this.pnlBottom2.Size = new System.Drawing.Size(712, 425);
 			this.pnlBottom2.TabIndex = 7;
 			// 
 			// UnrecExpGridControl
@@ -1502,7 +1499,7 @@ namespace UEEditor
 			this.UnrecExpGridControl.Location = new System.Drawing.Point(0, 0);
 			this.UnrecExpGridControl.MainView = this.gvUnrecExp;
 			this.UnrecExpGridControl.Name = "UnrecExpGridControl";
-			this.UnrecExpGridControl.Size = new System.Drawing.Size(712, 469);
+			this.UnrecExpGridControl.Size = new System.Drawing.Size(712, 425);
 			this.UnrecExpGridControl.TabIndex = 1;
 			this.UnrecExpGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvUnrecExp});
@@ -1542,6 +1539,7 @@ namespace UEEditor
 			this.gvUnrecExp.CustomDrawCell += new DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventHandler(this.gvUnrecExp_CustomDrawCell);
 			this.gvUnrecExp.FocusedRowChanged += new DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventHandler(this.gvUnrecExp_FocusedRowChanged);
 			this.gvUnrecExp.CustomColumnSort += new DevExpress.XtraGrid.Views.Base.CustomColumnSortEventHandler(this.gvUnrecExp_CustomColumnSort);
+			this.gvUnrecExp.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvUnrecExp_CustomColumnDisplayText);
 			// 
 			// colUEColumn1
 			// 
@@ -1764,7 +1762,7 @@ namespace UEEditor
 			this.tpZero.Controls.Add(this.ZeroGridControl);
 			this.tpZero.Location = new System.Drawing.Point(4, 22);
 			this.tpZero.Name = "tpZero";
-			this.tpZero.Size = new System.Drawing.Size(712, 749);
+			this.tpZero.Size = new System.Drawing.Size(712, 705);
 			this.tpZero.TabIndex = 2;
 			this.tpZero.Text = "Цена 0";
 			this.tpZero.Visible = false;
@@ -1780,7 +1778,7 @@ namespace UEEditor
 			this.ZeroGridControl.Location = new System.Drawing.Point(0, 0);
 			this.ZeroGridControl.MainView = this.gvZero;
 			this.ZeroGridControl.Name = "ZeroGridControl";
-			this.ZeroGridControl.Size = new System.Drawing.Size(712, 749);
+			this.ZeroGridControl.Size = new System.Drawing.Size(712, 705);
 			this.ZeroGridControl.TabIndex = 0;
 			this.ZeroGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvZero});
@@ -1793,12 +1791,10 @@ namespace UEEditor
             this.colZName,
             this.colZFirmCr,
             this.colZCurrency,
-            this.colZBaseCost,
             this.colZUnit,
             this.colZVolume,
             this.colZQuantity,
-            this.colZPeriod,
-            this.colZJunk});
+            this.colZPeriod});
 			this.gvZero.GridControl = this.ZeroGridControl;
 			this.gvZero.Name = "gvZero";
 			this.gvZero.OptionsMenu.EnableColumnMenu = false;
@@ -1851,15 +1847,6 @@ namespace UEEditor
 			this.colZCurrency.Visible = true;
 			this.colZCurrency.VisibleIndex = 4;
 			// 
-			// colZBaseCost
-			// 
-			this.colZBaseCost.Caption = "Базовая цена";
-			this.colZBaseCost.FieldName = "ZBaseCost";
-			this.colZBaseCost.Name = "colZBaseCost";
-			this.colZBaseCost.OptionsColumn.AllowEdit = false;
-			this.colZBaseCost.Visible = true;
-			this.colZBaseCost.VisibleIndex = 5;
-			// 
 			// colZUnit
 			// 
 			this.colZUnit.Caption = "Ед. измерения";
@@ -1867,7 +1854,7 @@ namespace UEEditor
 			this.colZUnit.Name = "colZUnit";
 			this.colZUnit.OptionsColumn.AllowEdit = false;
 			this.colZUnit.Visible = true;
-			this.colZUnit.VisibleIndex = 6;
+			this.colZUnit.VisibleIndex = 5;
 			// 
 			// colZVolume
 			// 
@@ -1876,7 +1863,7 @@ namespace UEEditor
 			this.colZVolume.Name = "colZVolume";
 			this.colZVolume.OptionsColumn.AllowEdit = false;
 			this.colZVolume.Visible = true;
-			this.colZVolume.VisibleIndex = 7;
+			this.colZVolume.VisibleIndex = 6;
 			// 
 			// colZQuantity
 			// 
@@ -1885,7 +1872,7 @@ namespace UEEditor
 			this.colZQuantity.Name = "colZQuantity";
 			this.colZQuantity.OptionsColumn.AllowEdit = false;
 			this.colZQuantity.Visible = true;
-			this.colZQuantity.VisibleIndex = 8;
+			this.colZQuantity.VisibleIndex = 7;
 			// 
 			// colZPeriod
 			// 
@@ -1894,23 +1881,14 @@ namespace UEEditor
 			this.colZPeriod.Name = "colZPeriod";
 			this.colZPeriod.OptionsColumn.AllowEdit = false;
 			this.colZPeriod.Visible = true;
-			this.colZPeriod.VisibleIndex = 9;
-			// 
-			// colZJunk
-			// 
-			this.colZJunk.Caption = "Просроченный";
-			this.colZJunk.FieldName = "ZJunk";
-			this.colZJunk.Name = "colZJunk";
-			this.colZJunk.OptionsColumn.AllowEdit = false;
-			this.colZJunk.Visible = true;
-			this.colZJunk.VisibleIndex = 10;
+			this.colZPeriod.VisibleIndex = 8;
 			// 
 			// tpForb
 			// 
 			this.tpForb.Controls.Add(this.ForbGridControl);
 			this.tpForb.Location = new System.Drawing.Point(4, 22);
 			this.tpForb.Name = "tpForb";
-			this.tpForb.Size = new System.Drawing.Size(712, 749);
+			this.tpForb.Size = new System.Drawing.Size(712, 705);
 			this.tpForb.TabIndex = 3;
 			this.tpForb.Text = "Запрещенные";
 			this.tpForb.Visible = false;
@@ -1926,7 +1904,7 @@ namespace UEEditor
 			this.ForbGridControl.Location = new System.Drawing.Point(0, 0);
 			this.ForbGridControl.MainView = this.gvForb;
 			this.ForbGridControl.Name = "ForbGridControl";
-			this.ForbGridControl.Size = new System.Drawing.Size(712, 749);
+			this.ForbGridControl.Size = new System.Drawing.Size(712, 705);
 			this.ForbGridControl.TabIndex = 0;
 			this.ForbGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvForb});
@@ -2390,16 +2368,13 @@ GROUP BY PD.pricecode",
 				  CodeCr As UECodeCr, 
 				  Unit As UEUnit, 
 				  Volume As UEVolume, 
-				  UpCost, 
 				  Quantity As UEQuantity, 
 				  Note, 
 				  Period As UEPeriod, 
 				  Doc, 
 				  BaseCost As UEBaseCost, 
 				  Currency As UECurrency, 
-				  AsFactCost, 
 				  TmpFullCode As UETmpFullCode,  
-				  TmpShortCode As UETmpShortCode, 
 				  TmpCodeFirmCr As UETmpCodeFirmCr, 
 				  TmpCurrency, 
 				  Status As UEStatus,
@@ -2593,12 +2568,10 @@ GROUP BY PD.pricecode",
 									Name As ZName, 
 									FirmCr As ZFirmCr, 
 									Currency As ZCurrency, 
-									BaseCost As ZBaseCost, 
 									Unit As ZUnit, 
 									Volume AS ZVolume, 
 									Quantity As ZQuantity, 
-									Period As ZPeriod, 
-									Junk As ZJunk 
+									Period As ZPeriod
 								FROM Zero 
 								WHERE FirmCode= ?JPriceCode";
 
@@ -2755,7 +2728,7 @@ GROUP BY PD.pricecode",
 								if(MessageBox.Show(Mess, "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 								{
 									UnmarkUnrecExpAsNameForm(gvUnrecExp.FocusedRowHandle);
-									SetReserved(String.Empty, gvUnrecExp.FocusedRowHandle);
+									SetReserved(false, gvUnrecExp.FocusedRowHandle);
 									flag = true;
 								}
 							}
@@ -2808,10 +2781,10 @@ GROUP BY PD.pricecode",
 			}
 		}
 
-		private void SetReserved(string reserved, int FocusedRowHandle)
+		private void SetReserved(bool reserved, int FocusedRowHandle)
 		{
 			DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-			drUnrecExp["UEJunk"]=reserved;
+			drUnrecExp["UEJunk"]=Convert.ToByte(reserved);
 		}
 
 		private void UnmarkUnrecExpAsNameForm(int FocusedRowHandle)
@@ -2823,7 +2796,6 @@ GROUP BY PD.pricecode",
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
 					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) - FormMask.NameForm);
 					drUnrecExp["UETmpFullCode"]=0;
-					drUnrecExp["UETmpShortCode"]=0;
 				}
 			}
 			catch
@@ -2901,11 +2873,9 @@ GROUP BY PD.pricecode",
 			{
 				//TODO: Здесь потребуется завести дополнительный столбец в таблицу нераспознанных выражений
 				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) | FormMask.NameForm);
-				if (MarkAsJUNK)
-					drUnrecExp["UEJunk"] = JUNK;
+				drUnrecExp["UEJunk"] = Convert.ToByte(MarkAsJUNK);
 				GridView bv = (GridView)gvCatalog.GetDetailView(gvCatalog.FocusedRowHandle,0);
 				drUnrecExp["UETmpFullCode"] = bv.GetDataRow(bv.FocusedRowHandle)["FFullCode"];
-				drUnrecExp["UETmpShortCode"] = bv.GetDataRow(bv.FocusedRowHandle)["FShortCode"];
 			}
 		}
 
@@ -3543,7 +3513,6 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 							newDR["FirmCode"] = LockedSynonym;
 							newDR["Synonym"] = GetFullUnrecName(i);
 							newDR["FullCode"] = dr[UETmpFullCode];
-							newDR["ShortCode"] = dr[UETmpShortCode];
 							newDR["Junk"] = dr[UEJunk];
 							try
 							{
@@ -3844,7 +3813,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			{
 				//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
 				drUpdated["UETmpFullCode"] = 0;
-				drUpdated["UETmpShortCode"] = 0;
 				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) - FormMask.NameForm);
 				HideSynonymCount++;
 			}
@@ -3863,7 +3831,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 				{
 					drNew["Status"] = drUpdated["UEStatus"];
 					drNew["TmpFullCode"] = drUpdated["UETmpFullCode"];
-					drNew["TmpShortCode"] = drUpdated["UETmpShortCode"];
 					drNew["TmpCodeFirmCr"] = drUpdated["UETmpCodeFirmCr"];
 					drNew["TmpCurrency"] = drUpdated["UETmpCurrency"];
 					drNew["RowID"] = drUpdated["UERowID"];
@@ -4323,6 +4290,12 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 				if (k != null)
 					k.SetValue(lColor.Name, lColor.BackColor.ToArgb());
 			}
+		}
+
+		private void gvUnrecExp_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)
+		{
+			if (e.Column == colUEJunk)
+				e.DisplayText = ((byte)e.Value == 1) ? "Да" : "Нет";
 		}
 
 	}
