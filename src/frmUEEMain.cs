@@ -93,6 +93,7 @@ namespace UEEditor
 		public frmProgress f = null;
 		public int SynonymCount = 0;
 		public int HideSynonymCount = 0;
+		public int DuplicateSynonymCount = 0;
 		public int SynonymFirmCrCount = 0;
 		public int SynonymCurrencyCount = 0;
 		public int ForbiddenCount = 0;
@@ -3321,8 +3322,9 @@ GROUP BY PD.pricecode",
 	по производителю - {2}
 	по валюте - {3}
 ќтклонено скрытых синонимов: {4}
+ќтклонено дублирующихс€ синонимов: {5}
 
-ѕерепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, SynonymCurrencyCount, HideSynonymCount);
+ѕерепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, SynonymCurrencyCount, HideSynonymCount, DuplicateSynonymCount);
 			return (MessageBox.Show(str, "¬опрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
 		}
 
@@ -3400,6 +3402,7 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 			SynonymCurrencyCount = 0;
 			ForbiddenCount = 0;
 			HideSynonymCount = 0;
+			DuplicateSynonymCount = 0;
 
 			// ол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводитс€
 			int DelCount = 0;
@@ -3815,6 +3818,16 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 				drUpdated["UETmpFullCode"] = 0;
 				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) - FormMask.NameForm);
 				HideSynonymCount++;
+			}
+
+			//ѕроизводим проверку того, что синоним может быть уже вставлен в таблицу синонимов
+			object SynonymExists = MySqlHelper.ExecuteScalar(MyCn, "select FullCode from farm.synonym where synonym = '" + String.Format("{0} {1} {2}", drUpdated["UEName1"], drUpdated["UEName2"], drUpdated["UEName3"]) + "' and FirmCode=" + LockedSynonym.ToString());
+			if ((SynonymExists != null))
+			{
+				//≈сли в процессе распозновани€ синоним уже кто-то добавил, то сбрасываем распознавание
+				drUpdated["UETmpFullCode"] = 0;
+				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) - FormMask.NameForm);
+				DuplicateSynonymCount++;
 			}
 
 			DataRow drNew = dtUnrecExpUpdate.Rows.Find( Convert.ToUInt32( drUpdated["UERowID"] ) );
