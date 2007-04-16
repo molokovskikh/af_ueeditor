@@ -3821,7 +3821,9 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			}
 
 			//ѕроизводим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-			object SynonymExists = MySqlHelper.ExecuteScalar(MyCn, "select FullCode from farm.synonym where synonym = '" + String.Format("{0} {1} {2}", drUpdated["UEName1"], drUpdated["UEName2"], drUpdated["UEName3"]) + "' and FirmCode=" + LockedSynonym.ToString());
+			object SynonymExists = MySqlHelper.ExecuteScalar(MyCn, 
+				"select FullCode from farm.synonym where synonym = ?Synonym and FirmCode=" + LockedSynonym.ToString(), 
+				new MySqlParameter("?Synonym", String.Format("{0} {1} {2}", drUpdated["UEName1"], drUpdated["UEName2"], drUpdated["UEName3"])));
 			if ((SynonymExists != null))
 			{
 				//≈сли в процессе распозновани€ синоним уже кто-то добавил, то сбрасываем распознавание
