@@ -2795,7 +2795,7 @@ GROUP BY PD.pricecode",
 				if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.NameForm) == FormMask.NameForm)
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) - FormMask.NameForm);
+					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.NameForm));
 					drUnrecExp["UETmpFullCode"]=0;
 				}
 			}
@@ -2811,7 +2811,7 @@ GROUP BY PD.pricecode",
 				if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm)
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) - FormMask.FirmForm);
+					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.FirmForm));
 					drUnrecExp["UETmpCodeFirmCr"]=0;
 				}
 			}
@@ -2827,7 +2827,7 @@ GROUP BY PD.pricecode",
 				if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.CurrForm) == FormMask.CurrForm)
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) - FormMask.CurrForm);
+					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.CurrForm));
 					drUnrecExp["UETmpCurrency"]=0;
 				}
 			}
@@ -2841,7 +2841,7 @@ GROUP BY PD.pricecode",
 			if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb)
 			{
 				DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) - FormMask.MarkForb);
+				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.MarkForb));
 			}
 		}
 
@@ -3816,7 +3816,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			{
 				//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
 				drUpdated["UETmpFullCode"] = 0;
-				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) - FormMask.NameForm);
+				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
 				HideSynonymCount++;
 			}
 
@@ -3828,7 +3828,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			{
 				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
 				drUpdated["UETmpFullCode"] = 0;
-				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) - FormMask.NameForm);
+				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
 				DuplicateSynonymCount++;
 			}
 

@@ -47,7 +47,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>UEEditor</ProductName>
     <PublisherName>Inforoom</PublisherName>
-    <ApplicationVersion>1.0.70.88</ApplicationVersion>
+    <ApplicationVersion>1.0.72.90</ApplicationVersion>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
