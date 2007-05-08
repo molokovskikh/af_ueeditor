@@ -47,8 +47,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>UEEditor</ProductName>
     <PublisherName>Inforoom</PublisherName>
-    <MinimumRequiredVersion>1.0.72.90</MinimumRequiredVersion>
-    <ApplicationVersion>1.0.72.90</ApplicationVersion>
+    <MinimumRequiredVersion>1.0.73.91</MinimumRequiredVersion>
+    <ApplicationVersion>1.0.73.91</ApplicationVersion>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -178,20 +178,20 @@
   <ItemGroup>
     <PublishFile Include="App.ico">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="ICSharpCode.SharpZipLib">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
       <FileType>Assembly</FileType>
     </PublishFile>
   </ItemGroup>
