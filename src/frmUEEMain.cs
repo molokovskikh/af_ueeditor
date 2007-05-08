@@ -3343,18 +3343,22 @@ GROUP BY PD.pricecode",
 			//и добавляем родителя первым в списке
 			if (LockedSynonym != LockedPriceCode)
 			{
-				string ParentFileExt = MySqlHelper.ExecuteScalar(MyCn, @"
+				object ParentFileExt = MySqlHelper.ExecuteScalar(MyCn, @"
 select 
   pf.FileExtention 
 from 
   farm.formrules fr, 
-  farm.pricefmts pf 
+  farm.pricefmts pf,
+  usersettings.price_update_info pui 
 where 
     fr.FirmCode = ?LockedSynonym 
-and pf.Format = fr.PriceFmt", 
-							new MySqlParameter("LockedSynonym", LockedSynonym)).ToString();
+and pf.Format = fr.PriceFmt
+and pui.PriceCode = fr.FirmCode
+and (pui.UnformCount > 0)", 
+							new MySqlParameter("LockedSynonym", LockedSynonym));
 				//Первым в списке добавляем прайс-лист c родительскими синонимами
-				RetransedPriceList.Add(new RetransedPrice(LockedSynonym, ParentFileExt));
+				if ((ParentFileExt != null) && !(ParentFileExt is DBNull) && (ParentFileExt is String))
+					RetransedPriceList.Add(new RetransedPrice(LockedSynonym, (string)ParentFileExt));
 			}
 			else
 				//Первым в списке добавляем сам прайс-лист
@@ -3371,7 +3375,8 @@ from
   usersettings.clientsdata cd,
   usersettings.pricescosts pc,
   usersettings.pricesdata parentpd,
-  farm.pricefmts pf
+  farm.pricefmts pf,
+  usersettings.price_update_info pui
 where
     fr.ParentSynonym = ?LockedSynonym
 and pd.PriceCode = fr.FirmCode
@@ -3383,6 +3388,8 @@ and cd.BillingStatus = 1
 and pc.PriceCode = pd.PriceCode
 and parentpd.PriceCode = pc.ShowPriceCode
 and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
+and pui.PriceCode = pd.PriceCode
+and (pui.UnformCount > 0)
 ",
 				new MySqlParameter("LockedSynonym", LockedSynonym));
 
@@ -3396,6 +3403,10 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 							Convert.ToInt64(drInerPrice["PriceCode"]), 
 							drInerPrice["FileExtention"].ToString()));
 			}
+
+			//Если в списке нет прайс-листа, с которым происходит работа, то мы его добавляем в список
+			if (!RetransedPriceList.Exists(delegate(RetransedPrice value) { return (value.PriceCode == LockedPriceCode);}) )
+				RetransedPriceList.Add(new RetransedPrice(LockedPriceCode, FileExt));
 
 			SynonymCount = 0; 
 			SynonymFirmCrCount = 0;
