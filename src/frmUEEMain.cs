@@ -208,7 +208,6 @@ namespace UEEditor
 		private System.Windows.Forms.ContextMenu cmUnrecExp;
 		private System.Windows.Forms.MenuItem miSendAboutNames;
 		private System.Windows.Forms.MenuItem miSendAboutFirmCr;
-		private System.Data.DataColumn JOrderManagerMail;
 		private System.Windows.Forms.ImageList imageList2;
 		private System.Windows.Forms.ColorDialog cdLegend;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -237,6 +236,7 @@ namespace UEEditor
         private DataColumn JParentName;
         private GridColumn colJParentName;
         private DataColumn JExt;
+		private DataColumn JFirmCode;
 		private MySqlDataAdapter daJobs;
 
 		public frmUEEMain()
@@ -323,7 +323,7 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -342,11 +342,11 @@ namespace UEEditor
 			this.JWholeSale = new System.Data.DataColumn();
 			this.JParentSynonym = new System.Data.DataColumn();
 			this.JPriceFMT = new System.Data.DataColumn();
-			this.JOrderManagerMail = new System.Data.DataColumn();
 			this.JNeedRetrans = new System.Data.DataColumn();
 			this.JRetranced = new System.Data.DataColumn();
 			this.JParentName = new System.Data.DataColumn();
 			this.JExt = new System.Data.DataColumn();
+			this.JFirmCode = new System.Data.DataColumn();
 			this.dtUnrecExp = new System.Data.DataTable();
 			this.EUColumn1 = new System.Data.DataColumn();
 			this.UEColumn2 = new System.Data.DataColumn();
@@ -586,10 +586,10 @@ namespace UEEditor
 			// 
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode2.LevelTemplate = this.gvCatForm;
-			gridLevelNode2.RelationName = "Relation1";
+			gridLevelNode1.LevelTemplate = this.gvCatForm;
+			gridLevelNode1.RelationName = "Relation1";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode2});
+            gridLevelNode1});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.MainView = this.gvCatalog;
 			this.CatalogGridControl.Name = "CatalogGridControl";
@@ -635,11 +635,11 @@ namespace UEEditor
             this.JWholeSale,
             this.JParentSynonym,
             this.JPriceFMT,
-            this.JOrderManagerMail,
             this.JNeedRetrans,
             this.JRetranced,
             this.JParentName,
-            this.JExt});
+            this.JExt,
+            this.JFirmCode});
 			this.dtJobs.TableName = "JobsGrid";
 			// 
 			// JPriceCode
@@ -704,10 +704,6 @@ namespace UEEditor
 			// 
 			this.JPriceFMT.ColumnName = "JPriceFMT";
 			// 
-			// JOrderManagerMail
-			// 
-			this.JOrderManagerMail.ColumnName = "JOrderManagerMail";
-			// 
 			// JNeedRetrans
 			// 
 			this.JNeedRetrans.ColumnName = "JNeedRetrans";
@@ -725,6 +721,11 @@ namespace UEEditor
 			// JExt
 			// 
 			this.JExt.ColumnName = "JExt";
+			// 
+			// JFirmCode
+			// 
+			this.JFirmCode.ColumnName = "JFirmCode";
+			this.JFirmCode.DataType = typeof(long);
 			// 
 			// dtUnrecExp
 			// 
@@ -2190,13 +2191,12 @@ namespace UEEditor
 		{
 			daJobs = new MySqlDataAdapter(
 				@"
-SELECT  PD.FirmCode, 
+SELECT  PD.FirmCode as JFirmCode, 
         PD.PriceCode                                                                                                         As JPriceCode, 
         concat(CD.ShortName, '(', if(pc.PriceCode = pc.ShowPriceCode, pd.PriceName, concat('[Колонка] ', pc.CostName)), ')') as JName, 
         regions.region                                                                                                       As JRegion, 
         FormRules.DateCurPrice                                                                                               AS JPriceDate, 
         FormRules.MaxOld, 
-        cd.OrderManagerMail                                                                     AS JOrderManagerMail, 
         0                                                                                       AS JPos, 
         0                                                                                       AS JNamePos, 
         ''                                                                                      AS JJobDate, 
@@ -4154,7 +4154,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 
 				body = String.Format(body, dr["JName"], "");
 
-                System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", dr["JOrderManagerMail"], GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["JName"]), body));
+				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["JName"]), body));
 			}
 		}
 
@@ -4189,8 +4189,51 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			
 				body = String.Format(body, dr["JName"], "");
 
-				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", dr["JOrderManagerMail"], GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["JName"]), body));
+				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["JName"]), body));
 			}
+		}
+
+		/// <summary>
+		/// Получить текст контактов из базы
+		/// </summary>
+		/// <param name="FirmCode">Код поставщика</param>
+		/// <param name="ContactGroupType">Тип контактной группы: 0 - General, 1 - ClientManager, 2 - OrderManager, 3 - Accountant</param>
+		/// <param name="ContactType">Тип контакта: 0 - Email, 1 - Phone</param>
+		/// <returns>Текст контактов, разделенный ";"</returns>
+		private string GetContactText(long FirmCode, byte ContactGroupType, byte ContactType)
+		{
+			DataSet dsContacts = MySqlHelper.ExecuteDataset(MyCn, @"
+select distinct c.contactText
+from usersettings.clientsdata cd
+  join contacts.contact_groups cg on cd.ContactGroupOwnerId = cg.ContactGroupOwnerId
+    join contacts.contacts c on cg.Id = c.ContactOwnerId
+where
+    firmcode = ?FirmCode
+and cg.Type = ?ContactGroupType
+and c.Type = ?ContactType
+
+union
+
+select distinct c.contactText
+from usersettings.clientsdata cd
+  join contacts.contact_groups cg on cd.ContactGroupOwnerId = cg.ContactGroupOwnerId
+    join contacts.persons p on cg.id = p.ContactGroupId
+      join contacts.contacts c on p.Id = c.ContactOwnerId
+where
+    firmcode = ?FirmCode
+and cg.Type = ?ContactGroupType
+and c.Type = ?ContactType;",
+				new MySqlParameter("?FirmCode", FirmCode),
+				new MySqlParameter("?ContactGroupType", ContactGroupType),
+				new MySqlParameter("?ContactType", ContactType));
+			List<string> contacts = new List<string>();
+			foreach (DataRow drContact in dsContacts.Tables[0].Rows)
+			{
+				if (!contacts.Contains(drContact["contactText"].ToString()))
+					contacts.Add(drContact["contactText"].ToString());
+			}
+
+			return String.Join(";", contacts.ToArray());
 		}
 
 		private void gvUnrecExp_CustomDrawCell(object sender, DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventArgs e)
