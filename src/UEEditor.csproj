@@ -29,13 +29,13 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <ManifestCertificateThumbprint>A2B5647673C2E0B69E3CFFB6E38313D3B3D8579A</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>B9E15F664C1FAAEA55EFC57672E6FB43F5836618</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <PublishUrl>http://localhost/UEEditor/</PublishUrl>
+    <PublishUrl>http://publish.analit.net/UEEditor/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -45,7 +45,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ProductName>UEEditor</ProductName>
+    <ProductName>Редактор нераспознанных выражений</ProductName>
     <PublisherName>Inforoom</PublisherName>
     <MinimumRequiredVersion>1.0.74.92</MinimumRequiredVersion>
     <ApplicationVersion>1.0.74.92</ApplicationVersion>
@@ -100,22 +100,22 @@
   <ItemGroup>
     <Reference Include="DevExpress.Data3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\DevExpress.Data3.dll</HintPath>
+      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.Data3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Utils3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\DevExpress.Utils3.dll</HintPath>
+      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.Utils3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.XtraEditors3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\DevExpress.XtraEditors3.dll</HintPath>
+      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.XtraEditors3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.XtraGrid3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\DevExpress.XtraGrid3.dll</HintPath>
+      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.XtraGrid3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data">
@@ -148,7 +148,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="UEEditor_TemporaryKey.pfx" />
     <Content Include="App.ico" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
