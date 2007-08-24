@@ -4057,51 +4057,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			}		
 		}
 
-		private string GetEmails(string PriceCode)
-		{
-			MySqlCommand EMailCMD = new MySqlCommand();
-			EMailCMD.Connection = MyCn;
-			EMailCMD.CommandText = 
-				@"SELECT DISTINCT 
-						Email 
-					FROM UserSettings.pricesdata, 
-						UserSettings.pricesregionaldata, 
-						accessright.regionaladmins, 
-						UserSettings.clientsdata 
-					WHERE pricesdata.pricecode=pricesregionaldata.pricecode 
-					AND AgencyEnabled=1 
-					AND pricesregionaldata.enabled=1 
-					AND clientsdata.firmcode=pricesdata.firmcode
-					AND (pricesregionaldata.regioncode & regionaladmins.RegionMask)>0
-					AND (pricesregionaldata.regioncode & clientsdata.MaskRegion)>0
-					AND sendalert=1
-					AND pricesdata.pricecode = ?JPriceCode";
-			EMailCMD.Parameters.Clear();
-			EMailCMD.Parameters.AddWithValue("?JPriceCode", PriceCode);
-
-			DataTable dtEmail = new DataTable();
-
-			MySqlDataAdapter daEmail = new MySqlDataAdapter(EMailCMD);
-
-			daEmail.Fill(dtEmail);
-
-			ArrayList EmailArray = new ArrayList();
-			foreach(DataRow Edr in dtEmail.Rows)
-			{
-				string tmp = Edr["Email"].ToString().Trim();
-				if (!EmailArray.Contains(tmp))
-				{
-					EmailArray.Add(tmp);
-				}
-			}
-
-			if (EmailArray.Count == 0)
-				EmailArray.Add("tech@analit.net");
-
-			string EmStr = String.Join(";", (string[])EmailArray.ToArray(typeof(string)));
-			return EmStr;
-		}
-
 		private string ConvertName(string tmp)
 		{
 			string res = String.Empty;
@@ -4154,7 +4109,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 
 				body = String.Format(body, dr["JName"], "");
 
-				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["JName"]), body));
+				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "farm@analit.net", String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["JName"]), body));
 			}
 		}
 
@@ -4189,7 +4144,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			
 				body = String.Format(body, dr["JName"], "");
 
-				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), GetEmails(LockedPriceCode.ToString()), String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["JName"]), body));
+				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "farm@analit.net", String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["JName"]), body));
 			}
 		}
 
