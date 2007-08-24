@@ -14,8 +14,7 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>UEEditor</AssemblyName>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>lib\InforoomCodeSign.pfx</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -35,6 +34,7 @@
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
     <IsWebBootstrapper>true</IsWebBootstrapper>
+    <SignAssembly>true</SignAssembly>
     <PublishUrl>http://publish.analit.net/UEEditor/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -100,28 +100,23 @@
   <ItemGroup>
     <Reference Include="DevExpress.Data3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.Data3.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>lib\DevExpress3\DevExpress.Data3.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Utils3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.Utils3.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>lib\DevExpress3\DevExpress.Utils3.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraEditors3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.XtraEditors3.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>lib\DevExpress3\DevExpress.XtraEditors3.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraGrid3, Version=3.0.1.0, Culture=neutral, PublicKeyToken=79868b8147b5eae4">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\StatViewer\src\StatViewer\lib\DevExpress.XtraGrid3.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>lib\DevExpress3\DevExpress.XtraGrid3.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
-      <Name>MySql.Data</Name>
-      <HintPath>lib\MySql.Data.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MySql.Data, Version=5.1.3.2, Culture=neutral, PublicKeyToken=56e353737e921561, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\MySqlData5\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -144,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="lib\InforoomCodeSign.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -172,7 +168,6 @@
       <DependentUpon>frmUEEMain.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="licenses.licx" />
   </ItemGroup>
   <ItemGroup>
     <PublishFile Include="App.ico">
@@ -183,15 +178,6 @@
       </TargetPath>
       <PublishState>Exclude</PublishState>
       <FileType>File</FileType>
-    </PublishFile>
-    <PublishFile Include="ICSharpCode.SharpZipLib">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <FileType>Assembly</FileType>
     </PublishFile>
   </ItemGroup>
   <ItemGroup>

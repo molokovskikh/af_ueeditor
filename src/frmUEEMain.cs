@@ -2252,7 +2252,7 @@ GROUP BY PD.pricecode",
 				{
 					dt.Clear();
                     MyCmd.Parameters.Clear();
-                    MyCmd.Parameters.Add("?JPriceCode", dr["JPriceCode"]);
+                    MyCmd.Parameters.AddWithValue("?JPriceCode", dr["JPriceCode"]);
 			
 					MyCmd.CommandText = 
 						@"SELECT 
@@ -2386,7 +2386,7 @@ GROUP BY PD.pricecode",
 				  WHERE FirmCode= ?LockedPriceCode ORDER BY Name1";
 
 			MyCmd.Parameters.Clear();
-			MyCmd.Parameters.Add("?LockedPriceCode", LockedPriceCode);
+			MyCmd.Parameters.AddWithValue("?LockedPriceCode", LockedPriceCode);
 			
 			UnrecExpGridControl.BeginUpdate();
 			try
@@ -2463,7 +2463,7 @@ GROUP BY PD.pricecode",
                 order by shortcode, fullcode, form";
 			//WHERE FullCode = ?TmpFullCOde";
 			//MyCmd.Parameters.Clear();
-			//MyCmd.Parameters.Add("?TmpFullCode", dr[UETmpFullCode]);
+			//MyCmd.Parameters.AddWithValue("?TmpFullCode", dr[UETmpFullCode]);
 
 			MyDA.Fill(dtForm);
 		}
@@ -2503,7 +2503,7 @@ GROUP BY PD.pricecode",
 							WHERE FirmCode = ?PriceCode
 							AND not exists(select * from blockedprice bp where bp.PriceCode = FirmCode)", 
 								MyCn, tran);
-							cmdDeleteJob.Parameters.Add("?PriceCode", JobsDR["JPriceCode"]);
+							cmdDeleteJob.Parameters.AddWithValue("?PriceCode", JobsDR["JPriceCode"]);
 							cmdDeleteJob.ExecuteNonQuery();
 							tran.Commit();
 							res = true;
@@ -2550,7 +2550,7 @@ GROUP BY PD.pricecode",
 					            FROM Forb 
 					            WHERE FirmCode= ?JPriceCode";
 				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.Add("?JPriceCode", LockedPriceCode);
+				MyCmd.Parameters.AddWithValue("?JPriceCode", LockedPriceCode);
 
 				MyDA.Fill(dtForb);
 
@@ -2577,7 +2577,7 @@ GROUP BY PD.pricecode",
 								WHERE FirmCode= ?JPriceCode";
 
 				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.Add("?JPriceCode", LockedPriceCode);
+				MyCmd.Parameters.AddWithValue("?JPriceCode", LockedPriceCode);
 				MyDA.Fill(dtZero);
 			}
 
@@ -3424,7 +3424,7 @@ and (pui.UnformCount > 0)
 			//«аполнили таблицу нераспознанных наименований дл€ обновлени€
 			MySqlDataAdapter daUnrecUpdate = new MySqlDataAdapter("select * from UnrecExp where FirmCode = ?FirmCode", MyCn);
 			MySqlCommandBuilder cbUnrecUpdate = new MySqlCommandBuilder(daUnrecUpdate);
-			daUnrecUpdate.SelectCommand.Parameters.Add("?FirmCode", LockedPriceCode);
+			daUnrecUpdate.SelectCommand.Parameters.AddWithValue("?FirmCode", LockedPriceCode);
 			DataTable dtUnrecUpdate = new DataTable();
 			daUnrecUpdate.Fill(dtUnrecUpdate);
 			dtUnrecUpdate.Constraints.Add("UnicNameCode", dtUnrecUpdate.Columns["RowID"], true);
@@ -3432,7 +3432,7 @@ and (pui.UnformCount > 0)
 			//«аполнили таблицу синонимов наименований
 			MySqlDataAdapter daSynonym = new MySqlDataAdapter("select * from Synonym where FirmCode = ?FirmCode limit 0", MyCn);
 			MySqlCommandBuilder cbSynonym = new MySqlCommandBuilder(daSynonym);
-			daSynonym.SelectCommand.Parameters.Add("?FirmCode", LockedSynonym);
+			daSynonym.SelectCommand.Parameters.AddWithValue("?FirmCode", LockedSynonym);
 			DataTable dtSynonym = new DataTable();
 			daSynonym.Fill(dtSynonym);
 			dtSynonym.Constraints.Add("UnicNameCode", dtSynonym.Columns["Synonym"], false);
@@ -3441,7 +3441,7 @@ and (pui.UnformCount > 0)
 			//«аполнили таблицу синонимов производителей
 			MySqlDataAdapter daSynonymFirmCr = new MySqlDataAdapter("select * from SynonymFirmCr where FirmCode = ?FirmCode limit 0", MyCn);
 			MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
-			daSynonymFirmCr.SelectCommand.Parameters.Add("?FirmCode", LockedSynonym);
+			daSynonymFirmCr.SelectCommand.Parameters.AddWithValue("?FirmCode", LockedSynonym);
 			DataTable dtSynonymFirmCr = new DataTable();
 			daSynonymFirmCr.Fill(dtSynonymFirmCr);
 			dtSynonymFirmCr.Constraints.Add("UnicNameCode", new DataColumn[] {dtSynonymFirmCr.Columns["Synonym"]}, false);
@@ -3450,7 +3450,7 @@ and (pui.UnformCount > 0)
 			//«аполнили таблицу синонимов валют
 			MySqlDataAdapter daSynonymCurrency = new MySqlDataAdapter("select * from SynonymCurrency where FirmCode = ?FirmCode limit 0", MyCn);
 			MySqlCommandBuilder cbSynonymCurrency = new MySqlCommandBuilder(daSynonymCurrency);
-			daSynonymCurrency.SelectCommand.Parameters.Add("?FirmCode", LockedSynonym);
+			daSynonymCurrency.SelectCommand.Parameters.AddWithValue("?FirmCode", LockedSynonym);
 			DataTable dtSynonymCurrency = new DataTable();
 			daSynonymCurrency.Fill(dtSynonymCurrency);
 			dtSynonymCurrency.Constraints.Add("UnicNameCode", new DataColumn[] {dtSynonymCurrency.Columns["Synonym"]}, false);
@@ -3795,10 +3795,10 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			MySqlCommand mcInsert = new MySqlCommand();
 			mcInsert.Connection = MyCn;
 			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.Add("?RetransPriceCode", RetransPriceCode);
-			mcInsert.Parameters.Add("?UserName", Environment.UserName);
-			mcInsert.Parameters.Add("?UserHost", Environment.MachineName);
-			mcInsert.Parameters.Add("?Now", now);
+			mcInsert.Parameters.AddWithValue("?RetransPriceCode", RetransPriceCode);
+			mcInsert.Parameters.AddWithValue("?UserName", Environment.UserName);
+			mcInsert.Parameters.AddWithValue("?UserHost", Environment.MachineName);
+			mcInsert.Parameters.AddWithValue("?Now", now);
 
 			mcInsert.CommandText = 
 					@"insert into logs.pricesretrans 
@@ -3921,7 +3921,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 		{
 			MySqlCommand mcInsert = new MySqlCommand("select * from blockedprice where PriceCode = ?LockPriceCode", MyCn);
 			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.Add("?LockPriceCode", LockedPriceCode);
+			mcInsert.Parameters.AddWithValue("?LockPriceCode", LockedPriceCode);
 			MySqlDataReader drInsert = mcInsert.ExecuteReader();
 			bool NotExist = !drInsert.Read();
 			drInsert.Close();
@@ -3929,7 +3929,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			if (NotExist)
 			{
 				mcInsert.CommandText = @"insert into blockedprice (PriceCode, BlockBy) values (?LockPriceCode, ?BlockBy)";
-				mcInsert.Parameters.Add("?BlockBy", BlockBy);
+				mcInsert.Parameters.AddWithValue("?BlockBy", BlockBy);
 				mcInsert.ExecuteNonQuery();
 			}
 		}
@@ -3938,7 +3938,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 		{
 			MySqlCommand mcInsert = new MySqlCommand("delete from blockedprice where PriceCode = ?LockPriceCode", MyCn);
 			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.Add("?LockPriceCode", LockedPriceCode);
+			mcInsert.Parameters.AddWithValue("?LockPriceCode", LockedPriceCode);
 			mcInsert.ExecuteNonQuery();
 		}
 
@@ -4077,7 +4077,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 					AND sendalert=1
 					AND pricesdata.pricecode = ?JPriceCode";
 			EMailCMD.Parameters.Clear();
-			EMailCMD.Parameters.Add("?JPriceCode", PriceCode);
+			EMailCMD.Parameters.AddWithValue("?JPriceCode", PriceCode);
 
 			DataTable dtEmail = new DataTable();
 
