@@ -2191,11 +2191,12 @@ namespace UEEditor
 		{
 			daJobs = new MySqlDataAdapter(
 				@"
-SELECT  PD.FirmCode as JFirmCode, 
+SELECT  PD.FirmCode as JFirmCode,
+        cd.ShortName as FirmShortName, 
         PD.PriceCode                                                                                                         As JPriceCode, 
         concat(CD.ShortName, '(', if(pc.PriceCode = pc.ShowPriceCode, pd.PriceName, concat('[Колонка] ', pc.CostName)), ')') as JName, 
         regions.region                                                                                                       As JRegion, 
-        FormRules.DateCurPrice                                                                                               AS JPriceDate, 
+        pui.DateCurPrice                                                                                               AS JPriceDate, 
         FormRules.MaxOld, 
         0                                                                                       AS JPos, 
         0                                                                                       AS JNamePos, 
@@ -2209,9 +2210,9 @@ SELECT  PD.FirmCode as JFirmCode,
         PD.MinReq                                                                               As JMinReq, 
         0                                                                                       AS JNeedRetrans, 
         0                                                                                       AS JRetranced, 
-        FormRules.DateLastForm                                                                  AS JDateLastForm, 
+        pui.DateLastForm                                                                  AS JDateLastForm, 
         if(FormRules.ParentSynonym is null, '', concat(pcd.ShortName, '(', ppd.PriceName, ')')) as JParentName 
-FROM ( usersettings.ClientsData AS CD, FormRules, PriceFMTs as pfmt, usersettings.pricesdata AS PD, regions, usersettings.pricescosts pc ) 
+FROM ( usersettings.ClientsData AS CD, FormRules, PriceFMTs as pfmt, usersettings.pricesdata AS PD, regions, usersettings.pricescosts pc, usersettings.price_update_info pui ) 
 LEFT JOIN blockedprice bp 
 ON      bp.PriceCode = PD.PriceCode 
 LEFT JOIN usersettings.pricesdata ppd 
@@ -2219,7 +2220,8 @@ ON      ppd.pricecode = FormRules.ParentSynonym
 LEFT JOIN usersettings.clientsdata pcd 
 ON      pcd.FirmCode       = ppd.firmcode 
 WHERE   FormRules.firmcode =PD.pricecode 
-    AND FormRules.PriceFmt = pfmt.Format 
+    AND FormRules.PriceFmt = pfmt.Format
+    and pui.PriceCode = PD.pricecode
     AND CD.firmcode        =PD.firmcode 
     AND regions.regioncode =CD.regioncode 
     AND pd.agencyenabled   =1 
@@ -4104,12 +4106,14 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 
 				Clipboard.SetDataObject(UnrecName);
 
+				string subject = String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["FirmShortName"]);
+
 				string body = "";
                 body = UEEditor.Properties.Settings.Default.AboutNamesBody;
 
-				body = String.Format(body, dr["JName"], "");
+				body = String.Format(body, dr["FirmShortName"]);
 
-				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "farm@analit.net", String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["JName"]), body));
+				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "pharm@analit.net", subject, body));
 			}
 		}
 
@@ -4139,12 +4143,14 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 
 				Clipboard.SetDataObject(UnrecFirmCr);
 
+				string subject = String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["FirmShortName"]);
+
 				string body = "";
                 body = UEEditor.Properties.Settings.Default.AboutFirmBody;
-			
-				body = String.Format(body, dr["JName"], "");
 
-				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "farm@analit.net", String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["JName"]), body));
+				body = String.Format(body, dr["FirmShortName"]);
+
+				System.Diagnostics.Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "pharm@analit.net", subject, body));
 			}
 		}
 

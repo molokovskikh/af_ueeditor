@@ -25,7 +25,7 @@ namespace UEEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Уведомление%20для%20{0}%20о%20нераспознанных%20наименованиях")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Уведомление%20о%20нераспознанных%20наименованиях%20для%20{0}")]
         public string AboutNamesSubject {
             get {
                 return ((string)(this["AboutNamesSubject"]));
@@ -34,7 +34,7 @@ namespace UEEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Уведомление%20для%20{0}%20о%20нераспознанных%20изготовителях")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Уведомление%20о%20нераспознанных%20изготовителях%20для%20{0}")]
         public string AboutFirmSubject {
             get {
                 return ((string)(this["AboutFirmSubject"]));
@@ -43,17 +43,19 @@ namespace UEEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"Здравствуйте. %0D%0A%0D%0A
-При обработке прайс-листа {0}
- не удалось соотнести наименования некоторых изготовителей с нашим каталогом по причинам описанным ниже: %0D%0A%0D%0A
-{1}%0D%0A%0D%0A%0D%0A
-Просьба внести изменения в написание указанных изготовителей в Вашем прайс-листе.%0D%0A%0D%0A
-До внесения изменений или получения нами информации по этому вопросу 
-перечисленные изготовители не будут указываться в Вашем прайс-листе.%0D%0A%0D%0A
-Вы можете контролировать процесс обработки Вашего прайс-листа, используя интерфейс управления(раздел %22Прайс-листы%22 - ссылка %22Информация о формализации%22).%0D%0A%0D%0A
-С уважением,%0D%0AАналитическая Компания %22Инфорум%22 г.Воронеж%0D%0A
+        [global::System.Configuration.DefaultSettingValueAttribute(@"Здравствуйте,%0D%0A%0D%0A
+%20%20%20%20%20При обработке Вашего {0} прайс-листа не удалось сопоставить наименования некоторых изготовителей с нашим каталогом по причинам, описанным ниже:%0D%0A%0D%0A%0D%0A%0D%0A
+%20%20%20%20%20Просьба внести изменения в написание указанных изготовителей в Вашем прайс-листе.%0D%0A
+Уведомляем вас, что до внесения изменений или получения нами от Вас информации по этому вопросу, перечисленные изготовители не будут указываться в Вашем прайс-листе.%0D%0A%0D%0A
+%20%20%20%20%20Вы можете контролировать процесс обработки Вашего прайс-листа, используя интерфейс управления:%0D%0A
+%20%20%20%20%20- раздел ""Прайс-листы"" - ссылка ""Информация о формализации"";%0D%0A
+%20%20%20%20%20- раздел ""Управление сопоставлением"".%0D%0A%0D%0A
+С уважением,%0D%0A
+Аналитическая компания ""Инфорум"" г.Воронеж%0D%0A
 Тел.: +7 4732 206000%0D%0A
-%0D%0AEmail: pharm@analit.net%0D%0Ahttp://www.analit.net")]
+         +7 495 2305302%0D%0A
+E-mail: pharm@analit.net%0D%0A
+http://www.analit.net")]
         public string AboutFirmBody {
             get {
                 return ((string)(this["AboutFirmBody"]));
@@ -62,17 +64,19 @@ namespace UEEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"Здравствуйте. %0D%0A%0D%0A
-При обработке прайс-листа {0} не опубликован ряд 
-позиций, которые не удалось соотнести с торговыми наименованиями нашего каталога по причинам описанным ниже: %0D%0A%0D%0A
-{1}%0D%0A%0D%0A%0D%0A
-Просьба внести изменения в написание указанных позиций Вашего прайс-листа.%0D%0A%0D%0A
-Уведомляем Вас, что до внесения изменений или получения нами информации по этому вопросу 
-перечисленные позиции будут блокированы.%0D%0A%0D%0A
-Вы можете контролировать процесс обработки Вашего прайс-листа, используя интерфейс управления(раздел %22Прайс-листы%22 - ссылка %22Информация о формализации%22).%0D%0A%0D%0A
-С уважением,%0D%0AАналитическая Компания %22Инфорум%22 г.Воронеж %0D%0A
+        [global::System.Configuration.DefaultSettingValueAttribute(@"Здравствуйте,%0D%0A%0D%0A
+%20%20%20%20%20При обработке Вашего {0} прайс-листа не опубликован (не доступен Вашим клиентам) ряд позиций, которые не удалось сопоставить с торговыми наименованиями нашего каталога по причинам, описанным ниже: %0D%0A%0D%0A%0D%0A%0D%0A
+%20%20%20%20%20Просьба внести изменения в написание указанных позиций Вашего прайс-листа.%0D%0A
+Уведомляем вас, что до внесения изменений или получения нами от Вас информации по этому вопросу, перечисленные позиции будут блокированы.%0D%0A%0D%0A
+%20%20%20%20%20Вы можете контролировать процесс обработки Вашего прайс-листа, используя интерфейс управления:%0D%0A
+%20%20%20%20%20- раздел ""Прайс-листы"" - ссылка ""Информация о формализации"";%0D%0A
+%20%20%20%20%20- раздел ""Управление сопоставлением"".%0D%0A%0D%0A
+С уважением,%0D%0A
+Аналитическая компания ""Инфорум"" г.Воронеж%0D%0A
 Тел.: +7 4732 206000%0D%0A
-%0D%0AEmail: pharm@analit.net%0D%0Ahttp://www.analit.net")]
+         +7 495 2305302%0D%0A
+E-mail: pharm@analit.net%0D%0A
+http://www.analit.net")]
         public string AboutNamesBody {
             get {
                 return ((string)(this["AboutNamesBody"]));
