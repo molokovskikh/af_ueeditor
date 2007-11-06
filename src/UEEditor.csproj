@@ -47,8 +47,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Редактор нераспознанных выражений</ProductName>
     <PublisherName>Inforoom</PublisherName>
-    <MinimumRequiredVersion>1.0.78.101</MinimumRequiredVersion>
-    <ApplicationVersion>1.0.78.101</ApplicationVersion>
+    <MinimumRequiredVersion>1.1.0.105</MinimumRequiredVersion>
+    <ApplicationVersion>1.1.0.105</ApplicationVersion>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -170,6 +170,42 @@
       </TargetPath>
       <PublishState>Exclude</PublishState>
       <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="DevExpress.Data.v6.1">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <FileType>Assembly</FileType>
+    </PublishFile>
+    <PublishFile Include="DevExpress.Utils.v6.1">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <FileType>Assembly</FileType>
+    </PublishFile>
+    <PublishFile Include="DevExpress.XtraEditors.v6.1">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <FileType>Assembly</FileType>
+    </PublishFile>
+    <PublishFile Include="DevExpress.XtraGrid.v6.1">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <FileType>Assembly</FileType>
     </PublishFile>
   </ItemGroup>
   <ItemGroup>

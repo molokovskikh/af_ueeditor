@@ -4,7 +4,6 @@ namespace UEEditor
 	{
 		private System.Data.DataSet dsMain;
 		private System.Data.DataTable dtJobs;
-		private System.Data.DataTable dtForm;
 		private System.Data.DataTable dtZero;
 		private System.Data.DataTable dtForb;
 		private System.Windows.Forms.StatusBarPanel statusBarPanel1;
@@ -110,8 +109,7 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colUEPeriod;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEJunk;
 		private System.Data.DataColumn UEStatus;
-		private System.Data.DataColumn UETmpFullCode;
-		private System.Data.DataTable CatalogNameGrid;
+		private System.Data.DataColumn UETmpProductId;
 		private System.Data.DataTable dtCatalogFirmCr;
 		private System.Windows.Forms.Timer MainTimer;
 
@@ -120,19 +118,13 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Views.Grid.GridView gvForb;
 		private DevExpress.XtraGrid.Views.Grid.GridView gvZero;
 		private System.Data.DataColumn CCodeFirmCr;
-		private System.Data.DataColumn CShortCode;
-		private System.Data.DataColumn FShortCode;
-		private System.Data.DataColumn CName;
 		private System.Data.DataColumn CFirmCr;
-		private System.Data.DataColumn FFullCode;
-		private System.Data.DataColumn FForm;
 		private DevExpress.XtraGrid.Views.Grid.GridView gvCatForm;
 		private DevExpress.XtraGrid.Columns.GridColumn colCName;
 		private DevExpress.XtraGrid.Columns.GridColumn colFForm;
 		private System.Data.DataColumn UEName2;
 		private System.Data.DataColumn UEName3;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEStatus;
-		private System.Data.DataColumn UETmpShortCode;
 		private System.Data.DataColumn UETmpCodeFirmCr;
 		private System.Data.DataColumn UEAlready;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEAlready;
@@ -140,9 +132,6 @@ namespace UEEditor
 		private System.Data.DataColumn JPriceFMT;
 		private System.Data.DataColumn JPhone;
 		private System.Data.DataColumn UETmpCurrency;
-		private System.Data.DataTable dtCurrency;
-		private System.Data.DataColumn CCurrency;
-		private System.Data.DataColumn CExchange;
 		private System.Windows.Forms.Panel pnlCenter1;
 		private System.Windows.Forms.Panel pnlWithButton1;
 		private System.Windows.Forms.Panel pnlTop1;
@@ -189,7 +178,7 @@ namespace UEEditor
 		private System.Data.DataColumn colCatalogID;
 		private System.Data.DataColumn colCatalog_NameID;
 		private System.Data.DataColumn colCatalog_FormId;
-		private System.Data.DataColumn dtCatalogForm;
+		private System.Data.DataColumn colCatalogForm;
 		private System.Data.DataTable dtProducts;
 		private System.Data.DataColumn colProductId;
 		private System.Data.DataColumn colProductCatalogId;
@@ -225,6 +214,7 @@ namespace UEEditor
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
+			this.colFProductsCount = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.CatalogGridControl = new DevExpress.XtraGrid.GridControl();
 			this.dsMain = new System.Data.DataSet();
 			this.dtJobs = new System.Data.DataTable();
@@ -261,22 +251,14 @@ namespace UEEditor
 			this.UEPeriod = new System.Data.DataColumn();
 			this.UEJunk = new System.Data.DataColumn();
 			this.UEStatus = new System.Data.DataColumn();
-			this.UETmpFullCode = new System.Data.DataColumn();
+			this.UETmpProductId = new System.Data.DataColumn();
 			this.UEName2 = new System.Data.DataColumn();
 			this.UEName3 = new System.Data.DataColumn();
-			this.UETmpShortCode = new System.Data.DataColumn();
 			this.UETmpCodeFirmCr = new System.Data.DataColumn();
 			this.UEAlready = new System.Data.DataColumn();
 			this.UETmpCurrency = new System.Data.DataColumn();
 			this.UERowID = new System.Data.DataColumn();
 			this.UEHandMade = new System.Data.DataColumn();
-			this.CatalogNameGrid = new System.Data.DataTable();
-			this.CShortCode = new System.Data.DataColumn();
-			this.CName = new System.Data.DataColumn();
-			this.dtForm = new System.Data.DataTable();
-			this.FShortCode = new System.Data.DataColumn();
-			this.FFullCode = new System.Data.DataColumn();
-			this.FForm = new System.Data.DataColumn();
 			this.dtZero = new System.Data.DataTable();
 			this.ZCode = new System.Data.DataColumn();
 			this.ZCodeCr = new System.Data.DataColumn();
@@ -296,9 +278,6 @@ namespace UEEditor
 			this.dtCatalogFirmCr = new System.Data.DataTable();
 			this.CCodeFirmCr = new System.Data.DataColumn();
 			this.CFirmCr = new System.Data.DataColumn();
-			this.dtCurrency = new System.Data.DataTable();
-			this.CCurrency = new System.Data.DataColumn();
-			this.CExchange = new System.Data.DataColumn();
 			this.dtSections = new System.Data.DataTable();
 			this.SSection = new System.Data.DataColumn();
 			this.dtCatalogNames = new System.Data.DataTable();
@@ -308,7 +287,8 @@ namespace UEEditor
 			this.colCatalogID = new System.Data.DataColumn();
 			this.colCatalog_NameID = new System.Data.DataColumn();
 			this.colCatalog_FormId = new System.Data.DataColumn();
-			this.dtCatalogForm = new System.Data.DataColumn();
+			this.colCatalogForm = new System.Data.DataColumn();
+			this.colCatalogProductsCount = new System.Data.DataColumn();
 			this.dtProducts = new System.Data.DataTable();
 			this.colProductId = new System.Data.DataColumn();
 			this.colProductCatalogId = new System.Data.DataColumn();
@@ -426,13 +406,10 @@ namespace UEEditor
 			((System.ComponentModel.ISupportInitialize)(this.dsMain)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtJobs)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtUnrecExp)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.CatalogNameGrid)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.dtForm)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtZero)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtForb)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtRegions)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalogFirmCr)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.dtCurrency)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtSections)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalogNames)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalog)).BeginInit();
@@ -475,14 +452,13 @@ namespace UEEditor
 			// 
 			this.gvCatForm.Appearance.HideSelectionRow.Options.UseBackColor = true;
 			this.gvCatForm.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colFForm});
+            this.colFForm,
+            this.colFProductsCount});
 			this.gvCatForm.GridControl = this.CatalogGridControl;
 			this.gvCatForm.Name = "gvCatForm";
 			this.gvCatForm.OptionsBehavior.AllowIncrementalSearch = true;
 			this.gvCatForm.OptionsBehavior.Editable = false;
 			this.gvCatForm.OptionsDetail.ShowDetailTabs = false;
-			this.gvCatForm.OptionsFilter.AllowColumnMRUFilterList = false;
-			this.gvCatForm.OptionsFilter.AllowMRUFilterList = false;
 			this.gvCatForm.OptionsMenu.EnableColumnMenu = false;
 			this.gvCatForm.OptionsMenu.EnableFooterMenu = false;
 			this.gvCatForm.OptionsMenu.EnableGroupPanelMenu = false;
@@ -490,6 +466,7 @@ namespace UEEditor
 			this.gvCatForm.OptionsView.ShowDetailButtons = false;
 			this.gvCatForm.OptionsView.ShowFilterPanel = false;
 			this.gvCatForm.OptionsView.ShowGroupPanel = false;
+			this.gvCatForm.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvCatForm_CustomColumnDisplayText);
 			// 
 			// colFForm
 			// 
@@ -503,6 +480,23 @@ namespace UEEditor
 			this.colFForm.OptionsColumn.ReadOnly = true;
 			this.colFForm.Visible = true;
 			this.colFForm.VisibleIndex = 0;
+			this.colFForm.Width = 295;
+			// 
+			// colFProductsCount
+			// 
+			this.colFProductsCount.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+			this.colFProductsCount.AppearanceCell.Options.UseFont = true;
+			this.colFProductsCount.AppearanceCell.Options.UseTextOptions = true;
+			this.colFProductsCount.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
+			this.colFProductsCount.AppearanceHeader.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+			this.colFProductsCount.AppearanceHeader.Options.UseFont = true;
+			this.colFProductsCount.Caption = "Свойства";
+			this.colFProductsCount.FieldName = "ProductsCount";
+			this.colFProductsCount.Name = "colFProductsCount";
+			this.colFProductsCount.OptionsColumn.ReadOnly = true;
+			this.colFProductsCount.Visible = true;
+			this.colFProductsCount.VisibleIndex = 1;
+			this.colFProductsCount.Width = 25;
 			// 
 			// CatalogGridControl
 			// 
@@ -541,9 +535,6 @@ namespace UEEditor
 			this.dsMain.DataSetName = "NewDataSet";
 			this.dsMain.Locale = new System.Globalization.CultureInfo("ru-RU");
 			this.dsMain.Relations.AddRange(new System.Data.DataRelation[] {
-            new System.Data.DataRelation("Relation1", "CatalogNameGrid", "FormGrid", new string[] {
-                        "CCode"}, new string[] {
-                        "FShortCode"}, false),
             new System.Data.DataRelation("CatalogNames", "dtCatalogNames", "dtCatalog", new string[] {
                         "ID"}, new string[] {
                         "NameID"}, false),
@@ -553,13 +544,10 @@ namespace UEEditor
 			this.dsMain.Tables.AddRange(new System.Data.DataTable[] {
             this.dtJobs,
             this.dtUnrecExp,
-            this.CatalogNameGrid,
-            this.dtForm,
             this.dtZero,
             this.dtForb,
             this.dtRegions,
             this.dtCatalogFirmCr,
-            this.dtCurrency,
             this.dtSections,
             this.dtCatalogNames,
             this.dtCatalog,
@@ -690,10 +678,9 @@ namespace UEEditor
             this.UEPeriod,
             this.UEJunk,
             this.UEStatus,
-            this.UETmpFullCode,
+            this.UETmpProductId,
             this.UEName2,
             this.UEName3,
-            this.UETmpShortCode,
             this.UETmpCodeFirmCr,
             this.UEAlready,
             this.UETmpCurrency,
@@ -779,10 +766,10 @@ namespace UEEditor
 			this.UEStatus.ColumnName = "UEStatus";
 			this.UEStatus.DataType = typeof(int);
 			// 
-			// UETmpFullCode
+			// UETmpProductId
 			// 
-			this.UETmpFullCode.ColumnName = "UETmpFullCode";
-			this.UETmpFullCode.DataType = typeof(long);
+			this.UETmpProductId.ColumnName = "UETmpProductId";
+			this.UETmpProductId.DataType = typeof(long);
 			// 
 			// UEName2
 			// 
@@ -791,11 +778,6 @@ namespace UEEditor
 			// UEName3
 			// 
 			this.UEName3.ColumnName = "UEName3";
-			// 
-			// UETmpShortCode
-			// 
-			this.UETmpShortCode.ColumnName = "UETmpShortCode";
-			this.UETmpShortCode.DataType = typeof(long);
 			// 
 			// UETmpCodeFirmCr
 			// 
@@ -820,59 +802,6 @@ namespace UEEditor
 			// 
 			this.UEHandMade.ColumnName = "UEHandMade";
 			this.UEHandMade.DataType = typeof(byte);
-			// 
-			// CatalogNameGrid
-			// 
-			this.CatalogNameGrid.Columns.AddRange(new System.Data.DataColumn[] {
-            this.CShortCode,
-            this.CName});
-			this.CatalogNameGrid.Constraints.AddRange(new System.Data.Constraint[] {
-            new System.Data.UniqueConstraint("Constraint1", new string[] {
-                        "CCode"}, false),
-            new System.Data.UniqueConstraint("Constraint2", new string[] {
-                        "CName"}, false)});
-			this.CatalogNameGrid.TableName = "CatalogNameGrid";
-			// 
-			// CShortCode
-			// 
-			this.CShortCode.AllowDBNull = false;
-			this.CShortCode.Caption = "CCode";
-			this.CShortCode.ColumnName = "CCode";
-			this.CShortCode.DataType = typeof(long);
-			// 
-			// CName
-			// 
-			this.CName.ColumnName = "CName";
-			// 
-			// dtForm
-			// 
-			this.dtForm.Columns.AddRange(new System.Data.DataColumn[] {
-            this.FShortCode,
-            this.FFullCode,
-            this.FForm});
-			this.dtForm.Constraints.AddRange(new System.Data.Constraint[] {
-            new System.Data.ForeignKeyConstraint("Relation1", "CatalogNameGrid", new string[] {
-                        "CCode"}, new string[] {
-                        "FShortCode"}, System.Data.AcceptRejectRule.None, System.Data.Rule.Cascade, System.Data.Rule.Cascade)});
-			this.dtForm.TableName = "FormGrid";
-			// 
-			// FShortCode
-			// 
-			this.FShortCode.Caption = "";
-			this.FShortCode.ColumnName = "FShortCode";
-			this.FShortCode.DataType = typeof(long);
-			// 
-			// FFullCode
-			// 
-			this.FFullCode.AllowDBNull = false;
-			this.FFullCode.Caption = "";
-			this.FFullCode.ColumnName = "FFullCode";
-			this.FFullCode.DataType = typeof(long);
-			// 
-			// FForm
-			// 
-			this.FForm.Caption = "";
-			this.FForm.ColumnName = "FForm";
 			// 
 			// dtZero
 			// 
@@ -978,22 +907,6 @@ namespace UEEditor
 			// 
 			this.CFirmCr.ColumnName = "CName";
 			// 
-			// dtCurrency
-			// 
-			this.dtCurrency.Columns.AddRange(new System.Data.DataColumn[] {
-            this.CCurrency,
-            this.CExchange});
-			this.dtCurrency.TableName = "CurrencyGrid";
-			// 
-			// CCurrency
-			// 
-			this.CCurrency.ColumnName = "CCurrency";
-			// 
-			// CExchange
-			// 
-			this.CExchange.ColumnName = "CExchange";
-			this.CExchange.DataType = typeof(decimal);
-			// 
 			// dtSections
 			// 
 			this.dtSections.Columns.AddRange(new System.Data.DataColumn[] {
@@ -1029,7 +942,8 @@ namespace UEEditor
             this.colCatalogID,
             this.colCatalog_NameID,
             this.colCatalog_FormId,
-            this.dtCatalogForm});
+            this.colCatalogForm,
+            this.colCatalogProductsCount});
 			this.dtCatalog.Constraints.AddRange(new System.Data.Constraint[] {
             new System.Data.ForeignKeyConstraint("CatalogNames", "dtCatalogNames", new string[] {
                         "ID"}, new string[] {
@@ -1053,9 +967,14 @@ namespace UEEditor
 			this.colCatalog_FormId.ColumnName = "FormId";
 			this.colCatalog_FormId.DataType = typeof(ulong);
 			// 
-			// dtCatalogForm
+			// colCatalogForm
 			// 
-			this.dtCatalogForm.ColumnName = "Form";
+			this.colCatalogForm.ColumnName = "Form";
+			// 
+			// colCatalogProductsCount
+			// 
+			this.colCatalogProductsCount.ColumnName = "ProductsCount";
+			this.colCatalogProductsCount.DataType = typeof(long);
 			// 
 			// dtProducts
 			// 
@@ -1092,6 +1011,7 @@ namespace UEEditor
 			this.gvCatalog.GridControl = this.CatalogGridControl;
 			this.gvCatalog.Name = "gvCatalog";
 			this.gvCatalog.OptionsBehavior.AllowIncrementalSearch = true;
+			this.gvCatalog.OptionsBehavior.Editable = false;
 			this.gvCatalog.OptionsDetail.ShowDetailTabs = false;
 			this.gvCatalog.OptionsMenu.EnableColumnMenu = false;
 			this.gvCatalog.OptionsMenu.EnableFooterMenu = false;
@@ -1107,7 +1027,6 @@ namespace UEEditor
 			this.colCName.Caption = "Наименование";
 			this.colCName.FieldName = "Name";
 			this.colCName.Name = "colCName";
-			this.colCName.OptionsColumn.AllowEdit = false;
 			this.colCName.OptionsColumn.ReadOnly = true;
 			this.colCName.Visible = true;
 			this.colCName.VisibleIndex = 0;
@@ -2263,18 +2182,16 @@ namespace UEEditor
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.frmUEEMain_Closing);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmUEEMain_KeyDown);
+			this.Load += new System.EventHandler(this.frmUEEMain_Load);
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dsMain)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtJobs)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtUnrecExp)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.CatalogNameGrid)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.dtForm)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtZero)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtForb)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtRegions)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalogFirmCr)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.dtCurrency)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtSections)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalogNames)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalog)).EndInit();
@@ -2323,5 +2240,7 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
 		private DevExpress.XtraGrid.Views.Grid.GridView gvFirmCr;
 		private DevExpress.XtraGrid.Columns.GridColumn colFirmCrName;
+		private System.Data.DataColumn colCatalogProductsCount;
+		private DevExpress.XtraGrid.Columns.GridColumn colFProductsCount;
 	}
 }
