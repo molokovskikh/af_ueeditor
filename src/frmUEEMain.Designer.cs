@@ -130,7 +130,6 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colUEAlready;
 		private System.Data.DataColumn JParentSynonym;
 		private System.Data.DataColumn JPriceFMT;
-		private System.Data.DataColumn JPhone;
 		private System.Data.DataColumn UETmpCurrency;
 		private System.Windows.Forms.Panel pnlCenter1;
 		private System.Windows.Forms.Panel pnlWithButton1;
@@ -225,7 +224,6 @@ namespace UEEditor
 			this.JNamePos = new System.Data.DataColumn();
 			this.JJobDate = new System.Data.DataColumn();
 			this.JBlockBy = new System.Data.DataColumn();
-			this.JPhone = new System.Data.DataColumn();
 			this.JMinReq = new System.Data.DataColumn();
 			this.JWholeSale = new System.Data.DataColumn();
 			this.JParentSynonym = new System.Data.DataColumn();
@@ -563,7 +561,6 @@ namespace UEEditor
             this.JNamePos,
             this.JJobDate,
             this.JBlockBy,
-            this.JPhone,
             this.JMinReq,
             this.JWholeSale,
             this.JParentSynonym,
@@ -613,10 +610,6 @@ namespace UEEditor
 			// 
 			this.JBlockBy.Caption = "Блокировано";
 			this.JBlockBy.ColumnName = "JBlockBy";
-			// 
-			// JPhone
-			// 
-			this.JPhone.ColumnName = "JPhone";
 			// 
 			// JMinReq
 			// 
