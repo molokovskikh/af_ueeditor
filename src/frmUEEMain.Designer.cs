@@ -2157,7 +2157,7 @@ namespace UEEditor
 			// MainTimer
 			// 
 			this.MainTimer.Enabled = true;
-			this.MainTimer.Interval = 15000;
+			this.MainTimer.Interval = 30000;
 			this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
 			// 
 			// frmUEEMain

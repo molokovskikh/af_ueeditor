@@ -267,12 +267,18 @@ GROUP BY PD.pricecode",
 
 						dt.Clear();
 
+						if (!(dr["JDateLastForm"] is DBNull) && Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(dr["JJobDate"]))
+							MyCmd.Parameters.AddWithValue("?JJobDate", dr["JDateLastForm"]);
+						else
+							MyCmd.Parameters.AddWithValue("?JJobDate", dr["JJobDate"]);
+
 						MyCmd.CommandText =
 							@"SELECT 
 							MAX(LogTime) AS JSynonymDate
 						FROM 
 							logs.synonymlogs 
-						WHERE PriceCode = ?JPriceCode";
+						WHERE PriceCode = ?JPriceCode
+                        and LogTime >= ?JJobDate";
 
 						object JSynonymDate = MyCmd.ExecuteScalar();
 
@@ -281,7 +287,8 @@ GROUP BY PD.pricecode",
 							MAX(LogTime) AS JSynonymFirmCrDate
 						FROM 
 							logs.synonymfirmcrlogs 
-						WHERE PriceCode = ?JPriceCode";
+						WHERE PriceCode = ?JPriceCode
+                        and LogTime >= ?JJobDate";
 
 						object JSynonymFirmCrDate = MyCmd.ExecuteScalar();
 
@@ -290,7 +297,8 @@ GROUP BY PD.pricecode",
 							MAX(LogTime) AS JPricesRetrans
 						FROM 
 							logs.pricesretrans 
-						WHERE PriceCode = ?JPriceCode";
+						WHERE PriceCode = ?JPriceCode
+                        and LogTime >= ?JJobDate";
 
 						object JPricesRetrans = MyCmd.ExecuteScalar();
 
