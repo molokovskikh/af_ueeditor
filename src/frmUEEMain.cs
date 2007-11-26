@@ -58,7 +58,7 @@ namespace UEEditor
 		public int HideSynonymCount = 0;
 		public int DuplicateSynonymCount = 0;
 		public int SynonymFirmCrCount = 0;
-		public int ForbiddenCount = 0;	
+		public int ForbiddenCount = 0;
 
 		public frmUEEMain()
 		{
@@ -422,6 +422,7 @@ and PropertyValues.Id = ProductProperties.PropertyValueId
 and Properties.Id = PropertyValues.PropertyId
 and Products.Hidden = 0
 group by Products.Id
+order by Properties
 ";
 
 			MyDA.Fill(dtProducts);
@@ -662,6 +663,39 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 			return "[" + FieldName + "] like '" + String.Join("%' or [" + FieldName + "] like '", flt2) + "%'";
 		}
 
+		private void GotoCatalogPosition(GridView selected, string Value, string FieldName)
+		{
+			int WordLen = 3;
+			string[] flt = Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			List<string> firstChars = new List<string>();
+			for (int i = 0; i < flt.Length; i++)
+			{
+				if (flt[i].Length >= WordLen)
+					firstChars.Add(flt[i].Substring(0, WordLen));
+			}
+
+			int positionId = 0, maxCompareCount = 0;
+
+			//Произодим поиск
+			for (int i = 0; i < selected.DataRowCount; i++)
+			{
+				string PropertiesValue = selected.GetDataRow(i)[FieldName].ToString();
+				int compareCount = 0;
+				foreach (string s in firstChars)
+					if (PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0)
+						compareCount++;
+
+				if (compareCount > maxCompareCount)
+				{
+					maxCompareCount = compareCount;
+					positionId = i;
+				}
+			}
+
+			if (positionId != 0)
+				selected.FocusedRowHandle = positionId;
+		}
+
 		private void GotoProductPosition(GridView selected, string Value, string FieldName)
 		{
 			int WordLen = 3;
@@ -709,6 +743,8 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 			gvCatalog.ActiveFilter.Add(gvCatalog.Columns["Name"], new ColumnFilterInfo( GetFilterString( GetFullUnrecName(FocusedRowHandle), "Name" ) , ""));
 			if (gvCatalog.DataRowCount == 0)
 				gvCatalog.ActiveFilter.Clear();
+			else
+				GotoCatalogPosition(gvCatalog, GetFullUnrecName(FocusedRowHandle), "Name");
 		}
 
 		private void ShowCatalogFirmCr(int FocusedRowHandle)
@@ -724,6 +760,8 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 				gvFirmCr.ActiveFilter.Add(gvFirmCr.Columns["CName"], new ColumnFilterInfo(GetFilterString(dr["UEFirmCr"].ToString(), "CName"), ""));
 				if (gvFirmCr.DataRowCount == 0)
 					gvFirmCr.ActiveFilter.Clear();
+				else
+					GotoCatalogPosition(gvFirmCr, dr["UEFirmCr"].ToString(), "CName");
 			}
 			else
 			{
@@ -969,7 +1007,8 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 			//Снимаем фильтр при поиске
 			if ((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
 				e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
-				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion)
+				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
+				(e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9))
 			{
 				FocusedView.ActiveFilter.Clear();
 			}
@@ -1013,6 +1052,9 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 							bv.ActiveFilter.Add(bv.Columns["Form"], new ColumnFilterInfo(GetFilterString(GetFullUnrecName(gvUnrecExp.FocusedRowHandle), "Form"), ""));
 							if (bv.DataRowCount == 0)
 								bv.ActiveFilter.Clear();
+							else
+								GotoCatalogPosition(bv, GetFullUnrecName(gvUnrecExp.FocusedRowHandle), "Form");
+
 							DataRow dr = gvCatalog.GetDataRow(gvCatalog.FocusedRowHandle);
 							colFForm.Caption = dr[colCName.FieldName].ToString();
 						}
@@ -2268,7 +2310,8 @@ and c.Type = ?ContactType;",
 			//Снимаем фильтр при поиске
 			if ((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
 				e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
-				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion)
+				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
+				(e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9))
 			{
 				gvFirmCr.ActiveFilter.Clear();
 			}
