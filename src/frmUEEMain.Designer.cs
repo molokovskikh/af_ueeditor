@@ -1174,6 +1174,7 @@ namespace UEEditor
 			this.gvJobs.OptionsMenu.EnableFooterMenu = false;
 			this.gvJobs.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvJobs.OptionsSelection.EnableAppearanceFocusedCell = false;
+			this.gvJobs.OptionsSelection.MultiSelect = true;
 			this.gvJobs.OptionsView.ShowGroupPanel = false;
 			this.gvJobs.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvJobs_RowStyle);
 			this.gvJobs.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvJobs_CustomDrawRowIndicator);

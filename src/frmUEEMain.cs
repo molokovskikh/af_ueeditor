@@ -240,11 +240,21 @@ WHERE   FormRules.firmcode =PD.pricecode
 		private void JobsGridFill()
 		{
 			long CurrPriceCode = -1;
+			List<long> selectedPrices = new List<long>();
 			if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow drJ = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
 				if (drJ != null)
 					CurrPriceCode = Convert.ToInt64(drJ["JPriceCode"]);
+			}
+
+			int[] selected = gvJobs.GetSelectedRows();
+			if (selected.Length > 0)
+			{
+				//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
+				foreach (int rowHandle in selected)
+					if (rowHandle != GridControl.InvalidRowHandle)
+						selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceCode.ColumnName]);
 			}
 
 			dtJobs.Clear();
@@ -259,7 +269,7 @@ WHERE   FormRules.firmcode =PD.pricecode
 				JobsGridControl.EndUpdate();
 			}
 
-			LocateJobs(CurrPriceCode);
+			LocateJobs(CurrPriceCode, (selectedPrices.Count <= 1) ? null : selectedPrices);
 			statusBar1.Panels[0].Text = "«аданий в очереди: " + dtJobs.Rows.Count;
 		}
 
@@ -491,36 +501,50 @@ group by Products.Id
 
 		private void btnDelJob_Click(object sender, System.EventArgs e)
 		{
-			bool res = false;
-			if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
+			int[] selected = gvJobs.GetSelectedRows();
+
+			if (selected.Length > 0)
 			{
-				if (MessageBox.Show("¬ы действительно хотите удалить задание?", "¬опрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+				if (MessageBox.Show("¬ы действительно хотите удалить выбранные задани€?", "¬опрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 				{
-					do
+					List<long> selectedPrices = new List<long>();
+
+					//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
+					foreach (int rowHandle in selected)
+						if (rowHandle != GridControl.InvalidRowHandle)
+							selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceCode.ColumnName]);
+
+					//удал€ем задани€
+					foreach (long selectedPrice in selectedPrices)
 					{
-						DataRow JobsDR = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
+						MySqlTransaction tran = MyCn.BeginTransaction();
 						try
 						{
-							MySqlTransaction tran = MyCn.BeginTransaction();
-							MySqlCommand cmdDeleteJob = new MySqlCommand(										
-								@"DELETE FROM farm.UnrecExp
-							WHERE PriceCode = ?PriceCode
-							AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.PriceCode)", 
+							MySqlCommand cmdDeleteJob = new MySqlCommand(@"
+DELETE FROM 
+  farm.UnrecExp
+WHERE 
+    PriceCode = ?PriceCode
+AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.PriceCode)",
 								MyCn, tran);
-							cmdDeleteJob.Parameters.AddWithValue("?PriceCode", JobsDR["JPriceCode"]);
+							cmdDeleteJob.Parameters.AddWithValue("?PriceCode", selectedPrice);
 							cmdDeleteJob.ExecuteNonQuery();
 							tran.Commit();
-							res = true;
-							MessageBox.Show("«адание удалено!");
 						}
-						catch(MySqlException ex)
-						{
-							MessageBox.Show(ex.ToString());
+						catch
+						{ 
+							if (tran != null)
+								try
+								{
+									tran.Rollback();
+								}
+								catch { }
+							throw;
 						}
 					}
-					while(!res);
+
+					JobsGridFill();
 				}
-				JobsGridFill();
 			}
 		}
 		
@@ -1255,7 +1279,7 @@ group by Products.Id
 					tcMain.TabPages.Remove(tpForb);
 					tcMain.SelectedTab = tpJobs;
 					JobsGridControl.Select();
-					LocateJobs(LockedPriceCode);
+					LocateJobs(LockedPriceCode, null);
 					UnLockedInBlockedPrice(LockedPriceCode);
 					LockedPriceCode = -1;
                     PriceFMT = String.Empty;
@@ -1799,19 +1823,27 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 			}
 		}
 
-		private void LocateJobs(long JCode)
+		private void LocateJobs(long JCode, List<long> selectedPrices)
 		{
-			if (JCode != -1)			
+			if ((JCode != -1) || (selectedPrices != null))
 			{
+				int FocusedRowHandle = GridControl.InvalidRowHandle;
+
 				for (int i = 0; i < gvJobs.RowCount; i++)
 				{
 					DataRow dr = gvJobs.GetDataRow(i);
-					if (dr[JPriceCode.ColumnName].ToString() == JCode.ToString())
+					if ((selectedPrices != null) && (selectedPrices.Contains((long)dr[JPriceCode.ColumnName])))
+						gvJobs.SelectRow(i);
+					if ((JCode != -1) && (JCode == (long)dr[JPriceCode.ColumnName]))
 					{
-						gvJobs.FocusedRowHandle = i;
-						return;
+						FocusedRowHandle = i;
+						if (selectedPrices == null)
+							break;
 					}
 				}
+
+				if (FocusedRowHandle != GridControl.InvalidRowHandle)
+					gvJobs.FocusedRowHandle = FocusedRowHandle;
 			}
 		}
 
