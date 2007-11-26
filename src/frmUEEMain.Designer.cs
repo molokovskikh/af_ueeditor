@@ -87,7 +87,6 @@ namespace UEEditor
 		private System.Windows.Forms.GroupBox grpBoxCatalog2;
 		private DevExpress.XtraGrid.GridControl CatalogGridControl;
 		private System.Windows.Forms.ImageList imageList1;
-		private System.Data.DataColumn JMinReq;
 		private System.Data.DataTable dtRegions;
 		private System.Data.DataColumn RRegion;
 		private System.Data.DataColumn JWholeSale;
@@ -224,7 +223,6 @@ namespace UEEditor
 			this.JNamePos = new System.Data.DataColumn();
 			this.JJobDate = new System.Data.DataColumn();
 			this.JBlockBy = new System.Data.DataColumn();
-			this.JMinReq = new System.Data.DataColumn();
 			this.JWholeSale = new System.Data.DataColumn();
 			this.JParentSynonym = new System.Data.DataColumn();
 			this.JPriceFMT = new System.Data.DataColumn();
@@ -456,6 +454,7 @@ namespace UEEditor
 			this.gvCatForm.Name = "gvCatForm";
 			this.gvCatForm.OptionsBehavior.AllowIncrementalSearch = true;
 			this.gvCatForm.OptionsBehavior.Editable = false;
+			this.gvCatForm.OptionsCustomization.AllowSort = false;
 			this.gvCatForm.OptionsDetail.ShowDetailTabs = false;
 			this.gvCatForm.OptionsMenu.EnableColumnMenu = false;
 			this.gvCatForm.OptionsMenu.EnableFooterMenu = false;
@@ -561,7 +560,6 @@ namespace UEEditor
             this.JNamePos,
             this.JJobDate,
             this.JBlockBy,
-            this.JMinReq,
             this.JWholeSale,
             this.JParentSynonym,
             this.JPriceFMT,
@@ -605,15 +603,12 @@ namespace UEEditor
 			// 
 			this.JJobDate.Caption = "Дата задания";
 			this.JJobDate.ColumnName = "JJobDate";
+			this.JJobDate.DataType = typeof(System.DateTime);
 			// 
 			// JBlockBy
 			// 
 			this.JBlockBy.Caption = "Блокировано";
 			this.JBlockBy.ColumnName = "JBlockBy";
-			// 
-			// JMinReq
-			// 
-			this.JMinReq.ColumnName = "JMinReq";
 			// 
 			// JWholeSale
 			// 
@@ -1005,6 +1000,7 @@ namespace UEEditor
 			this.gvCatalog.Name = "gvCatalog";
 			this.gvCatalog.OptionsBehavior.AllowIncrementalSearch = true;
 			this.gvCatalog.OptionsBehavior.Editable = false;
+			this.gvCatalog.OptionsCustomization.AllowSort = false;
 			this.gvCatalog.OptionsDetail.ShowDetailTabs = false;
 			this.gvCatalog.OptionsMenu.EnableColumnMenu = false;
 			this.gvCatalog.OptionsMenu.EnableFooterMenu = false;
@@ -1032,6 +1028,7 @@ namespace UEEditor
 			this.gvProducts.Name = "gvProducts";
 			this.gvProducts.OptionsBehavior.AllowIncrementalSearch = true;
 			this.gvProducts.OptionsBehavior.Editable = false;
+			this.gvProducts.OptionsCustomization.AllowSort = false;
 			this.gvProducts.OptionsDetail.EnableMasterViewMode = false;
 			this.gvProducts.OptionsDetail.ShowDetailTabs = false;
 			this.gvProducts.OptionsSelection.EnableAppearanceFocusedCell = false;
@@ -1193,6 +1190,7 @@ namespace UEEditor
 			this.colJName.OptionsColumn.ReadOnly = true;
 			this.colJName.Visible = true;
 			this.colJName.VisibleIndex = 0;
+			this.colJName.Width = 52;
 			// 
 			// colJParentName
 			// 
@@ -1205,6 +1203,7 @@ namespace UEEditor
 			this.colJParentName.OptionsColumn.ReadOnly = true;
 			this.colJParentName.Visible = true;
 			this.colJParentName.VisibleIndex = 1;
+			this.colJParentName.Width = 52;
 			// 
 			// colJWholeSale
 			// 
@@ -1219,6 +1218,7 @@ namespace UEEditor
 			this.colJWholeSale.OptionsColumn.ReadOnly = true;
 			this.colJWholeSale.Visible = true;
 			this.colJWholeSale.VisibleIndex = 2;
+			this.colJWholeSale.Width = 52;
 			// 
 			// colJRegion
 			// 
@@ -1231,6 +1231,7 @@ namespace UEEditor
 			this.colJRegion.OptionsColumn.ReadOnly = true;
 			this.colJRegion.Visible = true;
 			this.colJRegion.VisibleIndex = 3;
+			this.colJRegion.Width = 52;
 			// 
 			// colJNeedRetrans
 			// 
@@ -1244,6 +1245,7 @@ namespace UEEditor
 			this.colJNeedRetrans.ToolTip = "Требуется формализация";
 			this.colJNeedRetrans.Visible = true;
 			this.colJNeedRetrans.VisibleIndex = 4;
+			this.colJNeedRetrans.Width = 52;
 			// 
 			// colJRetranced
 			// 
@@ -1257,6 +1259,7 @@ namespace UEEditor
 			this.colJRetranced.ToolTip = "В очереди";
 			this.colJRetranced.Visible = true;
 			this.colJRetranced.VisibleIndex = 5;
+			this.colJRetranced.Width = 52;
 			// 
 			// colJPos
 			// 
@@ -1269,6 +1272,7 @@ namespace UEEditor
 			this.colJPos.OptionsColumn.ReadOnly = true;
 			this.colJPos.Visible = true;
 			this.colJPos.VisibleIndex = 6;
+			this.colJPos.Width = 56;
 			// 
 			// colJNamePos
 			// 
@@ -1281,18 +1285,23 @@ namespace UEEditor
 			this.colJNamePos.OptionsColumn.ReadOnly = true;
 			this.colJNamePos.Visible = true;
 			this.colJNamePos.VisibleIndex = 7;
+			this.colJNamePos.Width = 64;
 			// 
 			// colJJobDate
 			// 
 			this.colJJobDate.Caption = "Дата задания";
+			this.colJJobDate.DisplayFormat.FormatString = "dd.MM.yyyy HH.mm.ss";
+			this.colJJobDate.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
 			this.colJJobDate.FieldName = "JJobDate";
 			this.colJJobDate.Name = "colJJobDate";
 			this.colJJobDate.OptionsColumn.AllowEdit = false;
 			this.colJJobDate.OptionsColumn.AllowFocus = false;
 			this.colJJobDate.OptionsColumn.AllowIncrementalSearch = false;
 			this.colJJobDate.OptionsColumn.ReadOnly = true;
+			this.colJJobDate.UnboundType = DevExpress.Data.UnboundColumnType.DateTime;
 			this.colJJobDate.Visible = true;
 			this.colJJobDate.VisibleIndex = 8;
+			this.colJJobDate.Width = 121;
 			// 
 			// colJBlockBy
 			// 
@@ -1305,6 +1314,7 @@ namespace UEEditor
 			this.colJBlockBy.OptionsColumn.ReadOnly = true;
 			this.colJBlockBy.Visible = true;
 			this.colJBlockBy.VisibleIndex = 9;
+			this.colJBlockBy.Width = 38;
 			// 
 			// imageList1
 			// 
@@ -1740,6 +1750,7 @@ namespace UEEditor
 			this.gvFirmCr.GridControl = this.gcFirmCr;
 			this.gvFirmCr.Name = "gvFirmCr";
 			this.gvFirmCr.OptionsBehavior.AllowIncrementalSearch = true;
+			this.gvFirmCr.OptionsCustomization.AllowSort = false;
 			this.gvFirmCr.OptionsDetail.ShowDetailTabs = false;
 			this.gvFirmCr.OptionsMenu.EnableColumnMenu = false;
 			this.gvFirmCr.OptionsMenu.EnableFooterMenu = false;
@@ -2157,7 +2168,7 @@ namespace UEEditor
 			// MainTimer
 			// 
 			this.MainTimer.Enabled = true;
-			this.MainTimer.Interval = 30000;
+			this.MainTimer.Interval = 20000;
 			this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
 			// 
 			// frmUEEMain

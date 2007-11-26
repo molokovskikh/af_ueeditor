@@ -183,41 +183,57 @@ namespace UEEditor
 			daJobs = new MySqlDataAdapter(
 				@"
 SELECT  PD.FirmCode as JFirmCode,
-        cd.ShortName as FirmShortName, 
-        PD.PriceCode                                                                                                         As JPriceCode, 
-        concat(CD.ShortName, '(', if(pc.PriceCode = pc.ShowPriceCode, pd.PriceName, concat('[Колонка] ', pc.CostName)), ')') as JName, 
-        regions.region                                                                                                       As JRegion, 
-        pui.DateCurPrice                                                                                               AS JPriceDate, 
-        FormRules.MaxOld, 
-        0                                                                                       AS JPos, 
-        0                                                                                       AS JNamePos, 
-        ''                                                                                      AS JJobDate, 
-        CD.FirmSegment                                                                          As JWholeSale, 
-        bp.BlockBy                                                                              As JBlockBy, 
-        FormRules.ParentSynonym                                                                 as JParentSynonym, 
-        FormRules.PriceFmt                                                                      As JPriceFMT, 
-        pfmt.FileExtention                                                                      as JExt, 
-        PD.MinReq                                                                               As JMinReq, 
-        0                                                                                       AS JNeedRetrans, 
-        0                                                                                       AS JRetranced, 
-        pui.DateLastForm                                                                  AS JDateLastForm, 
-        if(FormRules.ParentSynonym is null, '', concat(pcd.ShortName, '(', ppd.PriceName, ')')) as JParentName 
-FROM ( usersettings.ClientsData AS CD, FormRules, PriceFMTs as pfmt, usersettings.pricesdata AS PD, regions, usersettings.pricescosts pc, usersettings.price_update_info pui ) 
-LEFT JOIN blockedprice bp 
-ON      bp.PriceCode = PD.PriceCode 
-LEFT JOIN usersettings.pricesdata ppd 
-ON      ppd.pricecode = FormRules.ParentSynonym 
-LEFT JOIN usersettings.clientsdata pcd 
-ON      pcd.FirmCode       = ppd.firmcode 
-WHERE   FormRules.firmcode =PD.pricecode 
+        cd.ShortName as FirmShortName,
+        PD.PriceCode                                                                                                         As JPriceCode,
+        concat(CD.ShortName, '(', if(pc.PriceCode = pc.ShowPriceCode, pd.PriceName, concat('[Колонка] ', pc.CostName)), ')') as JName,
+        regions.region                                                                                                       As JRegion,
+        pui.DateCurPrice                                                                                               AS JPriceDate,
+        FormRules.MaxOld,
+        statunrecexp.Pos                                                                        AS JPos,
+        statunrecexp.NamePos                                                                    AS JNamePos,
+        pui.DateLastForm                                                                        AS JJobDate,
+        CD.FirmSegment                                                                          As JWholeSale,
+        bp.BlockBy                                                                              As JBlockBy,
+        FormRules.ParentSynonym                                                                 as JParentSynonym,
+        FormRules.PriceFmt                                                                      As JPriceFMT,
+        pfmt.FileExtention                                                                      as JExt,
+        if((synonympui.LastSynonymsCreation is not null) and (pui.DateLastForm < synonympui.LastSynonymsCreation), 1, 0) AS JNeedRetrans,
+        if(pui.DateLastForm < pui.LastRetrans, 1, 0)                                            AS JRetranced,
+        pui.DateLastForm                                                                        AS JDateLastForm,
+        if(FormRules.ParentSynonym is null, '', concat(pcd.ShortName, '(', ppd.PriceName, ')')) AS JParentName
+FROM
+  (usersettings.ClientsData AS CD,
+   FormRules,
+   PriceFMTs as pfmt,
+   usersettings.pricesdata AS PD,
+   regions,
+   usersettings.pricescosts pc,
+   usersettings.price_update_info pui,
+   usersettings.price_update_info synonympui,
+   (select
+      unrecexp.PriceCode,
+      count(unrecexp.RowID) as Pos,
+      COUNT(IF(unrecexp.TmpProductId=0,unrecexp.TmpProductId,NULL)) as NamePos
+    from
+      farm.unrecexp
+    group by unrecexp.PriceCode) statunrecexp
+  )
+LEFT JOIN blockedprice bp
+ON      bp.PriceCode = PD.PriceCode
+LEFT JOIN usersettings.pricesdata ppd
+ON      ppd.pricecode = FormRules.ParentSynonym
+LEFT JOIN usersettings.clientsdata pcd
+ON      pcd.FirmCode       = ppd.firmcode
+WHERE   FormRules.firmcode =PD.pricecode
     AND FormRules.PriceFmt = pfmt.Format
+    and statunrecexp.PriceCode = PD.pricecode
     and pui.PriceCode = PD.pricecode
-    AND CD.firmcode        =PD.firmcode 
-    AND regions.regioncode =CD.regioncode 
-    AND pd.agencyenabled   =1 
-    AND exists(SELECT * FROM farm.UnrecExp un WHERE un.PriceCode = PD.PriceCode) 
-    AND pc.PriceCode = pd.PriceCode 
-GROUP BY PD.pricecode", 
+    and synonympui.PriceCode = if(FormRules.ParentSynonym is null, PD.pricecode, FormRules.ParentSynonym)
+    AND CD.firmcode        =PD.firmcode
+    AND regions.regioncode =CD.regioncode
+    AND pd.agencyenabled   =1
+    AND pc.PriceCode = pd.PriceCode
+", 
 				MyCn);
 		}
 
@@ -237,110 +253,6 @@ GROUP BY PD.pricecode",
 			try
 			{
 				daJobs.Fill(dtJobs);
-
-				using (DataTable dt = new DataTable())
-				{
-					foreach (DataRow dr in dtJobs.Rows)
-					{
-						dt.Clear();
-						MyCmd.Parameters.Clear();
-						MyCmd.Parameters.AddWithValue("?JPriceCode", dr["JPriceCode"]);
-
-						MyCmd.CommandText =
-							@"SELECT 
-							COUNT(*) AS JPos, 
-							COUNT(IF(TmpProductId=0 OR TmpCurrency='' ,TmpProductId,NULL)) AS JNamePos,  
-							MAX(AddDate) AS JJobDate
-						FROM 
-							farm.UnrecExp 
-						WHERE PriceCode = ?JPriceCode 
-							GROUP BY PriceCode";
-
-						MyDA.Fill(dt);
-
-						if (dt.Rows.Count > 0)
-						{
-							dr["JPos"] = dt.Rows[0]["JPos"];
-							dr["JNamePos"] = dt.Rows[0]["JNamePos"];
-							dr["JJobDate"] = dt.Rows[0]["JJobDate"];
-						}
-
-						dt.Clear();
-
-						if (!(dr["JDateLastForm"] is DBNull) && Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(dr["JJobDate"]))
-							MyCmd.Parameters.AddWithValue("?JJobDate", dr["JDateLastForm"]);
-						else
-							MyCmd.Parameters.AddWithValue("?JJobDate", dr["JJobDate"]);
-
-						MyCmd.CommandText =
-							@"SELECT 
-							MAX(LogTime) AS JSynonymDate
-						FROM 
-							logs.synonymlogs 
-						WHERE PriceCode = ?JPriceCode
-                        and LogTime >= ?JJobDate";
-
-						object JSynonymDate = MyCmd.ExecuteScalar();
-
-						MyCmd.CommandText =
-							@"SELECT 
-							MAX(LogTime) AS JSynonymFirmCrDate
-						FROM 
-							logs.synonymfirmcrlogs 
-						WHERE PriceCode = ?JPriceCode
-                        and LogTime >= ?JJobDate";
-
-						object JSynonymFirmCrDate = MyCmd.ExecuteScalar();
-
-						MyCmd.CommandText =
-							@"SELECT 
-							MAX(LogTime) AS JPricesRetrans
-						FROM 
-							logs.pricesretrans 
-						WHERE PriceCode = ?JPriceCode
-                        and LogTime >= ?JJobDate";
-
-						object JPricesRetrans = MyCmd.ExecuteScalar();
-
-						try
-						{
-							if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JPricesRetrans))
-								dr["JRetranced"] = 1;
-						}
-						catch
-						{
-							dr["JRetranced"] = 0;
-						}
-
-						if ((JSynonymDate is DBNull) && (JSynonymFirmCrDate is DBNull))
-						{
-							dr["JNeedRetrans"] = 0;
-						}
-						else
-						{
-							if (!(JSynonymDate is DBNull) && !(JSynonymFirmCrDate is DBNull))
-							{
-								if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymFirmCrDate))
-									dr["JNeedRetrans"] = 1;
-								if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymDate))
-									dr["JNeedRetrans"] = 1;
-							}
-							else
-							{
-								if (!(JSynonymDate is DBNull))
-								{
-									if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymDate))
-										dr["JNeedRetrans"] = 1;
-								}
-								else if (!(JSynonymFirmCrDate is DBNull))
-								{
-									if (Convert.ToDateTime(dr["JDateLastForm"]) < Convert.ToDateTime(JSynonymFirmCrDate))
-										dr["JNeedRetrans"] = 1;
-								}
-							}
-						}
-					}
-				}
 			}
 			finally
 			{
@@ -418,7 +330,6 @@ order by Name";
 		
 		private void CatalogFirmCrGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
 		{
-			//dataSet1.Tables["CatalogFirmCrGrid"].Clear();
 			dtCatalogFirmCr.Clear();
 			MyCmd.CommandText = 
 				@"SELECT 
@@ -479,7 +390,7 @@ union all
 SELECT
   Products.Id,
   Catalog.Id as CatalogId,
-  GROUP_CONCAT(Properties.PropertyName, '=', PropertyValues.Value
+  GROUP_CONCAT(PropertyValues.Value
     order by Properties.Id, PropertyValues.Id
     SEPARATOR ', '
   ) as Properties
@@ -709,12 +620,18 @@ group by Products.Id
 
 		private string GetFilterString(string Value, string FieldName)
 		{
-			string[] flt = Value.Split(' ');
+			int FirstLen = 4;
+			string[] flt = Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			ArrayList newflt = new ArrayList();
 			for(int i=0;i<flt.Length;i++)
 			{
-				if (flt[i].Length >=4)
-					newflt.Add( PrepareArg( flt[i].Substring(0, 4).Replace("'", "''") ) );
+				if (flt[i].Length >= 3)
+				{
+					if (flt[i].Length >= FirstLen)
+						newflt.Add(PrepareArg(flt[i].Substring(0, FirstLen).Replace("'", "''")));
+					else
+						newflt.Add(PrepareArg(flt[i].Replace("'", "''")));
+				}
 			}
 			string[] flt2 = new string[newflt.Count];
 			newflt.CopyTo(flt2);
@@ -740,7 +657,7 @@ group by Products.Id
 				string PropertiesValue = selected.GetDataRow(i)[FieldName].ToString();
 				int compareCount = 0;
 				foreach (string s in firstChars)
-					if (PropertiesValue.IndexOf("=" + s, StringComparison.OrdinalIgnoreCase) >= 0)
+					if (PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0)
 						compareCount++;
 
 				if (compareCount > maxCompareCount)
@@ -1423,7 +1340,7 @@ where
 and pf.Format = fr.PriceFmt
 and pui.PriceCode = fr.FirmCode
 and (pui.UnformCount > 0)", 
-							new MySqlParameter("LockedSynonym", LockedSynonym));
+							new MySqlParameter("?LockedSynonym", LockedSynonym));
 				//Первым в списке добавляем прайс-лист c родительскими синонимами
 				if ((ParentFileExt != null) && !(ParentFileExt is DBNull) && (ParentFileExt is String))
 					RetransedPriceList.Add(new RetransedPrice(LockedSynonym, (string)ParentFileExt));
@@ -1459,7 +1376,7 @@ and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
 and pui.PriceCode = pd.PriceCode
 and (pui.UnformCount > 0)
 ",
-				new MySqlParameter("LockedSynonym", LockedSynonym));
+				new MySqlParameter("?LockedSynonym", LockedSynonym));
 
 			//Если в наборе данных будут записи, то добавляем их в список
 			if (dsInerPrices.Tables[0].Rows.Count > 0)
@@ -1642,6 +1559,13 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					DataTable dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
 					daSynonymFirmCr.Update(dtSynonymFirmCrCopy);
 
+					MySqlHelper.ExecuteNonQuery(MyCn, @"
+update usersettings.price_update_info
+set
+  LastSynonymsCreation = now()
+where
+  PriceCode = ?PriceCode",
+								new MySqlParameter("?PriceCode", LockedSynonym)); 
 					f.Pr += 10;
 					
 					//Заполнили таблицу логов для запрещённых выражений
@@ -1666,8 +1590,8 @@ from
 where
   PriceCode = ?DeletePriceCode
 and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePriceCode and bp.BlockBy <> ?LockUserName)",
-										new MySqlParameter("DeletePriceCode", rp.PriceCode),
-										new MySqlParameter("LockUserName", Environment.UserName));
+										new MySqlParameter("?DeletePriceCode", rp.PriceCode),
+										new MySqlParameter("?LockUserName", Environment.UserName));
 					}
 
 					//DelCount = UpDateUnrecExp(tran);
