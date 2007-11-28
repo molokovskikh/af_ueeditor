@@ -1284,6 +1284,16 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 					tcMain.SelectedTab = tpUnrecExp;
 
 					UnrecExpGridFill(MyCmd, MyDA);
+
+					dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 5";
+					if (dtUnrecExp.DefaultView.Count == 0)
+					{
+						dtUnrecExp.DefaultView.RowFilter = null;
+						btnHideUnformFirmCr.Text = "Скрыть нераспознанные только по производителю";
+					}
+					else
+						btnHideUnformFirmCr.Text = "Показать все";
+
 					UnrecExpGridControl.Focus();
 					gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
 					gvUnrecExp.FocusedRowHandle = 0;
@@ -2375,6 +2385,22 @@ and c.Type = ?ContactType;",
 		{
 			if (e.RowHandle >= 0)
 				e.RowHeight += 4;
+		}
+
+		private void btnHideUnformFirmCr_Click(object sender, EventArgs e)
+		{
+			if (String.IsNullOrEmpty(dtUnrecExp.DefaultView.RowFilter))
+			{
+				dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 5";
+				btnHideUnformFirmCr.Text = "Показать все";
+			}
+			else
+			{
+				dtUnrecExp.DefaultView.RowFilter = null;
+				btnHideUnformFirmCr.Text = "Скрыть нераспознанные только по производителю";
+			}
+
+			UnrecExpGridControl.Focus();
 		}
 
 	}

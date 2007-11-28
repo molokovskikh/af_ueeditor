@@ -207,8 +207,8 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -353,6 +353,7 @@ namespace UEEditor
 			this.gcFirmCr = new DevExpress.XtraGrid.GridControl();
 			this.gvFirmCr = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFirmCrName = new DevExpress.XtraGrid.Columns.GridColumn();
+			this.btnHideUnformFirmCr = new System.Windows.Forms.Button();
 			this.pnlTop2 = new System.Windows.Forms.Panel();
 			this.BigNameLabel2 = new System.Windows.Forms.Label();
 			this.tpZero = new System.Windows.Forms.TabPage();
@@ -483,20 +484,20 @@ namespace UEEditor
 			// 
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode3.LevelTemplate = this.gvCatForm;
-			gridLevelNode4.LevelTemplate = this.gvProducts;
-			gridLevelNode4.RelationName = "Products";
-			gridLevelNode3.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode4});
-			gridLevelNode3.RelationName = "CatalogNames";
+			gridLevelNode1.LevelTemplate = this.gvCatForm;
+			gridLevelNode2.LevelTemplate = this.gvProducts;
+			gridLevelNode2.RelationName = "Products";
+			gridLevelNode1.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode2});
+			gridLevelNode1.RelationName = "CatalogNames";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode3});
+            gridLevelNode1});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.CatalogGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
 			this.CatalogGridControl.MainView = this.gvCatalog;
 			this.CatalogGridControl.Name = "CatalogGridControl";
-			this.CatalogGridControl.Size = new System.Drawing.Size(706, 237);
+			this.CatalogGridControl.Size = new System.Drawing.Size(706, 214);
 			this.CatalogGridControl.TabIndex = 0;
 			this.CatalogGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvCatalog,
@@ -1672,6 +1673,7 @@ namespace UEEditor
 			// pnlCenter2
 			// 
 			this.pnlCenter2.Controls.Add(this.pnlLeft2);
+			this.pnlCenter2.Controls.Add(this.btnHideUnformFirmCr);
 			this.pnlCenter2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.pnlCenter2.Location = new System.Drawing.Point(0, 24);
 			this.pnlCenter2.Name = "pnlCenter2";
@@ -1684,7 +1686,7 @@ namespace UEEditor
 			this.pnlLeft2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlLeft2.Location = new System.Drawing.Point(0, 0);
 			this.pnlLeft2.Name = "pnlLeft2";
-			this.pnlLeft2.Size = new System.Drawing.Size(712, 256);
+			this.pnlLeft2.Size = new System.Drawing.Size(712, 233);
 			this.pnlLeft2.TabIndex = 1;
 			// 
 			// grpBoxCatalog2
@@ -1694,7 +1696,7 @@ namespace UEEditor
 			this.grpBoxCatalog2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpBoxCatalog2.Location = new System.Drawing.Point(0, 0);
 			this.grpBoxCatalog2.Name = "grpBoxCatalog2";
-			this.grpBoxCatalog2.Size = new System.Drawing.Size(712, 256);
+			this.grpBoxCatalog2.Size = new System.Drawing.Size(712, 233);
 			this.grpBoxCatalog2.TabIndex = 0;
 			this.grpBoxCatalog2.TabStop = false;
 			this.grpBoxCatalog2.Text = "Каталог";
@@ -1714,7 +1716,7 @@ namespace UEEditor
 			this.gcFirmCr.LookAndFeel.UseDefaultLookAndFeel = false;
 			this.gcFirmCr.MainView = this.gvFirmCr;
 			this.gcFirmCr.Name = "gcFirmCr";
-			this.gcFirmCr.Size = new System.Drawing.Size(706, 237);
+			this.gcFirmCr.Size = new System.Drawing.Size(706, 214);
 			this.gcFirmCr.TabIndex = 1;
 			this.gcFirmCr.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvFirmCr});
@@ -1750,6 +1752,17 @@ namespace UEEditor
 			this.colFirmCrName.OptionsColumn.ReadOnly = true;
 			this.colFirmCrName.Visible = true;
 			this.colFirmCrName.VisibleIndex = 0;
+			// 
+			// btnHideUnformFirmCr
+			// 
+			this.btnHideUnformFirmCr.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.btnHideUnformFirmCr.Location = new System.Drawing.Point(0, 233);
+			this.btnHideUnformFirmCr.Name = "btnHideUnformFirmCr";
+			this.btnHideUnformFirmCr.Size = new System.Drawing.Size(712, 23);
+			this.btnHideUnformFirmCr.TabIndex = 2;
+			this.btnHideUnformFirmCr.Text = "btnHideUnformFirmCr";
+			this.btnHideUnformFirmCr.UseVisualStyleBackColor = true;
+			this.btnHideUnformFirmCr.Click += new System.EventHandler(this.btnHideUnformFirmCr_Click);
 			// 
 			// pnlTop2
 			// 
@@ -2160,5 +2173,6 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Views.Grid.GridView gvFirmCr;
 		private DevExpress.XtraGrid.Columns.GridColumn colFirmCrName;
 		private System.Data.DataColumn colCatalogProductsCount;
+		private System.Windows.Forms.Button btnHideUnformFirmCr;
 	}
 }
