@@ -2348,13 +2348,33 @@ and c.Type = ?ContactType;",
 			}
 		}
 
-		private void gvCatForm_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)
+		private void gvCatForm_RowStyle(object sender, RowStyleEventArgs e)
 		{
-			if ((e.RowHandle != GridControl.InvalidRowHandle) && (e.Column.Name == colFProductsCount.Name))
-				if (Convert.ToInt64(e.Value) > 1)
-					e.DisplayText = "Есть";
-				else
-					e.DisplayText = "Нет";
+			if ((e.RowHandle != GridControl.InvalidRowHandle) && (e.RowHandle != -1))
+			{ 
+				DataRow dr = ((GridView)sender).GetDataRow(e.RowHandle);
+
+				if ((dr != null) && (Convert.ToInt64(dr[colCatalogProductsCount.ColumnName]) > 1))
+					e.Appearance.BackColor = Color.LightGreen;
+			}
+
+		}
+
+		private void gvCatForm_CustomDrawRowIndicator(object sender, RowIndicatorCustomDrawEventArgs e)
+		{
+			if ((e.Info.IsRowIndicator) && (e.RowHandle != GridControl.InvalidRowHandle) && (e.RowHandle != -1))
+			{
+				DataRow dr = ((GridView)sender).GetDataRow(e.RowHandle);
+
+				if ((dr != null) && (Convert.ToInt64(dr[colCatalogProductsCount.ColumnName]) > 1))
+					e.Info.BackAppearance.BackColor = Color.LightGreen;
+			}
+		}
+
+		private void gvCatalog_CalcRowHeight(object sender, RowHeightEventArgs e)
+		{
+			if (e.RowHandle >= 0)
+				e.RowHeight += 4;
 		}
 
 	}

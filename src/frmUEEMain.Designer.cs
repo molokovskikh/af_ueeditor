@@ -207,12 +207,11 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colFProductsCount = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.CatalogGridControl = new DevExpress.XtraGrid.GridControl();
 			this.dsMain = new System.Data.DataSet();
 			this.dtJobs = new System.Data.DataTable();
@@ -354,10 +353,6 @@ namespace UEEditor
 			this.gcFirmCr = new DevExpress.XtraGrid.GridControl();
 			this.gvFirmCr = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFirmCrName = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
-			this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.gridView2 = new DevExpress.XtraGrid.Views.Grid.GridView();
-			this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.pnlTop2 = new System.Windows.Forms.Panel();
 			this.BigNameLabel2 = new System.Windows.Forms.Label();
 			this.tpZero = new System.Windows.Forms.TabPage();
@@ -433,8 +428,6 @@ namespace UEEditor
 			this.grpBoxCatalog2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.gcFirmCr)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvFirmCr)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.gridView2)).BeginInit();
 			this.pnlTop2.SuspendLayout();
 			this.tpZero.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ZeroGridControl)).BeginInit();
@@ -448,8 +441,7 @@ namespace UEEditor
 			// 
 			this.gvCatForm.Appearance.HideSelectionRow.Options.UseBackColor = true;
 			this.gvCatForm.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colFForm,
-            this.colFProductsCount});
+            this.colFForm});
 			this.gvCatForm.GridControl = this.CatalogGridControl;
 			this.gvCatForm.Name = "gvCatForm";
 			this.gvCatForm.OptionsBehavior.AllowIncrementalSearch = true;
@@ -463,7 +455,9 @@ namespace UEEditor
 			this.gvCatForm.OptionsView.ShowDetailButtons = false;
 			this.gvCatForm.OptionsView.ShowFilterPanel = false;
 			this.gvCatForm.OptionsView.ShowGroupPanel = false;
-			this.gvCatForm.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvCatForm_CustomColumnDisplayText);
+			this.gvCatForm.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvCatForm_RowStyle);
+			this.gvCatForm.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvCatForm_CustomDrawRowIndicator);
+			this.gvCatForm.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			// 
 			// colFForm
 			// 
@@ -479,22 +473,6 @@ namespace UEEditor
 			this.colFForm.VisibleIndex = 0;
 			this.colFForm.Width = 295;
 			// 
-			// colFProductsCount
-			// 
-			this.colFProductsCount.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
-			this.colFProductsCount.AppearanceCell.Options.UseFont = true;
-			this.colFProductsCount.AppearanceCell.Options.UseTextOptions = true;
-			this.colFProductsCount.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
-			this.colFProductsCount.AppearanceHeader.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
-			this.colFProductsCount.AppearanceHeader.Options.UseFont = true;
-			this.colFProductsCount.Caption = "Свойства";
-			this.colFProductsCount.FieldName = "ProductsCount";
-			this.colFProductsCount.Name = "colFProductsCount";
-			this.colFProductsCount.OptionsColumn.ReadOnly = true;
-			this.colFProductsCount.Visible = true;
-			this.colFProductsCount.VisibleIndex = 1;
-			this.colFProductsCount.Width = 25;
-			// 
 			// CatalogGridControl
 			// 
 			this.CatalogGridControl.DataMember = "dtCatalogNames";
@@ -505,18 +483,17 @@ namespace UEEditor
 			// 
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode1.LevelTemplate = this.gvCatForm;
-			gridLevelNode2.LevelTemplate = this.gvProducts;
-			gridLevelNode2.RelationName = "Products";
-			gridLevelNode1.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode2});
-			gridLevelNode1.RelationName = "CatalogNames";
+			gridLevelNode3.LevelTemplate = this.gvCatForm;
+			gridLevelNode4.LevelTemplate = this.gvProducts;
+			gridLevelNode4.RelationName = "Products";
+			gridLevelNode3.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode4});
+			gridLevelNode3.RelationName = "CatalogNames";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1});
+            gridLevelNode3});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.CatalogGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
-			this.CatalogGridControl.LookAndFeel.UseWindowsXPTheme = true;
 			this.CatalogGridControl.MainView = this.gvCatalog;
 			this.CatalogGridControl.Name = "CatalogGridControl";
 			this.CatalogGridControl.Size = new System.Drawing.Size(706, 237);
@@ -1008,6 +985,7 @@ namespace UEEditor
 			this.gvCatalog.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvCatalog.OptionsView.ShowFilterPanel = false;
 			this.gvCatalog.OptionsView.ShowGroupPanel = false;
+			this.gvCatalog.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			// 
 			// colCName
 			// 
@@ -1036,9 +1014,14 @@ namespace UEEditor
 			this.gvProducts.OptionsView.ShowFilterPanel = false;
 			this.gvProducts.OptionsView.ShowGroupPanel = false;
 			this.gvProducts.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvProducts_CustomColumnDisplayText);
+			this.gvProducts.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			// 
 			// colProperties
 			// 
+			this.colProperties.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+			this.colProperties.AppearanceCell.Options.UseFont = true;
+			this.colProperties.AppearanceHeader.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+			this.colProperties.AppearanceHeader.Options.UseFont = true;
 			this.colProperties.Caption = "Свойства";
 			this.colProperties.FieldName = "Properties";
 			this.colProperties.Name = "colProperties";
@@ -1141,7 +1124,6 @@ namespace UEEditor
 			this.JobsGridControl.Location = new System.Drawing.Point(0, 0);
 			this.JobsGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.JobsGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
-			this.JobsGridControl.LookAndFeel.UseWindowsXPTheme = true;
 			this.JobsGridControl.MainView = this.gvJobs;
 			this.JobsGridControl.Name = "JobsGridControl";
 			this.JobsGridControl.Size = new System.Drawing.Size(592, 681);
@@ -1478,7 +1460,6 @@ namespace UEEditor
 			this.UnrecExpGridControl.Location = new System.Drawing.Point(0, 0);
 			this.UnrecExpGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.UnrecExpGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
-			this.UnrecExpGridControl.LookAndFeel.UseWindowsXPTheme = true;
 			this.UnrecExpGridControl.MainView = this.gvUnrecExp;
 			this.UnrecExpGridControl.Name = "UnrecExpGridControl";
 			this.UnrecExpGridControl.Size = new System.Drawing.Size(712, 425);
@@ -1731,15 +1712,12 @@ namespace UEEditor
 			this.gcFirmCr.Location = new System.Drawing.Point(3, 16);
 			this.gcFirmCr.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.gcFirmCr.LookAndFeel.UseDefaultLookAndFeel = false;
-			this.gcFirmCr.LookAndFeel.UseWindowsXPTheme = true;
 			this.gcFirmCr.MainView = this.gvFirmCr;
 			this.gcFirmCr.Name = "gcFirmCr";
 			this.gcFirmCr.Size = new System.Drawing.Size(706, 237);
 			this.gcFirmCr.TabIndex = 1;
 			this.gcFirmCr.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.gvFirmCr,
-            this.gridView1,
-            this.gridView2});
+            this.gvFirmCr});
 			this.gcFirmCr.Visible = false;
 			this.gcFirmCr.KeyDown += new System.Windows.Forms.KeyEventHandler(this.gcFirmCr_KeyDown);
 			// 
@@ -1759,6 +1737,7 @@ namespace UEEditor
 			this.gvFirmCr.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvFirmCr.OptionsView.ShowFilterPanel = false;
 			this.gvFirmCr.OptionsView.ShowGroupPanel = false;
+			this.gvFirmCr.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			// 
 			// colFirmCrName
 			// 
@@ -1771,63 +1750,6 @@ namespace UEEditor
 			this.colFirmCrName.OptionsColumn.ReadOnly = true;
 			this.colFirmCrName.Visible = true;
 			this.colFirmCrName.VisibleIndex = 0;
-			// 
-			// gridView1
-			// 
-			this.gridView1.Appearance.HideSelectionRow.Options.UseBackColor = true;
-			this.gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.gridColumn1});
-			this.gridView1.GridControl = this.gcFirmCr;
-			this.gridView1.Name = "gridView1";
-			this.gridView1.OptionsBehavior.AllowIncrementalSearch = true;
-			this.gridView1.OptionsBehavior.Editable = false;
-			this.gridView1.OptionsDetail.ShowDetailTabs = false;
-			this.gridView1.OptionsFilter.AllowColumnMRUFilterList = false;
-			this.gridView1.OptionsFilter.AllowMRUFilterList = false;
-			this.gridView1.OptionsMenu.EnableColumnMenu = false;
-			this.gridView1.OptionsMenu.EnableFooterMenu = false;
-			this.gridView1.OptionsMenu.EnableGroupPanelMenu = false;
-			this.gridView1.OptionsSelection.EnableAppearanceFocusedCell = false;
-			this.gridView1.OptionsView.ShowDetailButtons = false;
-			this.gridView1.OptionsView.ShowFilterPanel = false;
-			this.gridView1.OptionsView.ShowGroupPanel = false;
-			// 
-			// gridColumn1
-			// 
-			this.gridColumn1.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.gridColumn1.AppearanceCell.Options.UseFont = true;
-			this.gridColumn1.AppearanceHeader.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.gridColumn1.AppearanceHeader.Options.UseFont = true;
-			this.gridColumn1.Caption = "Форма выпуска";
-			this.gridColumn1.FieldName = "Form";
-			this.gridColumn1.Name = "gridColumn1";
-			this.gridColumn1.OptionsColumn.ReadOnly = true;
-			this.gridColumn1.Visible = true;
-			this.gridColumn1.VisibleIndex = 0;
-			// 
-			// gridView2
-			// 
-			this.gridView2.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.gridColumn2});
-			this.gridView2.GridControl = this.gcFirmCr;
-			this.gridView2.Name = "gridView2";
-			this.gridView2.OptionsBehavior.AllowIncrementalSearch = true;
-			this.gridView2.OptionsBehavior.Editable = false;
-			this.gridView2.OptionsDetail.EnableMasterViewMode = false;
-			this.gridView2.OptionsDetail.ShowDetailTabs = false;
-			this.gridView2.OptionsSelection.EnableAppearanceFocusedCell = false;
-			this.gridView2.OptionsView.ShowDetailButtons = false;
-			this.gridView2.OptionsView.ShowFilterPanel = false;
-			this.gridView2.OptionsView.ShowGroupPanel = false;
-			// 
-			// gridColumn2
-			// 
-			this.gridColumn2.Caption = "Свойства";
-			this.gridColumn2.FieldName = "Properties";
-			this.gridColumn2.Name = "gridColumn2";
-			this.gridColumn2.OptionsColumn.ReadOnly = true;
-			this.gridColumn2.Visible = true;
-			this.gridColumn2.VisibleIndex = 0;
 			// 
 			// pnlTop2
 			// 
@@ -1872,7 +1794,6 @@ namespace UEEditor
 			this.ZeroGridControl.Location = new System.Drawing.Point(0, 0);
 			this.ZeroGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.ZeroGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
-			this.ZeroGridControl.LookAndFeel.UseWindowsXPTheme = true;
 			this.ZeroGridControl.MainView = this.gvZero;
 			this.ZeroGridControl.Name = "ZeroGridControl";
 			this.ZeroGridControl.Size = new System.Drawing.Size(712, 705);
@@ -2001,7 +1922,6 @@ namespace UEEditor
 			this.ForbGridControl.Location = new System.Drawing.Point(0, 0);
 			this.ForbGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.ForbGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
-			this.ForbGridControl.LookAndFeel.UseWindowsXPTheme = true;
 			this.ForbGridControl.MainView = this.gvForb;
 			this.ForbGridControl.Name = "ForbGridControl";
 			this.ForbGridControl.Size = new System.Drawing.Size(712, 705);
@@ -2224,8 +2144,6 @@ namespace UEEditor
 			this.grpBoxCatalog2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.gcFirmCr)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvFirmCr)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.gridView1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.gridView2)).EndInit();
 			this.pnlTop2.ResumeLayout(false);
 			this.tpZero.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.ZeroGridControl)).EndInit();
@@ -2239,13 +2157,8 @@ namespace UEEditor
 		#endregion
 
 		private DevExpress.XtraGrid.GridControl gcFirmCr;
-		private DevExpress.XtraGrid.Views.Grid.GridView gridView1;
-		private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
-		private DevExpress.XtraGrid.Views.Grid.GridView gridView2;
-		private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
 		private DevExpress.XtraGrid.Views.Grid.GridView gvFirmCr;
 		private DevExpress.XtraGrid.Columns.GridColumn colFirmCrName;
 		private System.Data.DataColumn colCatalogProductsCount;
-		private DevExpress.XtraGrid.Columns.GridColumn colFProductsCount;
 	}
 }
