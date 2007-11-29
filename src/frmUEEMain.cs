@@ -360,11 +360,12 @@ order by Name";
 select
   Catalog.*,
   CatalogForms.Form,
-  count(products.id) as productscount
+  count(pp.ProductId) as productscount
 from
   catalogs.Catalog,
   catalogs.CatalogForms,
   catalogs.products
+  left join catalogs.productproperties pp on pp.ProductId = products.id
 where
     CatalogForms.Id = Catalog.FormId
 and Catalog.Hidden = 0
@@ -384,42 +385,21 @@ order by Form";
 SELECT
   Products.Id,
   Catalog.Id as CatalogId,
-  null as Properties
+  GROUP_CONCAT(PropertyValues.Value
+    order by Properties.Id, PropertyValues.Id
+    SEPARATOR ', '
+  ) as Properties
 FROM
 (
 catalogs.Products,
 catalogs.Catalog
 )
 left join catalogs.ProductProperties on ProductProperties.ProductId = Products.Id
+left join catalogs.PropertyValues on PropertyValues.Id = ProductProperties.PropertyValueId
+left join catalogs.Properties on Properties.Id = PropertyValues.PropertyId
 where
     Catalog.Id = Products.CatalogID
-and Catalog.Id = ?CatalogId 
-and ProductProperties.ProductId is null
-and Products.Hidden = 0
-union all
-SELECT
-  Products.Id,
-  Catalog.Id as CatalogId,
-  GROUP_CONCAT(PropertyValues.Value
-    order by Properties.Id, PropertyValues.Id
-    SEPARATOR ', '
-  ) as Properties
-FROM
-catalogs.Products,
-catalogs.Catalog,
-catalogs.CatalogNames,
-catalogs.CatalogForms,
-catalogs.ProductProperties,
-catalogs.PropertyValues,
-catalogs.Properties
-where
-    Catalog.Id = Products.CatalogID
-and Catalog.Id = ?CatalogId 
-and CatalogNames.Id = Catalog.NameID
-and CatalogForms.Id = Catalog.FormID
-and ProductProperties.ProductId = Products.Id
-and PropertyValues.Id = ProductProperties.PropertyValueId
-and Properties.Id = PropertyValues.PropertyId
+and Catalog.Id = ?CatalogId
 and Products.Hidden = 0
 group by Products.Id
 order by Properties
@@ -437,44 +417,24 @@ order by Properties
 SELECT
   Products.Id,
   Catalog.Id as CatalogId,
-  null as Properties
+  cast(GROUP_CONCAT(PropertyValues.Value
+    order by Properties.Id, PropertyValues.Id
+    SEPARATOR ', '
+  ) as char) as Properties
 FROM
 (
 catalogs.Products,
 catalogs.Catalog
 )
 left join catalogs.ProductProperties on ProductProperties.ProductId = Products.Id
+left join catalogs.PropertyValues on PropertyValues.Id = ProductProperties.PropertyValueId
+left join catalogs.Properties on Properties.Id = PropertyValues.PropertyId
 where
     Catalog.Id = Products.CatalogID
 and Products.Id = ?ProductId 
-and ProductProperties.ProductId is null
-and Products.Hidden = 0
-union all
-SELECT
-  Products.Id,
-  Catalog.Id as CatalogId,
-  GROUP_CONCAT(Properties.PropertyName, '=', PropertyValues.Value
-    order by Properties.Id, PropertyValues.Id
-    SEPARATOR ', '
-  ) as Properties
-FROM
-catalogs.Products,
-catalogs.Catalog,
-catalogs.CatalogNames,
-catalogs.CatalogForms,
-catalogs.ProductProperties,
-catalogs.PropertyValues,
-catalogs.Properties
-where
-    Catalog.Id = Products.CatalogID
-and Products.Id = ?ProductId 
-and CatalogNames.Id = Catalog.NameID
-and CatalogForms.Id = Catalog.FormID
-and ProductProperties.ProductId = Products.Id
-and PropertyValues.Id = ProductProperties.PropertyValueId
-and Properties.Id = PropertyValues.PropertyId
 and Products.Hidden = 0
 group by Products.Id
+order by Properties
 ";
 
 			MyDA.Fill(dtProducts);
@@ -666,10 +626,16 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 		private void GotoCatalogPosition(GridView selected, string Value, string FieldName)
 		{
 			int WordLen = 3;
+
+			//–азбиваем вход€щие значение из прайса на слова
 			string[] flt = Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+			//массив первых символов из каждого слова
 			List<string> firstChars = new List<string>();
+
 			for (int i = 0; i < flt.Length; i++)
 			{
+				//≈сли длинна слова больше и равна WordLen, то добавл€ем первые символы слова в массив
 				if (flt[i].Length >= WordLen)
 					firstChars.Add(flt[i].Substring(0, WordLen));
 			}
@@ -679,49 +645,24 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 			//ѕроизодим поиск
 			for (int i = 0; i < selected.DataRowCount; i++)
 			{
+				//«начение строки из каталога
 				string PropertiesValue = selected.GetDataRow(i)[FieldName].ToString();
-				int compareCount = 0;
-				foreach (string s in firstChars)
-					if (PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0)
-						compareCount++;
 
-				if (compareCount > maxCompareCount)
+				//Ёто значение может быть пустой строкой, если сравниваем со свойствами
+				if (!String.IsNullOrEmpty(PropertiesValue))
 				{
-					maxCompareCount = compareCount;
-					positionId = i;
-				}
-			}
+					int compareCount = 0;
+					//ѕервые символы из каждого слова из прайс-листа ищем в каталоге,
+					//если находим это слово в каталоге, то увеличиваем счетчик совпадений
+					foreach (string s in firstChars)
+						if (PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0)
+							compareCount++;
 
-			if (positionId != 0)
-				selected.FocusedRowHandle = positionId;
-		}
-
-		private void GotoProductPosition(GridView selected, string Value, string FieldName)
-		{
-			int WordLen = 3;
-			string[] flt = Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			List<string> firstChars = new List<string>();
-			for (int i = 0; i < flt.Length; i++)
-			{
-				if (flt[i].Length >= WordLen)
-					firstChars.Add(flt[i].Substring(0, WordLen));
-			}
-
-			int positionId = 0, maxCompareCount = 0;
-
-			//ѕроизодим поиск со второй записи, т.к. в первый находитс€ "чистый" продукт (без свойств)
-			for (int i = 1; i < selected.DataRowCount; i++)
-			{
-				string PropertiesValue = selected.GetDataRow(i)[FieldName].ToString();
-				int compareCount = 0;
-				foreach (string s in firstChars)
-					if (PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0)
-						compareCount++;
-
-				if (compareCount > maxCompareCount)
-				{
-					maxCompareCount = compareCount;
-					positionId = i;
+					if (compareCount > maxCompareCount)
+					{
+						maxCompareCount = compareCount;
+						positionId = i;
+					}
 				}
 			}
 
@@ -1101,7 +1042,7 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 								else
 								{
 									//”станавливаем позицию на более подход€щем продукте.
-									GotoProductPosition(bv, GetFullUnrecName(gvUnrecExp.FocusedRowHandle), "Properties");
+									GotoCatalogPosition(bv, GetFullUnrecName(gvUnrecExp.FocusedRowHandle), "Properties");
 								}
 								colProperties.Caption = colFForm.Caption + " - " + drCatalog[colFForm.FieldName].ToString();
 							}
@@ -2364,7 +2305,7 @@ and c.Type = ?ContactType;",
 			{ 
 				DataRow dr = ((GridView)sender).GetDataRow(e.RowHandle);
 
-				if ((dr != null) && (Convert.ToInt64(dr[colCatalogProductsCount.ColumnName]) > 1))
+				if ((dr != null) && (Convert.ToInt64(dr[colCatalogProductsCount.ColumnName]) > 0))
 					e.Appearance.BackColor = Color.LightGreen;
 			}
 
@@ -2376,7 +2317,7 @@ and c.Type = ?ContactType;",
 			{
 				DataRow dr = ((GridView)sender).GetDataRow(e.RowHandle);
 
-				if ((dr != null) && (Convert.ToInt64(dr[colCatalogProductsCount.ColumnName]) > 1))
+				if ((dr != null) && (Convert.ToInt64(dr[colCatalogProductsCount.ColumnName]) > 0))
 					e.Info.BackAppearance.BackColor = Color.LightGreen;
 			}
 		}
