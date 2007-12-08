@@ -48,6 +48,9 @@ namespace UEEditor
 		private string UEregKey;
 		private string FregKey;
 		private string ZregKey;
+
+		//Время последнего обновления каталога
+		private DateTime catalogUpdate;
         
 		public string PriceFMT = String.Empty;
         public string FileExt = String.Empty;
@@ -116,6 +119,8 @@ namespace UEEditor
 			CatalogNameGridFill(MyCmd, MyDA);
 
 			FormGridFill(MyCmd, MyDA);
+
+			catalogUpdate = DateTime.Now;
 
 			//
 			JobsGridControl.Select();
@@ -440,6 +445,15 @@ order by Properties
 			MyDA.Fill(dtProducts);
 		}
 
+		private void CheckCatalog()
+		{
+			DateTime CatalogUpdateTime = Convert.ToDateTime(MySqlHelper.ExecuteScalar(MyCn, "select max(UpdateTime) from catalogs.catalog"));
+			DateTime ProductsUpdateTime = Convert.ToDateTime(MySqlHelper.ExecuteScalar(MyCn, "select max(UpdateTime) from catalogs.products"));
+			if ((catalogUpdate < CatalogUpdateTime) || (catalogUpdate < ProductsUpdateTime))
+				if (MessageBox.Show("Каталог был изменен. Произвести обновление каталога?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+					UpdateCatalog(); 
+		}
+
 		private void UpdateCatalog()
 		{
 			CatalogGridControl.BeginUpdate();
@@ -453,6 +467,8 @@ order by Properties
 				CatalogNameGridFill(MyCmd, MyDA);
 
 				FormGridFill(MyCmd, MyDA);
+
+				catalogUpdate = DateTime.Now;
 			}
 			finally
 			{
@@ -1827,6 +1843,8 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 						DialogResult DRes;
 						DRes = MessageBox.Show("Сохранить результаты?" , "Вопрос", MessageBoxButtons.YesNoCancel);
 						UnlockJob(DRes);
+						//Проверяем каталог после выхода из распознавания прайс-листа
+						CheckCatalog();
 					}
 					break;
 
