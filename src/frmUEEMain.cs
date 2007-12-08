@@ -628,7 +628,8 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 			int WordLen = 3;
 
 			//–азбиваем вход€щие значение из прайса на слова
-			string[] flt = Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			//разделител€ми слов €вл€ютс€: ' ', '+', '-'
+			string[] flt = Value.Split(new char[] { ' ', '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
 			//массив первых символов из каждого слова
 			List<string> firstChars = new List<string>();
@@ -637,7 +638,21 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 			{
 				//≈сли длинна слова больше и равна WordLen, то добавл€ем первые символы слова в массив
 				if (flt[i].Length >= WordLen)
-					firstChars.Add(flt[i].Substring(0, WordLen));
+				{
+					//удал€ем возможные символы квотирование из начала и конца строки
+					if ((flt[i][0] == '"') || (flt[i][0] == '\''))
+						flt[i] = flt[i].Substring(1, flt[i].Length - 1);
+
+					if ((flt[i][flt[i].Length - 1] == '"') || (flt[i][flt[i].Length - 1] == '\''))
+						flt[i] = flt[i].Substring(0, flt[i].Length - 1);
+
+					//≈сли длина слова позвол€ет вычесть WordLen-символов с конца и останетс€ >= WordLen, то обрезаем с конца
+					//≈сли нет, то берем только первые WordLen-символы с начала
+					if (flt[i].Length - WordLen >= WordLen)
+						firstChars.Add(flt[i].Substring(0, flt[i].Length - WordLen));
+					else
+						firstChars.Add(flt[i].Substring(0, (flt[i].Length < WordLen) ? flt[i].Length : WordLen));
+				}
 			}
 
 			int positionId = 0, maxCompareCount = 0;
@@ -652,11 +667,16 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 				if (!String.IsNullOrEmpty(PropertiesValue))
 				{
 					int compareCount = 0;
+					int currentIndex = -1;
 					//ѕервые символы из каждого слова из прайс-листа ищем в каталоге,
 					//если находим это слово в каталоге, то увеличиваем счетчик совпадений
 					foreach (string s in firstChars)
-						if (PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0)
+					{
+						currentIndex = PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase);
+						//—овпало в том случае, если нашли в начале строки, или в начале любого слова, перед которым стоит знак пунктуации или разделитель
+						if ((currentIndex == 0) || ((currentIndex > 0) && (Char.IsSeparator(PropertiesValue[currentIndex-1]) || Char.IsPunctuation(PropertiesValue[currentIndex-1]))))
 							compareCount++;
+					}
 
 					if (compareCount > maxCompareCount)
 					{
