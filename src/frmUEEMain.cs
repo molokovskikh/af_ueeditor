@@ -386,7 +386,7 @@ SELECT
   Products.Id,
   Catalog.Id as CatalogId,
   GROUP_CONCAT(PropertyValues.Value
-    order by Properties.Id, PropertyValues.Id
+    order by Properties.PropertyName, PropertyValues.Value
     SEPARATOR ', '
   ) as Properties
 FROM
@@ -418,7 +418,7 @@ SELECT
   Products.Id,
   Catalog.Id as CatalogId,
   cast(GROUP_CONCAT(PropertyValues.Value
-    order by Properties.Id, PropertyValues.Id
+    order by Properties.PropertyName, PropertyValues.Value
     SEPARATOR ', '
   ) as char) as Properties
 FROM
