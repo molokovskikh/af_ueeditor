@@ -16,6 +16,7 @@ using System.Threading;
 using System.Security.Permissions;
 using Microsoft.Win32;
 using System.Diagnostics;
+using Inforoom.Logging;
 
 
 
@@ -1678,9 +1679,13 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			f.Status = String.Empty;
 			f.Error = String.Empty;
 
+			SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "res : {0}", res);
+
 			bool S = DelCount == dtUnrecExp.Rows.Count;
+			SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "DelCount == dtUnrecExp.Rows.Count : {0}", DelCount == dtUnrecExp.Rows.Count);
 			if (!S)
 				S = (bool)f.Invoke( new ShowRetransPriceDelegate( ShowRetransPrice ) );
+			SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "ShowRetransPrice : {0}", S);
 
 			if (res &&  S)
 			{
@@ -1692,6 +1697,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 #endif
 
 				f.Status = "Перепроведение пpайса...";
+				SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроведение пpайса...");
 				f.Pr = 80;
 
 				int CurrentPriceCode = 0;
@@ -1701,6 +1707,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 					CurrentFileName = RetransedPriceList[CurrentPriceCode].PriceCode.ToString() + RetransedPriceList[CurrentPriceCode].FileExt;
 					try
 					{
+						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроводим : {0}", CurrentFileName);
 						if (File.Exists(rootpath + "Base\\" + CurrentFileName))
 						{
 							if (!File.Exists(rootpath + "Inbound0\\" + CurrentFileName))
@@ -1708,13 +1715,19 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 								File.Copy(rootpath + "Base\\" + CurrentFileName, rootpath + "Inbound0\\" + CurrentFileName);
 								PricesRetrans(now, RetransedPriceList[CurrentPriceCode].PriceCode);
 							}
+							else
+								SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Файла есть в Inbound");
 						}
+						else
+							SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Файла нет в Base");
+
 						RetransedPriceList.RemoveAt(CurrentPriceCode);
 					}
 					catch (Exception e)
 					{
 						if (f != null)
 							f.Error = String.Format("При копировании файла {1} возникла ошибка : {0}\r\n", e, CurrentFileName);
+						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "При копировании файла {1} возникла ошибка : {0}", e, CurrentFileName);
 						CurrentPriceCode++;
 						Thread.Sleep(500);
 					}
@@ -1722,6 +1735,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 						CurrentPriceCode = 0;
 				}
 				while(RetransedPriceList.Count > 0);
+
+				SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроведение пpайса завершено.");
 
 			}
 
