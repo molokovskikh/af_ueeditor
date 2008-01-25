@@ -47,8 +47,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Редактор нераспознанных выражений</ProductName>
     <PublisherName>Inforoom</PublisherName>
-    <MinimumRequiredVersion>1.1.12.123</MinimumRequiredVersion>
-    <ApplicationVersion>1.1.12.123</ApplicationVersion>
+    <MinimumRequiredVersion>1.1.13.124</MinimumRequiredVersion>
+    <ApplicationVersion>1.1.13.124</ApplicationVersion>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
