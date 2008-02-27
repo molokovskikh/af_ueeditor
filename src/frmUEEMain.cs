@@ -2424,7 +2424,7 @@ and c.Type = ?ContactType;",
 					"service@analit.net",
 					"Необработанная ошибка в UEEditor",
 					String.Format("Sender = {0}\r\nException = = {1}", sender, t.Exception));
-				System.Net.Mail.SmtpClient sm = new System.Net.Mail.SmtpClient("box.analit.net");
+				System.Net.Mail.SmtpClient sm = new System.Net.Mail.SmtpClient(UEEditor.Properties.Settings.Default.SMTPHost);
 				sm.Send(m);
 			}
 			catch

@@ -44,5 +44,8 @@ http://www.analit.net</Value>
 E-mail: pharm@analit.net%0D%0A
 http://www.analit.net</Value>
     </Setting>
+    <Setting Name="SMTPHost" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">mail.adc.analit.net</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

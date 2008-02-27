@@ -88,5 +88,14 @@ http://www.analit.net")]
                 return ((string)(this["AboutNamesBody"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("mail.adc.analit.net")]
+        public string SMTPHost {
+            get {
+                return ((string)(this["SMTPHost"]));
+            }
+        }
     }
 }
