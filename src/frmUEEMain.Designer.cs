@@ -454,7 +454,7 @@ namespace UEEditor
 			this.gvCatForm.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvCatForm.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvCatForm.OptionsView.ShowDetailButtons = false;
-			this.gvCatForm.OptionsView.ShowFilterPanel = false;
+			this.gvCatForm.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvCatForm.OptionsView.ShowGroupPanel = false;
 			this.gvCatForm.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvCatForm_RowStyle);
 			this.gvCatForm.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvCatForm_CustomDrawRowIndicator);
@@ -984,7 +984,7 @@ namespace UEEditor
 			this.gvCatalog.OptionsMenu.EnableFooterMenu = false;
 			this.gvCatalog.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvCatalog.OptionsSelection.EnableAppearanceFocusedCell = false;
-			this.gvCatalog.OptionsView.ShowFilterPanel = false;
+			this.gvCatalog.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvCatalog.OptionsView.ShowGroupPanel = false;
 			this.gvCatalog.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			// 
@@ -1012,7 +1012,7 @@ namespace UEEditor
 			this.gvProducts.OptionsDetail.ShowDetailTabs = false;
 			this.gvProducts.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvProducts.OptionsView.ShowDetailButtons = false;
-			this.gvProducts.OptionsView.ShowFilterPanel = false;
+			this.gvProducts.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvProducts.OptionsView.ShowGroupPanel = false;
 			this.gvProducts.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvProducts_CustomColumnDisplayText);
 			this.gvProducts.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
@@ -1737,7 +1737,7 @@ namespace UEEditor
 			this.gvFirmCr.OptionsMenu.EnableFooterMenu = false;
 			this.gvFirmCr.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvFirmCr.OptionsSelection.EnableAppearanceFocusedCell = false;
-			this.gvFirmCr.OptionsView.ShowFilterPanel = false;
+			this.gvFirmCr.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvFirmCr.OptionsView.ShowGroupPanel = false;
 			this.gvFirmCr.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			// 

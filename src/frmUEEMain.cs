@@ -96,7 +96,7 @@ namespace UEEditor
 			{
 			}
 
-			MyCn.ConnectionString = "server=sql.analit.net; user id=system; password=123; database=farm;convert zero datetime=true;";
+			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true;";
 #if DEBUG
 			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;";
 #endif
@@ -983,10 +983,11 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 		{
 			GridView FocusedView = (GridView)CatalogGridControl.FocusedView;
 			//Снимаем фильтр при поиске
-			if ((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
+			if (((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
 				e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
 				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
 				(e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9))
+				&& (FocusedView.ActiveFilter.Count > 0))
 			{
 				FocusedView.ActiveFilter.Clear();
 			}
@@ -2312,10 +2313,11 @@ and c.Type = ?ContactType;",
 		{
 			//Здесь будет обработка производителя
 			//Снимаем фильтр при поиске
-			if ((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
+			if (((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
 				e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
 				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
 				(e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9))
+				&& (gvFirmCr.ActiveFilter.Count > 0))
 			{
 				gvFirmCr.ActiveFilter.Clear();
 			}
