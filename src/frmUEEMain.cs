@@ -1475,17 +1475,19 @@ and (pui.UnformCount > 0)
 			DataTable dtSynonym = new DataTable();
 			daSynonym.Fill(dtSynonym);
 			dtSynonym.Constraints.Add("UnicNameCode", dtSynonym.Columns["Synonym"], false);
+			dtSynonym.Columns.Add("ChildPriceCode", typeof(long));
 			daSynonym.InsertCommand = new MySqlCommand(
 				@"
 insert into farm.synonym (PriceCode, Synonym, Junk, ProductId) values (?PriceCode, ?Synonym, ?Junk, ?ProductId);
-insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId)
-  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Synonym, ?Junk, ?ProductId)", MyCn);
+insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
+  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", MyCn);
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName);
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonym.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonym.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
 			daSynonym.InsertCommand.Parameters.Add("?Junk", MySqlDbType.Byte, 0, "Junk");
 			daSynonym.InsertCommand.Parameters.Add("?ProductId", MySqlDbType.UInt64, 0, "ProductId");
+			daSynonym.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 			
 			f.Pr += 1;
 			//Заполнили таблицу синонимов производителей
@@ -1495,17 +1497,19 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			DataTable dtSynonymFirmCr = new DataTable();
 			daSynonymFirmCr.Fill(dtSynonymFirmCr);
 			dtSynonymFirmCr.Constraints.Add("UnicNameCode", new DataColumn[] {dtSynonymFirmCr.Columns["Synonym"]}, false);
+			dtSynonymFirmCr.Columns.Add("ChildPriceCode", typeof(long));
 			daSynonymFirmCr.InsertCommand = new MySqlCommand(
 				@"
 insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym) values (?PriceCode, ?CodeFirmCr, ?Synonym);
-insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operation, SynonymFirmCrCode, PriceCode, CodeFirmCr, Synonym) 
-  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?CodeFirmCr, ?Synonym)", 
+insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operation, SynonymFirmCrCode, PriceCode, CodeFirmCr, Synonym, ChildPirceCode) 
+  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?CodeFirmCr, ?Synonym, ?ChildPriceCode)", 
 				MyCn);
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName);
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?CodeFirmCr", MySqlDbType.UInt64, 0, "CodeFirmCr");
+			daSynonymFirmCr.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 
 			f.Pr += 1;
 			//Заполнили таблицу запрещённых выражений
@@ -1562,6 +1566,8 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							newDR["Synonym"] = GetFullUnrecName(i);
 							newDR["ProductId"] = dr[UETmpProductId];
 							newDR["Junk"] = dr[UEJunk];
+							if (LockedSynonym != LockedPriceCode)
+								newDR["ChildPriceCode"] = LockedPriceCode;
 							try
 							{
 								dtSynonym.Rows.Add(newDR);
@@ -1580,6 +1586,8 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							newDR["PriceCode"] = LockedSynonym;
 							newDR["CodeFirmCr"] = dr[UETmpCodeFirmCr];
 							newDR["Synonym"] = GetFirmCr(i);
+							if (LockedSynonym != LockedPriceCode)
+								newDR["ChildPriceCode"] = LockedPriceCode;
 							try
 							{
 								dtSynonymFirmCr.Rows.Add(newDR);
