@@ -56,6 +56,7 @@ namespace UEEditor
 		public string PriceFMT = String.Empty;
         public string FileExt = String.Empty;
 		public long LockedPriceCode = -1;
+		public long LockedPriceItemId = -1;
 		public long LockedSynonym = -1;
 		public frmProgress f = null;
 		public int SynonymCount = 0;
@@ -98,7 +99,7 @@ namespace UEEditor
 
 			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true;";
 #if DEBUG
-			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;";
+			MyCn.ConnectionString = "server=sql.analit.net; user id=Morozov; password=Srt38123; database=farm;convert zero datetime=true;";
 #endif
 			MyCn.Open();
 			MyDA = new MySqlDataAdapter(MyCmd);
@@ -188,70 +189,75 @@ namespace UEEditor
 		{
 			daJobs = new MySqlDataAdapter(
 				@"
-SELECT  PD.FirmCode as JFirmCode,
+SELECT
+        PD.FirmCode as JFirmCode,
         cd.ShortName as FirmShortName,
-        PD.PriceCode                                                                                                         As JPriceCode,
-        concat(CD.ShortName, '(', if(pc.PriceCode = pc.ShowPriceCode, pd.PriceName, concat('[ олонка] ', pc.CostName)), ')') as JName,
+        pim.Id as JPriceItemId,
+        PD.PriceCode As JPriceCode,
+        concat(CD.ShortName, '(', if(pd.CostType = 1, concat('[ олонка] ', pc.CostName), pd.PriceName), ')') as JName,
         regions.region                                                                                                       As JRegion,
-        pui.DateCurPrice                                                                                               AS JPriceDate,
-        FormRules.MaxOld,
+        pim.PriceDate as JPriceDate,
         statunrecexp.Pos                                                                        AS JPos,
         statunrecexp.NamePos                                                                    AS JNamePos,
-        pui.DateLastForm                                                                        AS JJobDate,
+        pim.LastFormalization                                                                   AS JJobDate,
         CD.FirmSegment                                                                          As JWholeSale,
         bp.BlockBy                                                                              As JBlockBy,
-        FormRules.ParentSynonym                                                                 as JParentSynonym,
-        FormRules.PriceFmt                                                                      As JPriceFMT,
+        PD.ParentSynonym                                                                        as JParentSynonym,
+        pfmt.Format                                                                             As JPriceFMT,
         pfmt.FileExtention                                                                      as JExt,
-        if((synonympui.LastSynonymsCreation is not null) and (pui.DateLastForm < synonympui.LastSynonymsCreation), 1, 0) AS JNeedRetrans,
-        if(pui.DateLastForm < pui.LastRetrans, 1, 0)                                            AS JRetranced,
-        pui.DateLastForm                                                                        AS JDateLastForm,
-        if(FormRules.ParentSynonym is null, '', concat(pcd.ShortName, '(', ppd.PriceName, ')')) AS JParentName
+        pim.LastFormalization                                                                   AS JDateLastForm,
+        if((synonympim.LastSynonymsCreation is not null) and (pim.LastFormalization < synonympim.LastSynonymsCreation), 1, 0) AS JNeedRetrans,
+        if(pim.LastFormalization < pim.LastRetrans, 1, 0)                                            AS JRetranced,
+        if(pd.ParentSynonym is null, '', concat(synonymcd.ShortName, '(', synonympd.PriceName, ')')) AS JParentName
 FROM
-  (usersettings.ClientsData AS CD,
-   FormRules,
-   PriceFMTs as pfmt,
-   usersettings.pricesdata AS PD,
-   regions,
-   usersettings.pricescosts pc,
-   usersettings.price_update_info pui,
-   usersettings.price_update_info synonympui,
+  (
    (select
-      unrecexp.PriceCode,
+      unrecexp.PriceItemId,
       count(unrecexp.RowID) as Pos,
       COUNT(IF(unrecexp.TmpProductId=0,unrecexp.TmpProductId,NULL)) as NamePos
     from
       farm.unrecexp
-    group by unrecexp.PriceCode) statunrecexp
+    group by unrecexp.PriceItemId) statunrecexp,
+   usersettings.priceitems pim,
+   usersettings.pricescosts pc,
+   usersettings.pricesdata AS PD,
+   usersettings.ClientsData AS CD,
+   farm.regions,
+   farm.FormRules,
+   farm.PriceFMTs as pfmt,
+   usersettings.pricesdata synonympd,
+   usersettings.pricescosts synonympc,
+   usersettings.priceitems synonympim,
+   usersettings.clientsdata synonymcd
   )
-LEFT JOIN blockedprice bp
-ON      bp.PriceCode = PD.PriceCode
-LEFT JOIN usersettings.pricesdata ppd
-ON      ppd.pricecode = FormRules.ParentSynonym
-LEFT JOIN usersettings.clientsdata pcd
-ON      pcd.FirmCode       = ppd.firmcode
-WHERE   FormRules.firmcode =PD.pricecode
-    AND FormRules.PriceFmt = pfmt.Format
-    and statunrecexp.PriceCode = PD.pricecode
-    and pui.PriceCode = PD.pricecode
-    and synonympui.PriceCode = if(FormRules.ParentSynonym is null, PD.pricecode, FormRules.ParentSynonym)
-    AND CD.firmcode        =PD.firmcode
-    AND regions.regioncode =CD.regioncode
-    AND pd.agencyenabled   =1
-    AND pc.PriceCode = pd.PriceCode
-", 
+  LEFT JOIN farm.blockedprice bp ON bp.PriceItemId = pim.Id
+WHERE
+    pim.Id = statunrecexp.PriceItemId
+and pc.PriceItemId = pim.Id
+and pc.PriceCode = pd.PriceCode
+and ((pd.CostType = 1) or (pc.BaseCost = 1))
+AND pd.agencyenabled   =1
+and pd.FirmCode = cd.FirmCode
+AND regions.regioncode =CD.regioncode
+and FormRules.id = pim.FormRuleId
+and pfmt.Id = FormRules.PriceFormatId
+and synonympd.PriceCode = ifnull(pd.ParentSynonym, PD.pricecode)
+and synonympc.PriceCode = synonympd.PriceCode
+and synonympc.BaseCost = 1
+and synonympim.Id = synonympc.PriceItemId
+and synonymcd.FirmCode = synonympd.FirmCode", 
 				MyCn);
 		}
 
 		private void JobsGridFill()
 		{
-			long CurrPriceCode = -1;
+			long CurrPriceItemId = -1;
 			List<long> selectedPrices = new List<long>();
 			if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow drJ = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
 				if (drJ != null)
-					CurrPriceCode = Convert.ToInt64(drJ["JPriceCode"]);
+					CurrPriceItemId = Convert.ToInt64(drJ[JPriceItemId.ColumnName]);
 			}
 
 			int[] selected = gvJobs.GetSelectedRows();
@@ -260,7 +266,7 @@ WHERE   FormRules.firmcode =PD.pricecode
 				//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
 				foreach (int rowHandle in selected)
 					if (rowHandle != GridControl.InvalidRowHandle)
-						selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceCode.ColumnName]);
+						selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceItemId.ColumnName]);
 			}
 
 			dtJobs.Clear();
@@ -275,7 +281,7 @@ WHERE   FormRules.firmcode =PD.pricecode
 				JobsGridControl.EndUpdate();
 			}
 
-			LocateJobs(CurrPriceCode, (selectedPrices.Count <= 1) ? null : selectedPrices);
+			LocateJobs(CurrPriceItemId, (selectedPrices.Count <= 1) ? null : selectedPrices);
 			statusBar1.Panels[0].Text = "«аданий в очереди: " + dtJobs.Rows.Count;
 		}
 
@@ -308,10 +314,10 @@ WHERE   FormRules.firmcode =PD.pricecode
 				  Junk As UEJunk,
 				  HandMade As UEHandMade
 				  FROM farm.UnrecExp 
-				  WHERE PriceCode= ?LockedPriceCode ORDER BY Name1";
+				  WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1";
 
 			MyCmd.Parameters.Clear();
-			MyCmd.Parameters.AddWithValue("?LockedPriceCode", LockedPriceCode);
+			MyCmd.Parameters.AddWithValue("?LockedPriceItemId", LockedPriceItemId);
 			
 			UnrecExpGridControl.BeginUpdate();
 			try
@@ -490,7 +496,7 @@ order by Properties
 					//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
 					foreach (int rowHandle in selected)
 						if (rowHandle != GridControl.InvalidRowHandle)
-							selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceCode.ColumnName]);
+							selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceItemId.ColumnName]);
 
 					//удал€ем задани€
 					foreach (long selectedPrice in selectedPrices)
@@ -502,10 +508,10 @@ order by Properties
 DELETE FROM 
   farm.UnrecExp
 WHERE 
-    PriceCode = ?PriceCode
-AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.PriceCode)",
+    PriceItemId = ?PriceItemId
+AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.PriceItemId)",
 								MyCn, tran);
-							cmdDeleteJob.Parameters.AddWithValue("?PriceCode", selectedPrice);
+							cmdDeleteJob.Parameters.AddWithValue("?PriceItemId", selectedPrice);
 							cmdDeleteJob.ExecuteNonQuery();
 							tran.Commit();
 						}
@@ -554,9 +560,9 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 				MyCmd.CommandText = 
 					@"SELECT Forb As FForb 
 					            FROM farm.Forb 
-					            WHERE PriceCode= ?JPriceCode";
+					            WHERE PriceItemId= ?PriceItemId";
 				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?JPriceCode", LockedPriceCode);
+				MyCmd.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
 
 				MyDA.Fill(dtForb);
 
@@ -580,10 +586,10 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 									Quantity As ZQuantity, 
 									Period As ZPeriod
 								FROM farm.Zero 
-								WHERE PriceCode= ?JPriceCode";
+								WHERE PriceItemId= ?PriceItemId";
 
 				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?JPriceCode", LockedPriceCode);
+				MyCmd.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
 				MyDA.Fill(dtZero);
 			}
 
@@ -1242,14 +1248,15 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 				DataRow dr = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
 				if (dr[colJBlockBy.FieldName].ToString() == String.Empty || dr[colJBlockBy.FieldName].ToString() == Environment.UserName)
 				{
-					LockedPriceCode = Convert.ToInt64(dr["JPriceCode"]);
+					LockedPriceCode = Convert.ToInt64(dr[JPriceCode.ColumnName]);
+					LockedPriceItemId = Convert.ToInt64(dr[JPriceItemId.ColumnName]);
                     PriceFMT = dr[JPriceFMT].ToString();
                     FileExt = dr[JExt].ToString();
                     if (dr[JParentSynonym] is DBNull)
 						LockedSynonym = LockedPriceCode;
 					else
 						LockedSynonym = Convert.ToInt64(dr[JParentSynonym]);
-					LockedInBlockedPrice(LockedPriceCode, Environment.UserName);
+					LockedInBlockedPrice(LockedPriceItemId, Environment.UserName);
 					grpBoxCatalog2.Text = " аталог";
 
 					tcMain.TabPages.Add(tpUnrecExp);
@@ -1310,9 +1317,10 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 					tcMain.TabPages.Remove(tpForb);
 					tcMain.SelectedTab = tpJobs;
 					JobsGridControl.Select();
-					LocateJobs(LockedPriceCode, null);
-					UnLockedInBlockedPrice(LockedPriceCode);
+					LocateJobs(LockedPriceItemId, null);
+					UnLockedInBlockedPrice(LockedPriceItemId);
 					LockedPriceCode = -1;
+					LockedPriceItemId = -1;
                     PriceFMT = String.Empty;
                     FileExt = String.Empty;
                     LockedSynonym = -1;
@@ -1379,58 +1387,29 @@ AND not exists(select * from blockedprice bp where bp.PriceCode = UnrecExp.Price
 			//—писок прайсов, которые нужно перепровести
 			List<RetransedPrice> RetransedPriceList = new List<RetransedPrice>();
 
-			//≈сли прайс-лист уже имеет родительский синоним, то ищем FileExtention родител€
-			//и добавл€ем родител€ первым в списке
-			if (LockedSynonym != LockedPriceCode)
-			{
-				object ParentFileExt = MySqlHelper.ExecuteScalar(MyCn, @"
-select 
-  pf.FileExtention 
-from 
-  farm.formrules fr, 
-  farm.pricefmts pf,
-  usersettings.price_update_info pui 
-where 
-    fr.FirmCode = ?LockedSynonym 
-and pf.Format = fr.PriceFmt
-and pui.PriceCode = fr.FirmCode
-and (pui.UnformCount > 0)", 
-							new MySqlParameter("?LockedSynonym", LockedSynonym));
-				//ѕервым в списке добавл€ем прайс-лист c родительскими синонимами
-				if ((ParentFileExt != null) && !(ParentFileExt is DBNull) && (ParentFileExt is String))
-					RetransedPriceList.Add(new RetransedPrice(LockedSynonym, (string)ParentFileExt));
-			}
-			else
-				//ѕервым в списке добавл€ем сам прайс-лист
-				RetransedPriceList.Add(new RetransedPrice(LockedPriceCode, FileExt));
-
 			//ѕопытка найти всех потомков, которые используют родительские синонимы
 			DataSet dsInerPrices = MySqlHelper.ExecuteDataset(MyCn, @"
 select
-  pd.PriceCode,
+  pc.PriceItemId,
   pf.FileExtention
 from
-  farm.formrules fr,
   usersettings.pricesdata pd,
   usersettings.clientsdata cd,
   usersettings.pricescosts pc,
-  usersettings.pricesdata parentpd,
-  farm.pricefmts pf,
-  usersettings.price_update_info pui
+  usersettings.priceitems pim,
+  farm.formrules fr,
+  farm.pricefmts pf
 where
-    fr.ParentSynonym = ?LockedSynonym
-and pd.PriceCode = fr.FirmCode
-and pf.Format = fr.PriceFmt
+    ((pd.PriceCode = ?LockedSynonym) or (pd.ParentSynonym = ?LockedSynonym))
 and pd.AgencyEnabled = 1
 and cd.FirmCode = pd.FirmCode
 and cd.FirmStatus = 1
-and cd.BillingStatus = 1
 and pc.PriceCode = pd.PriceCode
-and parentpd.PriceCode = pc.ShowPriceCode
-and ((pc.PriceCode = pc.ShowPriceCode) or (parentpd.CostType = 1))
-and pui.PriceCode = pd.PriceCode
-and (pui.UnformCount > 0)
-",
+and ((pd.CostType = 1) or (pc.BaseCost = 1))
+and pim.Id = pc.PriceItemId
+and (pim.UnformCount > 0)
+and fr.Id = pim.FormRuleId
+and pf.Id = fr.PriceFormatId",
 				new MySqlParameter("?LockedSynonym", LockedSynonym));
 
 			//≈сли в наборе данных будут записи, то добавл€ем их в список
@@ -1438,15 +1417,14 @@ and (pui.UnformCount > 0)
 			{
 				HasParentSynonym = true;
 				foreach(DataRow drInerPrice in dsInerPrices.Tables[0].Rows)
-					RetransedPriceList.Add(
-						new RetransedPrice(
-							Convert.ToInt64(drInerPrice["PriceCode"]), 
-							drInerPrice["FileExtention"].ToString()));
+					if ((LockedPriceItemId != Convert.ToInt64(drInerPrice["PriceItemId"])) && !RetransedPriceList.Exists(delegate(RetransedPrice value) { return value.PriceItemId == Convert.ToInt64(drInerPrice["PriceItemId"]); }))
+						RetransedPriceList.Add(
+							new RetransedPrice(
+								Convert.ToInt64(drInerPrice["PriceItemId"]),
+								drInerPrice["FileExtention"].ToString()));
 			}
 
-			//≈сли в списке нет прайс-листа, с которым происходит работа, то мы его добавл€ем в список
-			if (!RetransedPriceList.Exists(delegate(RetransedPrice value) { return (value.PriceCode == LockedPriceCode);}) )
-				RetransedPriceList.Add(new RetransedPrice(LockedPriceCode, FileExt));
+			RetransedPriceList.Insert(0, new RetransedPrice(LockedPriceItemId, FileExt));			
 
 			SynonymCount = 0; 
 			SynonymFirmCrCount = 0;
@@ -1461,9 +1439,9 @@ and (pui.UnformCount > 0)
 			//«аполнение таблиц перед вставкой
 
 			//«аполнили таблицу нераспознанных наименований дл€ обновлени€
-			MySqlDataAdapter daUnrecUpdate = new MySqlDataAdapter("select * from farm.UnrecExp where PriceCode = ?PriceCode", MyCn);
+			MySqlDataAdapter daUnrecUpdate = new MySqlDataAdapter("select * from farm.UnrecExp where PriceItemId = ?PriceItemId", MyCn);
 			MySqlCommandBuilder cbUnrecUpdate = new MySqlCommandBuilder(daUnrecUpdate);
-			daUnrecUpdate.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedPriceCode);
+			daUnrecUpdate.SelectCommand.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
 			DataTable dtUnrecUpdate = new DataTable();
 			daUnrecUpdate.Fill(dtUnrecUpdate);
 			dtUnrecUpdate.Constraints.Add("UnicNameCode", dtUnrecUpdate.Columns["RowID"], true);
@@ -1544,7 +1522,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					{
 						DataRow newDR = dtForbidden.NewRow();
 								
-						newDR["PriceCode"] = LockedSynonym;
+						newDR["PriceCode"] = LockedPriceCode;
 						newDR["Forbidden"] = GetFullUnrecName(i);
 						try
 						{
@@ -1623,11 +1601,14 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					daSynonymFirmCr.Update(dtSynonymFirmCrCopy);
 
 					MySqlHelper.ExecuteNonQuery(MyCn, @"
-update usersettings.price_update_info
+update 
+  usersettings.pricescosts,
+  usersettings.priceitems
 set
-  LastSynonymsCreation = now()
+  priceitems.LastSynonymsCreation = now()
 where
-  PriceCode = ?PriceCode",
+    pricescosts.PriceCode = ?PriceCode
+and priceitems.Id = pricescosts.PriceItemId",
 								new MySqlParameter("?PriceCode", LockedSynonym)); 
 					f.Pr += 10;
 					
@@ -1651,9 +1632,9 @@ delete
 from
   farm.UnrecExp
 where
-  PriceCode = ?DeletePriceCode
-and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePriceCode and bp.BlockBy <> ?LockUserName)",
-										new MySqlParameter("?DeletePriceCode", rp.PriceCode),
+  PriceItemId = ?DeletePriceItem
+and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?DeletePriceItem and bp.BlockBy <> ?LockUserName)",
+										new MySqlParameter("?DeletePriceItem", rp.PriceItemId),
 										new MySqlParameter("?LockUserName", Environment.UserName));
 					}
 
@@ -1713,7 +1694,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 				string CurrentFileName;
 				do
 				{
-					CurrentFileName = RetransedPriceList[CurrentPriceCode].PriceCode.ToString() + RetransedPriceList[CurrentPriceCode].FileExt;
+					CurrentFileName = RetransedPriceList[CurrentPriceCode].PriceItemId.ToString() + RetransedPriceList[CurrentPriceCode].FileExt;
 					try
 					{
 						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "ѕерепроводим : {0}", CurrentFileName);
@@ -1721,8 +1702,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 						{
 							if (!File.Exists(rootpath + "Inbound0\\" + CurrentFileName))
 							{
-								File.Copy(rootpath + "Base\\" + CurrentFileName, rootpath + "Inbound0\\" + CurrentFileName);
-								PricesRetrans(now, RetransedPriceList[CurrentPriceCode].PriceCode);
+								File.Move(rootpath + "Base\\" + CurrentFileName, rootpath + "Inbound0\\" + CurrentFileName);
+								PricesRetrans(now, RetransedPriceList[CurrentPriceCode].PriceItemId);
 							}
 							else
 								SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "‘айла есть в Inbound");
@@ -1752,12 +1733,12 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 			f.Pr = 100;
 		}
 
-		private void PricesRetrans(DateTime now, long RetransPriceCode)
+		private void PricesRetrans(DateTime now, long retransPriceItemId)
 		{
 			MySqlCommand mcInsert = new MySqlCommand();
 			mcInsert.Connection = MyCn;
 			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.AddWithValue("?RetransPriceCode", RetransPriceCode);
+			mcInsert.Parameters.AddWithValue("?RetransPriceItemId", retransPriceItemId);
 			mcInsert.Parameters.AddWithValue("?UserName", Environment.UserName);
 			mcInsert.Parameters.AddWithValue("?UserHost", Environment.MachineName);
 			mcInsert.Parameters.AddWithValue("?Now", now);
@@ -1767,12 +1748,12 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceCode = ?DeletePr
 						(LogTime, 
 						OperatorName,
 						OperatorHost,
-						PriceCode) 
+						PriceItemId) 
 					values 
 						(?Now,
 						?UserName,
 						?UserHost,
-						?RetransPriceCode)";
+						?RetransPriceItemId)";
 	
 			mcInsert.ExecuteNonQuery();
 		}
@@ -1887,9 +1868,9 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 				for (int i = 0; i < gvJobs.RowCount; i++)
 				{
 					DataRow dr = gvJobs.GetDataRow(i);
-					if ((selectedPrices != null) && (selectedPrices.Contains((long)dr[JPriceCode.ColumnName])))
+					if ((selectedPrices != null) && (selectedPrices.Contains((long)dr[JPriceItemId.ColumnName])))
 						gvJobs.SelectRow(i);
-					if ((JCode != -1) && (JCode == (long)dr[JPriceCode.ColumnName]))
+					if ((JCode != -1) && (JCode == (long)dr[JPriceItemId.ColumnName]))
 					{
 						FocusedRowHandle = i;
 						if (selectedPrices == null)
@@ -1902,28 +1883,28 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 			}
 		}
 
-		private void LockedInBlockedPrice(long LockPriceCode, string BlockBy)
+		private void LockedInBlockedPrice(long lockPriceItemId, string BlockBy)
 		{
-			MySqlCommand mcInsert = new MySqlCommand("select * from blockedprice where PriceCode = ?LockPriceCode", MyCn);
+			MySqlCommand mcInsert = new MySqlCommand("select * from blockedprice where PriceItemId = ?LockPriceItemId", MyCn);
 			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.AddWithValue("?LockPriceCode", LockedPriceCode);
+			mcInsert.Parameters.AddWithValue("?LockPriceItemId", lockPriceItemId);
 			MySqlDataReader drInsert = mcInsert.ExecuteReader();
 			bool NotExist = !drInsert.Read();
 			drInsert.Close();
 			drInsert = null;
 			if (NotExist)
 			{
-				mcInsert.CommandText = @"insert into blockedprice (PriceCode, BlockBy) values (?LockPriceCode, ?BlockBy)";
+				mcInsert.CommandText = @"insert into blockedprice (PriceItemId, BlockBy) values (?LockPriceItemId, ?BlockBy)";
 				mcInsert.Parameters.AddWithValue("?BlockBy", BlockBy);
 				mcInsert.ExecuteNonQuery();
 			}
 		}
 
-		private void UnLockedInBlockedPrice(long LockPriceCode)
+		private void UnLockedInBlockedPrice(long unLockPriceItemId)
 		{
-			MySqlCommand mcInsert = new MySqlCommand("delete from blockedprice where PriceCode = ?LockPriceCode", MyCn);
+			MySqlCommand mcInsert = new MySqlCommand("delete from blockedprice where PriceItemId = ?unLockPriceItemId", MyCn);
 			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.AddWithValue("?LockPriceCode", LockedPriceCode);
+			mcInsert.Parameters.AddWithValue("?unLockPriceItemId", unLockPriceItemId);
 			mcInsert.ExecuteNonQuery();
 		}
 
@@ -2063,7 +2044,7 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 
 		private void miSendAboutNames_Click(object sender, System.EventArgs e)
 		{	
-			DataRow[] drs = dtJobs.Select("JPriceCode = " + LockedPriceCode.ToString());
+			DataRow[] drs = dtJobs.Select("JPriceItemId = " + LockedPriceItemId.ToString());
 
 			if (drs.Length > 0)
 			{
@@ -2102,7 +2083,7 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 
 		private void miSendAboutFirmCr_Click(object sender, System.EventArgs e)
 		{
-			DataRow[] drs = dtJobs.Select("JPriceCode = " + LockedPriceCode.ToString());
+			DataRow[] drs = dtJobs.Select("JPriceItemId = " + LockedPriceItemId.ToString());
 
 			if (drs.Length > 0)
 			{
@@ -2411,12 +2392,12 @@ and c.Type = ?ContactType;",
 
 	public class RetransedPrice
 	{
-		public long PriceCode;
+		public long PriceItemId;
 		public string FileExt;
 
-		public RetransedPrice(long APriceCode, string AFileExt)
+		public RetransedPrice(long priceItemId, string AFileExt)
 		{
-			this.PriceCode = APriceCode;
+			this.PriceItemId = priceItemId;
 			this.FileExt = AFileExt;
 		}
 	}
