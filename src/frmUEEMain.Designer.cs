@@ -230,6 +230,7 @@ namespace UEEditor
 			this.JParentName = new System.Data.DataColumn();
 			this.JExt = new System.Data.DataColumn();
 			this.JFirmCode = new System.Data.DataColumn();
+			this.JPriceItemId = new System.Data.DataColumn();
 			this.dtUnrecExp = new System.Data.DataTable();
 			this.EUColumn1 = new System.Data.DataColumn();
 			this.UEColumn2 = new System.Data.DataColumn();
@@ -393,7 +394,6 @@ namespace UEEditor
 			this.colCColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.MainTimer = new System.Windows.Forms.Timer(this.components);
 			this.cdLegend = new System.Windows.Forms.ColorDialog();
-			this.JPriceItemId = new System.Data.DataColumn();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dsMain)).BeginInit();
@@ -624,6 +624,11 @@ namespace UEEditor
 			// 
 			this.JFirmCode.ColumnName = "JFirmCode";
 			this.JFirmCode.DataType = typeof(long);
+			// 
+			// JPriceItemId
+			// 
+			this.JPriceItemId.ColumnName = "JPriceItemId";
+			this.JPriceItemId.DataType = typeof(long);
 			// 
 			// dtUnrecExp
 			// 
@@ -2088,11 +2093,6 @@ namespace UEEditor
 			this.MainTimer.Enabled = true;
 			this.MainTimer.Interval = 20000;
 			this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
-			// 
-			// JPriceItemId
-			// 
-			this.JPriceItemId.ColumnName = "JPriceItemId";
-			this.JPriceItemId.DataType = typeof(long);
 			// 
 			// frmUEEMain
 			// 

@@ -2089,23 +2089,26 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 			{
 				DataRow dr = drs[0];
 
-				ArrayList FirmCrArray = new ArrayList();
+				Dictionary<string, string> UnrecFirmCr = new Dictionary<string, string>();
 
 				foreach(DataRow UEdr in dtUnrecExp.Rows)
 				{
 					if ( ((FormMask)Convert.ToByte(UEdr["UEStatus"]) & FormMask.FirmForm) != FormMask.FirmForm )
 					{
 						string tmp = UEdr["UEFirmCr"].ToString().Trim();
-						if (!FirmCrArray.Contains(tmp))
-						{
-							FirmCrArray.Add(tmp);
-						}
+						if (!UnrecFirmCr.ContainsKey(tmp))
+							UnrecFirmCr.Add(tmp, UEdr["UEName1"].ToString().Trim());
 					}
 				}
 
-				string UnrecFirmCr = String.Join("\r\n", (string[])FirmCrArray.ToArray(typeof(string)));
 
-				Clipboard.SetDataObject(UnrecFirmCr);
+				List<string> UnrecFirmCrAndNameList = new List<string>();
+				foreach (string key in UnrecFirmCr.Keys)
+					UnrecFirmCrAndNameList.Add(UnrecFirmCr[key] + "  -  " + key);
+
+				string UnrecFirmCrString = String.Join("\r\n", UnrecFirmCrAndNameList.ToArray());
+
+				Clipboard.SetDataObject(UnrecFirmCrString);
 
 				string subject = String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["FirmShortName"]);
 
