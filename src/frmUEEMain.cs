@@ -194,7 +194,7 @@ SELECT
         cd.ShortName as FirmShortName,
         pim.Id as JPriceItemId,
         PD.PriceCode As JPriceCode,
-        concat(CD.ShortName, '(', if(pd.CostType = 1, concat('[Колонка] ', pc.CostName), pd.PriceName), ')') as JName,
+        concat(CD.ShortName, ' (', if(pd.CostType = 1, concat(pd.PriceName, ' [Колонка] ', pc.CostName), pd.PriceName), ')') as JName,
         regions.region                                                                                                       As JRegion,
         pim.PriceDate as JPriceDate,
         statunrecexp.Pos                                                                        AS JPos,
@@ -208,7 +208,7 @@ SELECT
         pim.LastFormalization                                                                   AS JDateLastForm,
         if((synonympim.LastSynonymsCreation is not null) and (pim.LastFormalization < synonympim.LastSynonymsCreation), 1, 0) AS JNeedRetrans,
         if(pim.LastFormalization < pim.LastRetrans, 1, 0)                                            AS JRetranced,
-        if(pd.ParentSynonym is null, '', concat(synonymcd.ShortName, '(', synonympd.PriceName, ')')) AS JParentName
+        if(pd.ParentSynonym is null, '', concat(synonymcd.ShortName, ' (', synonympd.PriceName, ')')) AS JParentName
 FROM
   (
    (select
