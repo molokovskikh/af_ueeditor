@@ -134,9 +134,7 @@ namespace UEEditor
 		[STAThread]
 		static void Main() 
 		{
-			UEEditorExceptionHandler feh = new UEEditorExceptionHandler();
-
-			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(feh.OnThreadException);
+			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(UEEditorExceptionHandler.OnThreadException);
 
 			Application.Run(new frmUEEMain());	
 		}
@@ -2409,7 +2407,7 @@ and c.Type = ?ContactType;",
 	{
 
 		// Handles the exception event.
-		public void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs t)
+		public static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs t)
 		{
 			try
 			{
@@ -2417,7 +2415,16 @@ and c.Type = ?ContactType;",
 					"service@analit.net",
 					"service@analit.net",
 					"Необработанная ошибка в UEEditor",
-					String.Format("Sender = {0}\r\nException = = {1}", sender, t.Exception));
+String.Format(@"
+Источник     = {0}
+Пользователь = {1}
+Компьютер    = {2}
+Ошибка       =
+{3}",
+						sender,
+						Environment.UserName,
+						Environment.MachineName,
+						t.Exception)); 
 				System.Net.Mail.SmtpClient sm = new System.Net.Mail.SmtpClient(UEEditor.Properties.Settings.Default.SMTPHost);
 				sm.Send(m);
 			}
