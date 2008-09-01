@@ -2054,11 +2054,9 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 				{
 					if ( ((FormMask)Convert.ToByte(UEdr["UEStatus"]) & FormMask.MarkForb) == FormMask.MarkForb )
 					{
-	
-						string tmp = (UEdr["UEName1"].ToString() + " " + UEdr["UEFirmCr"].ToString()).Trim();
+						string tmp = (UEdr["UECode"].ToString() + " " +UEdr["UEName1"].ToString() + " " + UEdr["UEFirmCr"].ToString()).Trim();
 						if (!NameArray.Contains(tmp))
 						{
-							//ConvertName(tmp);
 							NameArray.Add( tmp );
 						}
 					}
