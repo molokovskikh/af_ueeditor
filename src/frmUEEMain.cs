@@ -99,7 +99,7 @@ namespace UEEditor
 
 			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true;";
 #if DEBUG
-			MyCn.ConnectionString = "server=sql.analit.net; user id=Morozov; password=Srt38123; database=farm;convert zero datetime=true;";
+			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;";
 #endif
 			MyCn.Open();
 			MyDA = new MySqlDataAdapter(MyCmd);
@@ -361,6 +361,11 @@ order by Name";
 
 			MyDA.Fill(dtCatalogFirmCr);
 
+			//ƒобавл€ем в начало таблицы определенную запись, обозначающую пон€тие "производитель не известен"
+			DataRow drUnknown = dtCatalogFirmCr.NewRow();
+			drUnknown["CCode"] = 0;
+			drUnknown["CName"] = "производитель не известен";
+			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
 		}
 
 		private void FormGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
@@ -837,20 +842,19 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 					if ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm)
 					{
 						DataRow drUN = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
-						if (drUN != null)
+						//≈сли нашли такую запись и поле "FirmCr" непустое, то сбрасываем сопоставление по производителю
+						if ((drUN != null) && !String.IsNullOrEmpty(drUN[UEFirmCr].ToString()))
 						{
-							string FirmName = String.Empty;
-							if ((Int64)drUN[UETmpCodeFirmCr] == 1)
-								FirmName = "-";
-							else
+							string FirmName = null;
+							//≈сли сопоставлено и (UETmpCodeFirmCr is DBNull), то значение кода = 0, иначе берем значение кода из пол€ UETmpCodeFirmCr
+							DataRow[] drFM = dtCatalogFirmCr.Select(
+								"CCode = " + (Convert.IsDBNull(drUN[UETmpCodeFirmCr]) ? "0" : drUN[UETmpCodeFirmCr].ToString()));
+							if (drFM.Length > 0)
 							{
-								DataRow[] drFM = dtCatalogFirmCr.Select("CCode = " + drUN[UETmpCodeFirmCr].ToString());
-								if (drFM.Length > 0)
-								{
-									FirmName = drFM[0]["CName"].ToString();
-								}
+								FirmName = drFM[0]["CName"].ToString();
 							}
-							if(FirmName != String.Empty && MessageBox.Show("ѕроизводитель: " + FirmName+ "\r\nќтменить сопоставление по производителю?", "¬опрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+
+							if (!String.IsNullOrEmpty(FirmName) && MessageBox.Show("ѕроизводитель: " + FirmName+ "\r\nќтменить сопоставление по производителю?", "¬опрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 							{
 								UnmarkUnrecExpAsFirmForm(gvUnrecExp.FocusedRowHandle);
 								flag = true;
@@ -884,7 +888,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
 					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.NameForm));
-					drUnrecExp["UETmpProductId"] = 0;
+					drUnrecExp["UETmpProductId"] = DBNull.Value;
 				}
 			}
 			catch
@@ -900,7 +904,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
 					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.FirmForm));
-					drUnrecExp["UETmpCodeFirmCr"]=0;
+					drUnrecExp["UETmpCodeFirmCr"] = DBNull.Value;
 				}
 			}
 			catch
@@ -959,7 +963,11 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			if (((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) &  FormMask.FirmForm) != FormMask.FirmForm)
 			{
 				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) | FormMask.FirmForm);
-				drUnrecExp["UETmpCodeFirmCr"] = drCatalogFirmCr["CCode"];
+				//≈сли выбранный код €вл€етс€ записью "производитель не известен", то устанавливаем DBNull, иначе рельное значение
+				if ((long)drCatalogFirmCr["CCode"] == 0)
+					drUnrecExp["UETmpCodeFirmCr"] = DBNull.Value;
+				else
+					drUnrecExp["UETmpCodeFirmCr"] = drCatalogFirmCr["CCode"];
 			}
 		}
 
@@ -1145,13 +1153,6 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 					if (drName == TmpName)
 					{
 						MarkUnrecExpAsNameForm(dr, MarkAsJUNK);
-
-						if (String.Empty == dr["UEFirmCr"].ToString())
-						{
-							dr["UEStatus"] = (int)((FormMask)Convert.ToByte(dr["UEStatus"]) | FormMask.NameForm);
-							//TODO: «десь надо корректно 
-							dr["UETmpCodeFirmCr"] = 1;
-						}
 					}
 				}
 			}
@@ -1762,10 +1763,12 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 
 			int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm | FormMask.CurrForm);
 
-			//ѕроизводим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
-			bool HidedSynonym = Convert.ToBoolean(
-				MySqlHelper.ExecuteScalar(MyCn,
-				String.Format(@"
+			if (!Convert.IsDBNull(drUpdated[UETmpProductId]))
+			{
+				//ѕроизводим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
+				bool HidedSynonym = Convert.ToBoolean(
+					MySqlHelper.ExecuteScalar(MyCn,
+					String.Format(@"
 select
   (products.Hidden or catalog.Hidden) as Hidden
 from
@@ -1774,15 +1777,16 @@ from
 where
     products.Id = {0}
 and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
+						)
 					)
-				)
-			);
-			if (HidedSynonym)
-			{
-				//≈сли в процессе распозновани€ каталожное наименование скрыли, то сбрасываем распознавание
-				drUpdated["UETmpProductId"] = 0;
-				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
-				HideSynonymCount++;
+				);
+				if (HidedSynonym)
+				{
+					//≈сли в процессе распозновани€ каталожное наименование скрыли, то сбрасываем распознавание
+					drUpdated["UETmpProductId"] = DBNull.Value;
+					drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
+					HideSynonymCount++;
+				}
 			}
 
 			//ѕроизводим проверку того, что синоним может быть уже вставлен в таблицу синонимов
@@ -1792,7 +1796,7 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 			if ((SynonymExists != null))
 			{
 				//≈сли в процессе распозновани€ синоним уже кто-то добавил, то сбрасываем распознавание
-				drUpdated["UETmpProductId"] = 0;
+				drUpdated["UETmpProductId"] = DBNull.Value;
 				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
 				DuplicateSynonymCount++;
 			}
