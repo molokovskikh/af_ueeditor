@@ -61,6 +61,7 @@ namespace UEEditor
 		public frmProgress f = null;
 		public int SynonymCount = 0;
 		public int HideSynonymCount = 0;
+		public int HideSynonymFirmCrCount = 0;
 		public int DuplicateSynonymCount = 0;
 		public int SynonymFirmCrCount = 0;
 		public int ForbiddenCount = 0;
@@ -351,12 +352,13 @@ order by Name";
 		private void CatalogFirmCrGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
 		{
 			dtCatalogFirmCr.Clear();
-			MyCmd.CommandText = 
+			MyCmd.CommandText =
 				@"SELECT 
 					CodeFirmCr As CCode, 
 					FirmCr As CName 
 				FROM CatalogFirmCr
-                where CodeFirmCr <> 1 
+                where CodeFirmCr <> 1
+                and Hidden = 0 
 				Order By FirmCr";
 
 			MyDA.Fill(dtCatalogFirmCr);
@@ -1370,8 +1372,9 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 	по производителю - {2}
 ќтклонено скрытых синонимов: {3}
 ќтклонено дублирующихс€ синонимов: {4}
+ќтклонено скрытых синонимов производителей: {5}
 
-ѕерепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, HideSynonymCount, DuplicateSynonymCount);
+ѕерепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, HideSynonymCount, DuplicateSynonymCount, HideSynonymFirmCrCount);
 			return (MessageBox.Show(str, "¬опрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
 		}
 
@@ -1429,6 +1432,7 @@ and pf.Id = fr.PriceFormatId",
 			SynonymFirmCrCount = 0;
 			ForbiddenCount = 0;
 			HideSynonymCount = 0;
+			HideSynonymFirmCrCount = 0;
 			DuplicateSynonymCount = 0;
 
 			// ол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводитс€
@@ -1788,6 +1792,31 @@ and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
 					HideSynonymCount++;
 				}
 			}
+
+			if (!Convert.IsDBNull(drUpdated[UETmpCodeFirmCr]))
+			{
+				//ѕроизводим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
+				bool HidedSynonymFirmCr = Convert.ToBoolean(
+					MySqlHelper.ExecuteScalar(MyCn,
+					String.Format(@"
+select
+  Hidden
+from
+  farm.catalogfirmcr
+where
+    CodeFirmCr = {0}", drUpdated[UETmpCodeFirmCr]
+						)
+					)
+				);
+				if (HidedSynonymFirmCr)
+				{
+					//≈сли в процессе распозновани€ каталожное наименование скрыли, то сбрасываем распознавание
+					drUpdated[UETmpCodeFirmCr] = DBNull.Value;
+					drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.FirmForm));
+					HideSynonymFirmCrCount++;
+				}
+			}
+
 
 			//ѕроизводим проверку того, что синоним может быть уже вставлен в таблицу синонимов
 			object SynonymExists = MySqlHelper.ExecuteScalar(MyCn, 
