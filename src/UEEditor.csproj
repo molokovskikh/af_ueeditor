@@ -32,7 +32,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <ManifestCertificateThumbprint>B9E15F664C1FAAEA55EFC57672E6FB43F5836618</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>7A62A5AE17C1C79F529466067F45F6A10223630D</ManifestCertificateThumbprint>
     <ManifestKeyFile>lib\InforoomCodeSign.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
@@ -51,10 +51,11 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Редактор нераспознанных выражений</ProductName>
     <PublisherName>Inforoom</PublisherName>
-    <MinimumRequiredVersion>1.2.0.150</MinimumRequiredVersion>
-    <ApplicationRevision>150</ApplicationRevision>
-    <ApplicationVersion>1.2.0.150</ApplicationVersion>
+    <MinimumRequiredVersion>1.2.6.156</MinimumRequiredVersion>
+    <ApplicationRevision>156</ApplicationRevision>
+    <ApplicationVersion>1.2.6.156</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
