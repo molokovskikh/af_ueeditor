@@ -213,7 +213,7 @@ FROM
    (select
       unrecexp.PriceItemId,
       count(unrecexp.RowID) as Pos,
-      COUNT(IF(unrecexp.TmpProductId=0,unrecexp.TmpProductId,NULL)) as NamePos
+      COUNT(IF(unrecexp.TmpProductId is null, 1, null)) as NamePos
     from
       farm.unrecexp
     group by unrecexp.PriceItemId) statunrecexp,

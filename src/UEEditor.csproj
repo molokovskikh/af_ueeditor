@@ -51,9 +51,9 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Редактор нераспознанных выражений</ProductName>
     <PublisherName>Inforoom</PublisherName>
-    <MinimumRequiredVersion>1.2.6.156</MinimumRequiredVersion>
-    <ApplicationRevision>156</ApplicationRevision>
-    <ApplicationVersion>1.2.6.156</ApplicationVersion>
+    <MinimumRequiredVersion>1.2.7.158</MinimumRequiredVersion>
+    <ApplicationRevision>158</ApplicationRevision>
+    <ApplicationVersion>1.2.7.158</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
