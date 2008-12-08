@@ -33,7 +33,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <ManifestCertificateThumbprint>7A62A5AE17C1C79F529466067F45F6A10223630D</ManifestCertificateThumbprint>
-    <ManifestKeyFile>lib\InforoomCodeSign.pfx</ManifestKeyFile>
+    <ManifestKeyFile>InforoomCodeSign.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
     <IsWebBootstrapper>true</IsWebBootstrapper>
@@ -159,6 +159,7 @@
       <Link>InforoomCodeSign.pfx</Link>
     </None>
     <None Include="app.config" />
+    <None Include="app.Release.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
