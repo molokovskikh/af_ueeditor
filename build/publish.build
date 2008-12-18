@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="PrepareClickOnceDeployment" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Microsoft.Sdc.Common.tasks"/>
+
+  <PropertyGroup>
+    <PublishDir></PublishDir>
+    <SolutionName></SolutionName>
+    <ClickOnceAppTitle></ClickOnceAppTitle>
+    <ClickOnceUrl></ClickOnceUrl>
+    <ClickOnceApplicationUrl>$(ClickOnceUrl)$(SolutionName).application</ClickOnceApplicationUrl>
+    <SigningCert></SigningCert>
+    <Company>Inforoom</Company>
+    <Password></Password>
+    <SdkPath></SdkPath>
+    <BootstrapperComponentsLocation>Relative</BootstrapperComponentsLocation>
+    <Version>0.0.0.0</Version>
+    <MinVersion>0.0.0.0</MinVersion>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <GetVersionAssembly Include="$(PublishDir)\$(SolutionName).exe"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClickOnceInstallationFiles Include="$(SolutionName).application"/>
+    <ClickOnceInstallationFiles Include="$(SolutionName).exe.manifest"/>
+    <ClickOnceInstallationFiles Include="setup.exe"/>
+  </ItemGroup> 
+
+  <Target Name="PrepareClickOnceDeployment">        
+    <CreateItem Include="$(PublishDir)\**\*.*">
+      <Output TaskParameter="Include" ItemName="AppManifestContents"/>
+    </CreateItem>
+    
+    <GenerateApplicationManifest
+        AssemblyName="$(SolutionName).exe"
+        AssemblyVersion="$(Version)"
+        EntryPoint="$(PublishDir)\$(SolutionName).exe"
+        OutputManifest="$(SolutionName).exe.manifest"/>
+    <Exec Command="&quot;$(SdkPath)bin\\mage.exe&quot; -Update $(SolutionName).exe.manifest -TrustLevel FullTrust -Name &quot;$(SolutionName)&quot; -FromDirectory $(PublishDir)"/>
+    <Exec Command="&quot;$(SdkPath)bin\\mage.exe&quot; -Sign $(SolutionName).exe.manifest -CertFile $(SigningCert) -Password $(password)"/>
+    <GenerateDeploymentManifest AssemblyName="$(SolutionName).application"
+                                AssemblyVersion="$(Version)"
+                                DeploymentUrl="$(ClickOnceApplicationUrl)"
+                                Description=""
+                                Product="$(ClickOnceAppTitle)"
+                                Publisher="$(Company)"
+                                EntryPoint="$(SolutionName).exe.manifest"
+                                Install="true"
+                                UpdateEnabled="true"
+                                UpdateMode="Foreground"
+                                OutputManifest="$(SolutionName).application"
+                                MinimumRequiredVersion="$(MinVersion)"
+                                MapFileExtensions="true"/>
+    <Exec Command="&quot;$(SdkPath)bin\\mage.exe&quot; -Sign $(SolutionName).application -CertFile $(SigningCert) -Password $(password)"/>
+    <GenerateBootstrapper 
+      ApplicationFile="$(SolutionName).application"
+      ApplicationName="$(ClickOnceAppTitle)"
+      ApplicationUrl="$(ClickOnceUrl)"
+      BootstrapperItems="@(BootstrapperPackage)"
+      Culture="ru"
+      FallbackCulture="ru-RU"
+      CopyComponents="true"
+      ComponentsLocation="$(BootstrapperComponentsLocation)"
+      Validate="false"
+      Path="$(SdkPath)Bootstrapper\\"
+      OutputPath="." />
+  </Target>
+
+</Project>
