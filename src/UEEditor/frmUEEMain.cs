@@ -542,7 +542,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow dr = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
-				if (dr[colJBlockBy.FieldName].ToString() == String.Empty || dr[colJBlockBy.FieldName].ToString() == Environment.UserName)
+				if ((dr[colJBlockBy.FieldName].ToString() == String.Empty) || dr[colJBlockBy.FieldName].ToString().Equals(Environment.UserName.ToLower(), StringComparison.OrdinalIgnoreCase))
 					LockJob();
 			}
 		}
@@ -1247,7 +1247,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow dr = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
-				if (dr[colJBlockBy.FieldName].ToString() == String.Empty || dr[colJBlockBy.FieldName].ToString() == Environment.UserName)
+				if ((dr[colJBlockBy.FieldName].ToString() == String.Empty) || dr[colJBlockBy.FieldName].ToString().Equals(Environment.UserName.ToLower(), StringComparison.OrdinalIgnoreCase) )
 				{
 					LockedPriceCode = Convert.ToInt64(dr[JPriceCode.ColumnName]);
 					LockedPriceItemId = Convert.ToInt64(dr[JPriceItemId.ColumnName]);
@@ -1462,7 +1462,7 @@ and pf.Id = fr.PriceFormatId",
 insert into farm.synonym (PriceCode, Synonym, Junk, ProductId) values (?PriceCode, ?Synonym, ?Junk, ?ProductId);
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
   values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", MyCn);
-			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName);
+			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonym.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonym.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
@@ -1485,7 +1485,7 @@ insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym) values (?PriceCo
 insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operation, SynonymFirmCrCode, PriceCode, CodeFirmCr, Synonym, ChildPriceCode) 
   values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?CodeFirmCr, ?Synonym, ?ChildPriceCode)", 
 				MyCn);
-			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName);
+			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
@@ -1505,7 +1505,7 @@ insert into farm.Forbidden (PriceCode, Forbidden) values (?PriceCode, ?Forbidden
 insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, ForbiddenRowID, PriceCode, Forbidden) 
   values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Forbidden);", 
 				MyCn);
-			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName);
+			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
 			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daForbidden.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daForbidden.InsertCommand.Parameters.Add("?Forbidden", MySqlDbType.VarString, 0, "Forbidden");
@@ -1638,7 +1638,7 @@ where
   PriceItemId = ?DeletePriceItem
 and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?DeletePriceItem and bp.BlockBy <> ?LockUserName)",
 										new MySqlParameter("?DeletePriceItem", rp.PriceItemId),
-										new MySqlParameter("?LockUserName", Environment.UserName));
+										new MySqlParameter("?LockUserName", Environment.UserName.ToLower()));
 					}
 
 					//DelCount = UpDateUnrecExp(tran);
@@ -1742,7 +1742,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			mcInsert.Connection = MyCn;
 			mcInsert.Parameters.Clear();
 			mcInsert.Parameters.AddWithValue("?RetransPriceItemId", retransPriceItemId);
-			mcInsert.Parameters.AddWithValue("?UserName", Environment.UserName);
+			mcInsert.Parameters.AddWithValue("?UserName", Environment.UserName.ToLower());
 			mcInsert.Parameters.AddWithValue("?UserHost", Environment.MachineName);
 			mcInsert.Parameters.AddWithValue("?Now", now);
 
@@ -1926,7 +1926,7 @@ where
 			if (NotExist)
 			{
 				mcInsert.CommandText = @"insert into blockedprice (PriceItemId, BlockBy) values (?LockPriceItemId, ?BlockBy)";
-				mcInsert.Parameters.AddWithValue("?BlockBy", BlockBy);
+				mcInsert.Parameters.AddWithValue("?BlockBy", BlockBy.ToLower());
 				mcInsert.ExecuteNonQuery();
 			}
 		}
@@ -2453,7 +2453,7 @@ String.Format(@"
 Œ¯Ë·Í‡       =
 {3}",
 						sender,
-						Environment.UserName,
+						Environment.UserName.ToLower(),
 						Environment.MachineName,
 						t.Exception)); 
 				System.Net.Mail.SmtpClient sm = new System.Net.Mail.SmtpClient(UEEditor.Properties.Settings.Default.SMTPHost);
