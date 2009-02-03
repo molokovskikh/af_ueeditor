@@ -1686,7 +1686,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 #if DEBUG
 				string rootpath = @"C:\Temp\";
 #else
-				string rootpath = @"\\fms\Prices\";
+				string rootpath = Properties.Settings.Default.RootPath;
 #endif
 
 				f.Status = "Перепроведение пpайса...";
