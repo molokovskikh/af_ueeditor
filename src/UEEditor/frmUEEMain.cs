@@ -98,9 +98,9 @@ namespace UEEditor
 			{
 			}
 
-			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true; pooling=false;";
+			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true; pooling=true;";
 #if DEBUG
-			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;  pooling=false;";
+			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;  pooling=true;";
 #endif
 			MyCn.Open();
 			MyDA = new MySqlDataAdapter(MyCmd);
