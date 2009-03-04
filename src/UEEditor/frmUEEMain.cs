@@ -17,6 +17,8 @@ using System.Security.Permissions;
 using Microsoft.Win32;
 using System.Diagnostics;
 using Inforoom.Logging;
+using RemotePricePricessor;
+using UEEditor.Properties;
 
 
 
@@ -66,12 +68,17 @@ namespace UEEditor
 		public int SynonymFirmCrCount = 0;
 		public int ForbiddenCount = 0;
 
+		private readonly IRemotePriceProcessor remotePriceProcessor;
+
 		public frmUEEMain()
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+
+			remotePriceProcessor = (IRemotePriceProcessor)Activator.GetObject(typeof(IRemotePriceProcessor),
+																   Settings.Default.PriceProcessorURL);
 		}
 
 		private void frmUEEMain_Load(object sender, EventArgs e)
@@ -1383,7 +1390,6 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			bool res = false;
 			//Имеются ли родительские синонимы
 			bool HasParentSynonym = LockedSynonym != LockedPriceCode;
-			DateTime now = DateTime.Now;
 			f.Status = "Подготовка таблиц...";
 
 			//Список прайсов, которые нужно перепровести
@@ -1682,52 +1688,34 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 
 			if (res &&  S)
 			{
-
-#if DEBUG
-				string rootpath = @"C:\Temp\";
-#else
-				string rootpath = Properties.Settings.Default.RootPath;
-#endif
-
 				f.Status = "Перепроведение пpайса...";
 				SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроведение пpайса...");
 				f.Pr = 80;
 
-				int CurrentPriceCode = 0;
-				string CurrentFileName;
-				do
+				DateTime now = DateTime.Now;
+
+				while (RetransedPriceList.Count > 0)
 				{
-					CurrentFileName = RetransedPriceList[CurrentPriceCode].PriceItemId.ToString() + RetransedPriceList[CurrentPriceCode].FileExt;
+					SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроводим : {0}", RetransedPriceList[0].PriceItemId);
 					try
 					{
-						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроводим : {0}", CurrentFileName);
-						if (File.Exists(rootpath + "Base\\" + CurrentFileName))
-						{
-							if (!File.Exists(rootpath + "Inbound0\\" + CurrentFileName))
-							{
-								File.Move(rootpath + "Base\\" + CurrentFileName, rootpath + "Inbound0\\" + CurrentFileName);
-								PricesRetrans(now, RetransedPriceList[CurrentPriceCode].PriceItemId);
-							}
-							else
-								SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Файла есть в Inbound");
-						}
-						else
-							SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Файла нет в Base");
-
-						RetransedPriceList.RemoveAt(CurrentPriceCode);
+						remotePriceProcessor.RetransPrice(Convert.ToUInt32(RetransedPriceList[0].PriceItemId));
+						PricesRetrans(now, RetransedPriceList[0].PriceItemId);
 					}
-					catch (Exception e)
+					catch (Exception retransException)
 					{
 						if (f != null)
-							f.Error = String.Format("При копировании файла {1} возникла ошибка : {0}\r\n", e, CurrentFileName);
-						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "При копировании файла {1} возникла ошибка : {0}", e, CurrentFileName);
-						CurrentPriceCode++;
+							f.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
+						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(),
+							"При перепроведении priceitem {0} возникла ошибка : {1}", RetransedPriceList[0].PriceItemId, retransException);
+						UEEditorExceptionHandler.SendMessageOnException(this,
+							new Exception(String.Format("Ошибка при перепроведении priceitem: {0}", RetransedPriceList[0].PriceItemId), 
+							retransException));
 						Thread.Sleep(500);
 					}
-					if (CurrentPriceCode >= RetransedPriceList.Count)
-						CurrentPriceCode = 0;
+
+					RetransedPriceList.RemoveAt(0);
 				}
-				while(RetransedPriceList.Count > 0);
 
 				SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроведение пpайса завершено.");
 
@@ -2436,9 +2424,7 @@ and c.Type = ?ContactType;",
 
 	internal class UEEditorExceptionHandler
 	{
-
-		// Handles the exception event.
-		public static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs t)
+		public static void SendMessageOnException(object sender, Exception exception)
 		{
 			try
 			{
@@ -2455,12 +2441,18 @@ String.Format(@"
 						sender,
 						Environment.UserName.ToLower(),
 						Environment.MachineName,
-						t.Exception)); 
+						exception));
 				System.Net.Mail.SmtpClient sm = new System.Net.Mail.SmtpClient(UEEditor.Properties.Settings.Default.SMTPHost);
 				sm.Send(m);
 			}
 			catch
 			{ }
+		}
+
+		// Handles the exception event.
+		public static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs t)
+		{
+			SendMessageOnException(sender, t.Exception);
 			MessageBox.Show("В приложении возникла необработанная ошибка.\r\nИнформация об ошибке была отправлена разработчику.");
 		}
 

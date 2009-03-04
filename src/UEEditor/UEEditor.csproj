@@ -134,6 +134,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\MySqlData5\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="RemotePriceProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b87fa865681cc1c6, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\RemotePriceProcessor.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>

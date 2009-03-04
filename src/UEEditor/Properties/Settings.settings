@@ -47,8 +47,8 @@ http://www.analit.net</Value>
     <Setting Name="SMTPHost" Type="System.String" Scope="Application">
       <Value Profile="(Default)">mail.adc.analit.net</Value>
     </Setting>
-    <Setting Name="RootPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">\\fmsold\Prices\</Value>
+    <Setting Name="PriceProcessorURL" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://fms.adc.analit.net:888/RemotePriceProcessor</Value>
     </Setting>
   </Settings>
 </SettingsFile>
