@@ -1702,6 +1702,11 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 						remotePriceProcessor.RetransPrice(Convert.ToUInt32(RetransedPriceList[0].PriceItemId));
 						PricesRetrans(now, RetransedPriceList[0].PriceItemId);
 					}
+					catch (PriceProcessorException PriceProcessorException)
+					{
+						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(),
+							"При перепроведении priceitem {0} возникла ошибка : {1}", RetransedPriceList[0].PriceItemId, PriceProcessorException);
+					}
 					catch (Exception retransException)
 					{
 						if (f != null)
@@ -1709,7 +1714,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(),
 							"При перепроведении priceitem {0} возникла ошибка : {1}", RetransedPriceList[0].PriceItemId, retransException);
 						UEEditorExceptionHandler.SendMessageOnException(this,
-							new Exception(String.Format("Ошибка при перепроведении priceitem: {0}", RetransedPriceList[0].PriceItemId), 
+							new Exception(String.Format("Ошибка при перепроведении priceitem: {0}", RetransedPriceList[0].PriceItemId),
 							retransException));
 						Thread.Sleep(500);
 					}
