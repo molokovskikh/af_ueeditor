@@ -48,7 +48,7 @@ http://www.analit.net</Value>
       <Value Profile="(Default)">mail.adc.analit.net</Value>
     </Setting>
     <Setting Name="PriceProcessorURL" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://fms.adc.analit.net:888/RemotePriceProcessor</Value>
+      <Value Profile="(Default)">tcp://fms.adc.analit.net:889/RemotePriceProcessor</Value>
     </Setting>
   </Settings>
 </SettingsFile>
