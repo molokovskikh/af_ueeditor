@@ -26,7 +26,6 @@ namespace UEEditor
 		private System.Data.DataColumn UECodeCr;
 		private System.Data.DataColumn UEName1;
 		private System.Data.DataColumn UEFirmCr;
-		private System.Data.DataColumn UECurrency;
 		private System.Data.DataColumn UEBaseCost;
 		private System.Data.DataColumn UEUnit;
 		private System.Data.DataColumn UEVolume;
@@ -37,7 +36,6 @@ namespace UEEditor
 		private System.Data.DataColumn ZCodeCr;
 		private System.Data.DataColumn ZName;
 		private System.Data.DataColumn ZFirmCr;
-		private System.Data.DataColumn ZCurrency;
 		private System.Data.DataColumn ZBaseCost;
 		private System.Data.DataColumn ZUnit;
 		private System.Data.DataColumn ZVolume;
@@ -47,7 +45,6 @@ namespace UEEditor
 		private System.Data.DataColumn FForb;
 		private System.Data.DataColumn EUColumn1;
 		private System.Data.DataColumn UEColumn2;
-		private System.Data.DataColumn UEColumn3;
 		private System.Data.DataTable dtUnrecExp;
 		private System.ComponentModel.IContainer components;
 
@@ -62,26 +59,10 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colZCodeCr;
 		private DevExpress.XtraGrid.Columns.GridColumn colZName;
 		private DevExpress.XtraGrid.Columns.GridColumn colZFirmCr;
-		private DevExpress.XtraGrid.Columns.GridColumn colZCurrency;
 		private DevExpress.XtraGrid.Columns.GridColumn colZUnit;
 		private DevExpress.XtraGrid.Columns.GridColumn colZVolume;
 		private DevExpress.XtraGrid.Columns.GridColumn colZQuantity;
 		private DevExpress.XtraGrid.Columns.GridColumn colZPeriod;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn10;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn11;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn12;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn13;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn14;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn15;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn16;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn26;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn27;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn28;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn29;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn30;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn31;
-		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn32;
-		private DevExpress.XtraGrid.Columns.GridColumn colCColumn11;
 		private System.Windows.Forms.Panel pnlCenter2;
 		private System.Windows.Forms.Panel pnlLeft2;
 		private System.Windows.Forms.GroupBox grpBoxCatalog2;
@@ -95,12 +76,10 @@ namespace UEEditor
 		private DevExpress.XtraGrid.GridControl UnrecExpGridControl;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEColumn1;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEColumn2;
-		private DevExpress.XtraGrid.Columns.GridColumn colUEColumn3;
 		private DevExpress.XtraGrid.Columns.GridColumn colUECode;
 		private DevExpress.XtraGrid.Columns.GridColumn colUECodeCr;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEName1;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEFirmCr;
-		private DevExpress.XtraGrid.Columns.GridColumn colUECurrency;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEBaseCost;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEUnit;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEVolume;
@@ -129,7 +108,6 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colUEAlready;
 		private System.Data.DataColumn JParentSynonym;
 		private System.Data.DataColumn JPriceFMT;
-		private System.Data.DataColumn UETmpCurrency;
 		private System.Windows.Forms.Panel pnlCenter1;
 		private System.Windows.Forms.Panel pnlWithButton1;
 		private System.Windows.Forms.Panel pnlTop1;
@@ -234,12 +212,10 @@ namespace UEEditor
 			this.dtUnrecExp = new System.Data.DataTable();
 			this.EUColumn1 = new System.Data.DataColumn();
 			this.UEColumn2 = new System.Data.DataColumn();
-			this.UEColumn3 = new System.Data.DataColumn();
 			this.UECode = new System.Data.DataColumn();
 			this.UECodeCr = new System.Data.DataColumn();
 			this.UEName1 = new System.Data.DataColumn();
 			this.UEFirmCr = new System.Data.DataColumn();
-			this.UECurrency = new System.Data.DataColumn();
 			this.UEBaseCost = new System.Data.DataColumn();
 			this.UEUnit = new System.Data.DataColumn();
 			this.UEVolume = new System.Data.DataColumn();
@@ -252,7 +228,6 @@ namespace UEEditor
 			this.UEName3 = new System.Data.DataColumn();
 			this.UETmpCodeFirmCr = new System.Data.DataColumn();
 			this.UEAlready = new System.Data.DataColumn();
-			this.UETmpCurrency = new System.Data.DataColumn();
 			this.UERowID = new System.Data.DataColumn();
 			this.UEHandMade = new System.Data.DataColumn();
 			this.dtZero = new System.Data.DataTable();
@@ -260,7 +235,6 @@ namespace UEEditor
 			this.ZCodeCr = new System.Data.DataColumn();
 			this.ZName = new System.Data.DataColumn();
 			this.ZFirmCr = new System.Data.DataColumn();
-			this.ZCurrency = new System.Data.DataColumn();
 			this.ZBaseCost = new System.Data.DataColumn();
 			this.ZUnit = new System.Data.DataColumn();
 			this.ZVolume = new System.Data.DataColumn();
@@ -334,12 +308,10 @@ namespace UEEditor
 			this.gvUnrecExp = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colUEColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colUEColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUECode = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUECodeCr = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEName1 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEFirmCr = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colUECurrency = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEBaseCost = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEUnit = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEVolume = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -364,7 +336,6 @@ namespace UEEditor
 			this.colZCodeCr = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZName = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZFirmCr = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colZCurrency = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZUnit = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZVolume = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colZQuantity = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -377,21 +348,6 @@ namespace UEEditor
 			this.menuItem2 = new System.Windows.Forms.MenuItem();
 			this.menuItem3 = new System.Windows.Forms.MenuItem();
 			this.menuItem4 = new System.Windows.Forms.MenuItem();
-			this.dataGridTextBoxColumn10 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn11 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn12 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn13 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn14 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn15 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn16 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn26 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn27 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn28 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn29 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn30 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn31 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.dataGridTextBoxColumn32 = new System.Windows.Forms.DataGridTextBoxColumn();
-			this.colCColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.MainTimer = new System.Windows.Forms.Timer(this.components);
 			this.cdLegend = new System.Windows.Forms.ColorDialog();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).BeginInit();
@@ -635,12 +591,10 @@ namespace UEEditor
 			this.dtUnrecExp.Columns.AddRange(new System.Data.DataColumn[] {
             this.EUColumn1,
             this.UEColumn2,
-            this.UEColumn3,
             this.UECode,
             this.UECodeCr,
             this.UEName1,
             this.UEFirmCr,
-            this.UECurrency,
             this.UEBaseCost,
             this.UEUnit,
             this.UEVolume,
@@ -653,7 +607,6 @@ namespace UEEditor
             this.UEName3,
             this.UETmpCodeFirmCr,
             this.UEAlready,
-            this.UETmpCurrency,
             this.UERowID,
             this.UEHandMade});
 			this.dtUnrecExp.TableName = "UnrecExpGrid";
@@ -668,11 +621,6 @@ namespace UEEditor
 			// 
 			this.UEColumn2.Caption = "";
 			this.UEColumn2.ColumnName = "UEColumn2";
-			// 
-			// UEColumn3
-			// 
-			this.UEColumn3.Caption = "";
-			this.UEColumn3.ColumnName = "UEColumn3";
 			// 
 			// UECode
 			// 
@@ -693,11 +641,6 @@ namespace UEEditor
 			// 
 			this.UEFirmCr.Caption = "Производитель";
 			this.UEFirmCr.ColumnName = "UEFirmCr";
-			// 
-			// UECurrency
-			// 
-			this.UECurrency.Caption = "Валюта";
-			this.UECurrency.ColumnName = "UECurrency";
 			// 
 			// UEBaseCost
 			// 
@@ -759,10 +702,6 @@ namespace UEEditor
 			this.UEAlready.ColumnName = "UEAlready";
 			this.UEAlready.DataType = typeof(int);
 			// 
-			// UETmpCurrency
-			// 
-			this.UETmpCurrency.ColumnName = "UETmpCurrency";
-			// 
 			// UERowID
 			// 
 			this.UERowID.ColumnName = "UERowID";
@@ -780,7 +719,6 @@ namespace UEEditor
             this.ZCodeCr,
             this.ZName,
             this.ZFirmCr,
-            this.ZCurrency,
             this.ZBaseCost,
             this.ZUnit,
             this.ZVolume,
@@ -804,10 +742,6 @@ namespace UEEditor
 			// ZFirmCr
 			// 
 			this.ZFirmCr.ColumnName = "ZFirmCr";
-			// 
-			// ZCurrency
-			// 
-			this.ZCurrency.ColumnName = "ZCurrency";
 			// 
 			// ZBaseCost
 			// 
@@ -1473,12 +1407,10 @@ namespace UEEditor
 			this.gvUnrecExp.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colUEColumn1,
             this.colUEColumn2,
-            this.colUEColumn3,
             this.colUECode,
             this.colUECodeCr,
             this.colUEName1,
             this.colUEFirmCr,
-            this.colUECurrency,
             this.colUEBaseCost,
             this.colUEUnit,
             this.colUEVolume,
@@ -1531,20 +1463,6 @@ namespace UEEditor
 			this.colUEColumn2.VisibleIndex = 1;
 			this.colUEColumn2.Width = 20;
 			// 
-			// colUEColumn3
-			// 
-			this.colUEColumn3.Caption = "Curr";
-			this.colUEColumn3.FieldName = "UEColumn3";
-			this.colUEColumn3.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Left;
-			this.colUEColumn3.Name = "colUEColumn3";
-			this.colUEColumn3.OptionsColumn.AllowEdit = false;
-			this.colUEColumn3.OptionsColumn.AllowSize = false;
-			this.colUEColumn3.OptionsColumn.FixedWidth = true;
-			this.colUEColumn3.ToolTip = "Признак того, что позиция распознана по валюте";
-			this.colUEColumn3.Visible = true;
-			this.colUEColumn3.VisibleIndex = 2;
-			this.colUEColumn3.Width = 20;
-			// 
 			// colUECode
 			// 
 			this.colUECode.Caption = "Код";
@@ -1552,7 +1470,7 @@ namespace UEEditor
 			this.colUECode.Name = "colUECode";
 			this.colUECode.OptionsColumn.AllowEdit = false;
 			this.colUECode.Visible = true;
-			this.colUECode.VisibleIndex = 3;
+			this.colUECode.VisibleIndex = 2;
 			this.colUECode.Width = 55;
 			// 
 			// colUECodeCr
@@ -1562,7 +1480,7 @@ namespace UEEditor
 			this.colUECodeCr.Name = "colUECodeCr";
 			this.colUECodeCr.OptionsColumn.AllowEdit = false;
 			this.colUECodeCr.Visible = true;
-			this.colUECodeCr.VisibleIndex = 4;
+			this.colUECodeCr.VisibleIndex = 3;
 			this.colUECodeCr.Width = 55;
 			// 
 			// colUEName1
@@ -1572,7 +1490,7 @@ namespace UEEditor
 			this.colUEName1.Name = "colUEName1";
 			this.colUEName1.OptionsColumn.AllowEdit = false;
 			this.colUEName1.Visible = true;
-			this.colUEName1.VisibleIndex = 5;
+			this.colUEName1.VisibleIndex = 4;
 			this.colUEName1.Width = 55;
 			// 
 			// colUEFirmCr
@@ -1582,18 +1500,8 @@ namespace UEEditor
 			this.colUEFirmCr.Name = "colUEFirmCr";
 			this.colUEFirmCr.OptionsColumn.AllowEdit = false;
 			this.colUEFirmCr.Visible = true;
-			this.colUEFirmCr.VisibleIndex = 6;
+			this.colUEFirmCr.VisibleIndex = 5;
 			this.colUEFirmCr.Width = 55;
-			// 
-			// colUECurrency
-			// 
-			this.colUECurrency.Caption = "Валюта";
-			this.colUECurrency.FieldName = "UECurrency";
-			this.colUECurrency.Name = "colUECurrency";
-			this.colUECurrency.OptionsColumn.AllowEdit = false;
-			this.colUECurrency.Visible = true;
-			this.colUECurrency.VisibleIndex = 7;
-			this.colUECurrency.Width = 55;
 			// 
 			// colUEBaseCost
 			// 
@@ -1602,7 +1510,7 @@ namespace UEEditor
 			this.colUEBaseCost.Name = "colUEBaseCost";
 			this.colUEBaseCost.OptionsColumn.AllowEdit = false;
 			this.colUEBaseCost.Visible = true;
-			this.colUEBaseCost.VisibleIndex = 8;
+			this.colUEBaseCost.VisibleIndex = 6;
 			this.colUEBaseCost.Width = 55;
 			// 
 			// colUEUnit
@@ -1612,7 +1520,7 @@ namespace UEEditor
 			this.colUEUnit.Name = "colUEUnit";
 			this.colUEUnit.OptionsColumn.AllowEdit = false;
 			this.colUEUnit.Visible = true;
-			this.colUEUnit.VisibleIndex = 9;
+			this.colUEUnit.VisibleIndex = 7;
 			this.colUEUnit.Width = 55;
 			// 
 			// colUEVolume
@@ -1622,7 +1530,7 @@ namespace UEEditor
 			this.colUEVolume.Name = "colUEVolume";
 			this.colUEVolume.OptionsColumn.AllowEdit = false;
 			this.colUEVolume.Visible = true;
-			this.colUEVolume.VisibleIndex = 10;
+			this.colUEVolume.VisibleIndex = 8;
 			this.colUEVolume.Width = 55;
 			// 
 			// colUEQuantity
@@ -1632,7 +1540,7 @@ namespace UEEditor
 			this.colUEQuantity.Name = "colUEQuantity";
 			this.colUEQuantity.OptionsColumn.AllowEdit = false;
 			this.colUEQuantity.Visible = true;
-			this.colUEQuantity.VisibleIndex = 11;
+			this.colUEQuantity.VisibleIndex = 9;
 			this.colUEQuantity.Width = 55;
 			// 
 			// colUEPeriod
@@ -1642,7 +1550,7 @@ namespace UEEditor
 			this.colUEPeriod.Name = "colUEPeriod";
 			this.colUEPeriod.OptionsColumn.AllowEdit = false;
 			this.colUEPeriod.Visible = true;
-			this.colUEPeriod.VisibleIndex = 12;
+			this.colUEPeriod.VisibleIndex = 10;
 			this.colUEPeriod.Width = 55;
 			// 
 			// colUEJunk
@@ -1652,7 +1560,7 @@ namespace UEEditor
 			this.colUEJunk.Name = "colUEJunk";
 			this.colUEJunk.OptionsColumn.AllowEdit = false;
 			this.colUEJunk.Visible = true;
-			this.colUEJunk.VisibleIndex = 13;
+			this.colUEJunk.VisibleIndex = 11;
 			this.colUEJunk.Width = 55;
 			// 
 			// colUEStatus
@@ -1813,7 +1721,6 @@ namespace UEEditor
             this.colZCodeCr,
             this.colZName,
             this.colZFirmCr,
-            this.colZCurrency,
             this.colZUnit,
             this.colZVolume,
             this.colZQuantity,
@@ -1861,15 +1768,6 @@ namespace UEEditor
 			this.colZFirmCr.Visible = true;
 			this.colZFirmCr.VisibleIndex = 3;
 			// 
-			// colZCurrency
-			// 
-			this.colZCurrency.Caption = "Валюта";
-			this.colZCurrency.FieldName = "ZCurrency";
-			this.colZCurrency.Name = "colZCurrency";
-			this.colZCurrency.OptionsColumn.AllowEdit = false;
-			this.colZCurrency.Visible = true;
-			this.colZCurrency.VisibleIndex = 4;
-			// 
 			// colZUnit
 			// 
 			this.colZUnit.Caption = "Ед. измерения";
@@ -1877,7 +1775,7 @@ namespace UEEditor
 			this.colZUnit.Name = "colZUnit";
 			this.colZUnit.OptionsColumn.AllowEdit = false;
 			this.colZUnit.Visible = true;
-			this.colZUnit.VisibleIndex = 5;
+			this.colZUnit.VisibleIndex = 4;
 			// 
 			// colZVolume
 			// 
@@ -1886,7 +1784,7 @@ namespace UEEditor
 			this.colZVolume.Name = "colZVolume";
 			this.colZVolume.OptionsColumn.AllowEdit = false;
 			this.colZVolume.Visible = true;
-			this.colZVolume.VisibleIndex = 6;
+			this.colZVolume.VisibleIndex = 5;
 			// 
 			// colZQuantity
 			// 
@@ -1895,7 +1793,7 @@ namespace UEEditor
 			this.colZQuantity.Name = "colZQuantity";
 			this.colZQuantity.OptionsColumn.AllowEdit = false;
 			this.colZQuantity.Visible = true;
-			this.colZQuantity.VisibleIndex = 7;
+			this.colZQuantity.VisibleIndex = 6;
 			// 
 			// colZPeriod
 			// 
@@ -1904,7 +1802,7 @@ namespace UEEditor
 			this.colZPeriod.Name = "colZPeriod";
 			this.colZPeriod.OptionsColumn.AllowEdit = false;
 			this.colZPeriod.Visible = true;
-			this.colZPeriod.VisibleIndex = 8;
+			this.colZPeriod.VisibleIndex = 7;
 			// 
 			// tpForb
 			// 
@@ -1971,122 +1869,6 @@ namespace UEEditor
 			// 
 			this.menuItem4.Index = -1;
 			this.menuItem4.Text = "Отослать письмо о изготовителях";
-			// 
-			// dataGridTextBoxColumn10
-			// 
-			this.dataGridTextBoxColumn10.Format = "";
-			this.dataGridTextBoxColumn10.FormatInfo = null;
-			this.dataGridTextBoxColumn10.MappingName = "UEColumn1";
-			this.dataGridTextBoxColumn10.Width = 75;
-			// 
-			// dataGridTextBoxColumn11
-			// 
-			this.dataGridTextBoxColumn11.Format = "";
-			this.dataGridTextBoxColumn11.FormatInfo = null;
-			this.dataGridTextBoxColumn11.MappingName = "UEColumn2";
-			this.dataGridTextBoxColumn11.Width = 75;
-			// 
-			// dataGridTextBoxColumn12
-			// 
-			this.dataGridTextBoxColumn12.Format = "";
-			this.dataGridTextBoxColumn12.FormatInfo = null;
-			this.dataGridTextBoxColumn12.MappingName = "UEColumn3";
-			this.dataGridTextBoxColumn12.Width = 75;
-			// 
-			// dataGridTextBoxColumn13
-			// 
-			this.dataGridTextBoxColumn13.Format = "";
-			this.dataGridTextBoxColumn13.FormatInfo = null;
-			this.dataGridTextBoxColumn13.HeaderText = "Код";
-			this.dataGridTextBoxColumn13.MappingName = "UECode";
-			this.dataGridTextBoxColumn13.Width = 75;
-			// 
-			// dataGridTextBoxColumn14
-			// 
-			this.dataGridTextBoxColumn14.Format = "";
-			this.dataGridTextBoxColumn14.FormatInfo = null;
-			this.dataGridTextBoxColumn14.HeaderText = "Код производителя";
-			this.dataGridTextBoxColumn14.MappingName = "UECodeCr";
-			this.dataGridTextBoxColumn14.Width = 75;
-			// 
-			// dataGridTextBoxColumn15
-			// 
-			this.dataGridTextBoxColumn15.Format = "";
-			this.dataGridTextBoxColumn15.FormatInfo = null;
-			this.dataGridTextBoxColumn15.HeaderText = "Наименование";
-			this.dataGridTextBoxColumn15.MappingName = "UEName1";
-			this.dataGridTextBoxColumn15.Width = 75;
-			// 
-			// dataGridTextBoxColumn16
-			// 
-			this.dataGridTextBoxColumn16.Format = "";
-			this.dataGridTextBoxColumn16.FormatInfo = null;
-			this.dataGridTextBoxColumn16.HeaderText = "Производитель";
-			this.dataGridTextBoxColumn16.MappingName = "UEFirmCr";
-			this.dataGridTextBoxColumn16.Width = 75;
-			// 
-			// dataGridTextBoxColumn26
-			// 
-			this.dataGridTextBoxColumn26.Format = "";
-			this.dataGridTextBoxColumn26.FormatInfo = null;
-			this.dataGridTextBoxColumn26.HeaderText = "Валюта";
-			this.dataGridTextBoxColumn26.MappingName = "UECurrency";
-			this.dataGridTextBoxColumn26.Width = 75;
-			// 
-			// dataGridTextBoxColumn27
-			// 
-			this.dataGridTextBoxColumn27.Format = "";
-			this.dataGridTextBoxColumn27.FormatInfo = null;
-			this.dataGridTextBoxColumn27.HeaderText = "Базовая цена";
-			this.dataGridTextBoxColumn27.MappingName = "UEBaseCost";
-			this.dataGridTextBoxColumn27.Width = 75;
-			// 
-			// dataGridTextBoxColumn28
-			// 
-			this.dataGridTextBoxColumn28.Format = "";
-			this.dataGridTextBoxColumn28.FormatInfo = null;
-			this.dataGridTextBoxColumn28.HeaderText = "Ед. измерения";
-			this.dataGridTextBoxColumn28.MappingName = "UEUnit";
-			this.dataGridTextBoxColumn28.Width = 75;
-			// 
-			// dataGridTextBoxColumn29
-			// 
-			this.dataGridTextBoxColumn29.Format = "";
-			this.dataGridTextBoxColumn29.FormatInfo = null;
-			this.dataGridTextBoxColumn29.HeaderText = "Цех. уп.";
-			this.dataGridTextBoxColumn29.MappingName = "UEVolume";
-			this.dataGridTextBoxColumn29.Width = 75;
-			// 
-			// dataGridTextBoxColumn30
-			// 
-			this.dataGridTextBoxColumn30.Format = "";
-			this.dataGridTextBoxColumn30.FormatInfo = null;
-			this.dataGridTextBoxColumn30.HeaderText = "Количество";
-			this.dataGridTextBoxColumn30.MappingName = "UEQuantity";
-			this.dataGridTextBoxColumn30.Width = 75;
-			// 
-			// dataGridTextBoxColumn31
-			// 
-			this.dataGridTextBoxColumn31.Format = "";
-			this.dataGridTextBoxColumn31.FormatInfo = null;
-			this.dataGridTextBoxColumn31.HeaderText = "Срок годности";
-			this.dataGridTextBoxColumn31.MappingName = "UEPeriod";
-			this.dataGridTextBoxColumn31.Width = 75;
-			// 
-			// dataGridTextBoxColumn32
-			// 
-			this.dataGridTextBoxColumn32.Format = "";
-			this.dataGridTextBoxColumn32.FormatInfo = null;
-			this.dataGridTextBoxColumn32.HeaderText = "Признак";
-			this.dataGridTextBoxColumn32.MappingName = "UEJunk";
-			this.dataGridTextBoxColumn32.Width = 75;
-			// 
-			// colCColumn11
-			// 
-			this.colCColumn11.FieldName = "CColumn1";
-			this.colCColumn11.Name = "colCColumn11";
-			this.colCColumn11.Visible = true;
-			this.colCColumn11.VisibleIndex = 0;
 			// 
 			// MainTimer
 			// 

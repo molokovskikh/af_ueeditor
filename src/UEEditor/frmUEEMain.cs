@@ -301,7 +301,6 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 				  Name2 AS UEName2, 
 				  Name3 As UEName3, 
 				  FirmCr As UEFirmCr, 
-				  CountryCr, 
 				  Code As UECode, 
 				  CodeCr As UECodeCr, 
 				  Unit As UEUnit, 
@@ -311,10 +310,8 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 				  Period As UEPeriod, 
 				  Doc, 
 				  BaseCost As UEBaseCost, 
-				  Currency As UECurrency, 
 				  TmpProductId As UETmpProductId,  
 				  TmpCodeFirmCr As UETmpCodeFirmCr, 
-				  TmpCurrency, 
 				  Status As UEStatus,
                   Already As UEAlready, 
 				  Junk As UEJunk,
@@ -592,7 +589,6 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 									CodeCr As ZCodeCr, 
 									Name As ZName, 
 									FirmCr As ZFirmCr, 
-									Currency As ZCurrency, 
 									Unit As ZUnit, 
 									Volume AS ZVolume, 
 									Quantity As ZQuantity, 
@@ -624,12 +620,6 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 		{
 			FormMask m = GetMask(NumRow, FieldName);
 			return (m & FormMask.FirmForm) != FormMask.FirmForm;
-		}
-
-		private bool NotCurrForm(int NumRow, string FieldName)
-		{
-			FormMask m = GetMask(NumRow, FieldName);
-			return (m & FormMask.CurrForm) != FormMask.CurrForm;
 		}
 
 		private bool MarkForbidden(int NumRow, string FieldName)
@@ -1838,7 +1828,6 @@ where
 					drNew["Status"] = drUpdated["UEStatus"];
 					drNew["TmpProductId"] = drUpdated["UETmpProductId"];
 					drNew["TmpCodeFirmCr"] = drUpdated["UETmpCodeFirmCr"];
-					drNew["TmpCurrency"] = drUpdated["UETmpCurrency"];
 					drNew["RowID"] = drUpdated["UERowID"];
 					if ((byte)drUpdated["UEHandMade"] == 0)
 					{
@@ -2224,20 +2213,6 @@ and c.Type = ?ContactType;",
 						System.Drawing.Brush br = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Control);
 						e.Graphics.FillRectangle(br, r);
 						e.Graphics.DrawImageUnscaled(imageList2.Images[1], r.X, r.Y);
-						ControlPaint.DrawBorder3D(e.Graphics, e.Bounds, Border3DStyle.Adjust);
-						e.Handled = true;
-					}
-				}
-
-				if (e.Column == colUEColumn3)
-				{
-					if (((GetMask(e.RowHandle, "UEStatus") & FormMask.CurrForm) == FormMask.CurrForm) && ((GetMask(e.RowHandle, "UEStatus") & FormMask.MarkForb) != FormMask.MarkForb))
-					{
-						Rectangle  r = e.Bounds;
-						r.Inflate(-1, -1);
-						System.Drawing.Brush br = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Control);
-						e.Graphics.FillRectangle(br, r);
-						e.Graphics.DrawImageUnscaled(imageList2.Images[2], r.X, r.Y);
 						ControlPaint.DrawBorder3D(e.Graphics, e.Bounds, Border3DStyle.Adjust);
 						e.Handled = true;
 					}
