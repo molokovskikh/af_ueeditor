@@ -185,6 +185,7 @@
     <Compile Include="frmUEEMain.Designer.cs">
       <DependentUpon>frmUEEMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\InputLanguageHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

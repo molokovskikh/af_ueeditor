@@ -20,12 +20,14 @@ using RemotePricePricessor;
 using Inforoom.UEEditor.Properties;
 using DevExpress.Data.Filtering;
 using log4net;
+using DevExpress.Utils.Paint;
 
 
 [assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
 namespace Inforoom.UEEditor
 {
 
+	/*
 	[FlagsAttribute]
 	public enum FormMask : byte
 	{
@@ -41,6 +43,25 @@ namespace Inforoom.UEEditor
 		AssortmentAbsent = 16,
 		//Помечено как исключение
 		MarkExclude = 32
+	}
+	 */
+	[FlagsAttribute]
+	public enum FormMask : byte
+	{
+		//Сопоставлено по наименованию
+		NameForm = 1,
+		//Сопоставлено по производителю
+		FirmForm = 2,
+		//Сопоставлено по валюте
+		AssortmentForm = 4,
+		// Полностью формализован по наименованию, производителю и ассортименту
+		FullForm = 7, 
+		//Помечено как запрещенное
+		MarkForb = 8,
+		// Помеченый как исключение
+		MarkExclude	   = 16,
+		// Формализован по наименованию, производителю и как исключение
+		ExcludeForm    = 19 
 	}
 	/// <summary>
 	/// Summary description for Form1.
@@ -75,6 +96,9 @@ namespace Inforoom.UEEditor
 		public int DuplicateSynonymCount = 0;
 		public int SynonymFirmCrCount = 0;
 		public int ForbiddenCount = 0;
+		public string producerSeachText;
+
+		public const string unknownProducer = "производитель не известен";
 
 		private readonly IRemotePriceProcessor remotePriceProcessor;
 
@@ -132,7 +156,7 @@ namespace Inforoom.UEEditor
 			JobsGridFill();
 
 			//Запоняем каталожные таблицы
-			CatalogFirmCrGridFill(MyCmd, MyDA);
+			//CatalogFirmCrGridFill(MyCmd, MyDA);
 
 			CatalogNameGridFill(MyCmd, MyDA);
 
@@ -377,7 +401,194 @@ order by CName";
 			//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
 			DataRow drUnknown = dtCatalogFirmCr.NewRow();
 			drUnknown["CCode"] = 0;
-			drUnknown["CName"] = "производитель не известен";
+			drUnknown["CName"] = unknownProducer;
+			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
+		}
+
+		private void ProducersGridFillByName(string name, long? productId)
+		{
+			dtCatalogFirmCr.Clear();
+			if (productId.HasValue)
+			{
+				MyCmd.CommandText = @"
+SELECT
+  p.Id As CCode,
+  p.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  1 as CIsAssortment
+FROM
+  catalogs.assortment a,
+  catalogs.Producers P
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (a.ProductId = ?ProductId)
+and (p.Id = a.ProducerId)
+and (p.Id <> 1) 
+and (" + GetFilterString(name, "p.Name", "  ") + ") " +
+	@"
+union
+SELECT
+  p.Id As CCode,
+  pe.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  1 as CIsAssortment
+FROM
+  (
+  catalogs.assortment a,
+  catalogs.Producers P,
+  catalogs.ProducerEquivalents PE
+  )
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (a.ProductId = ?ProductId)
+and (p.Id = a.ProducerId)
+and (pe.ProducerId = p.Id)
+and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
+	"order by CName";
+
+				MyCmd.Parameters.Clear();
+				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				MyCmd.Parameters.AddWithValue("?Name", name);
+				MyCmd.Parameters.AddWithValue("?ProductId", productId.Value);
+			}
+			else
+			{
+				MyCmd.CommandText = @"
+SELECT
+  p.Id As CCode,
+  p.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  1 as CIsAssortment
+FROM
+  catalogs.Producers P
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (p.Id <> 1) 
+and (" + GetFilterString(name, "p.Name", "  ") + ") " +
+	@"
+union
+SELECT
+  p.Id As CCode,
+  pe.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  1 as CIsAssortment
+FROM
+  (
+  catalogs.Producers P,
+  catalogs.ProducerEquivalents PE
+  )
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (pe.ProducerId = p.Id)
+and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
+	"order by CName";
+
+				MyCmd.Parameters.Clear();
+				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				MyCmd.Parameters.AddWithValue("?Name", name);
+			}
+
+			MyDA.Fill(dtCatalogFirmCr);
+
+			//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
+			DataRow drUnknown = dtCatalogFirmCr.NewRow();
+			drUnknown["CCode"] = 0;
+			drUnknown["CName"] = unknownProducer;
+			drUnknown[CBlocked.ColumnName] = false;
+			drUnknown[CIsAssortment.ColumnName] = true;
+			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
+		}
+
+		private void ProducersGridFillByFilter(string name, string filter, long? productId)
+		{
+			dtCatalogFirmCr.Clear();
+
+			if (productId.HasValue)
+			{
+				MyCmd.CommandText = @"
+SELECT
+  p.Id As CCode,
+  p.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  (a.ProductId is not null) as CIsAssortment
+FROM
+  catalogs.Producers P
+  left join catalogs.assortment a on (a.ProductId = ?ProductId) and (a.ProducerId = p.Id)
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (p.Id <> 1) 
+and (p.Name like ?filter)
+union
+SELECT
+  p.Id As CCode,
+  pe.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  (a.ProductId is not null) as CIsAssortment
+FROM
+  (
+  catalogs.Producers P,
+  catalogs.ProducerEquivalents PE
+  )
+  left join catalogs.assortment a on (a.ProductId = ?ProductId) and (a.ProducerId = p.Id)
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (p.Id <> 1)
+and (pe.ProducerId = p.Id)
+and (pe.Name like ?filter)
+order by CName";
+
+				MyCmd.Parameters.Clear();
+				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				MyCmd.Parameters.AddWithValue("?Name", name);
+				MyCmd.Parameters.AddWithValue("?filter", "%" + filter + "%");
+				MyCmd.Parameters.AddWithValue("?ProductId", productId.Value);
+			}
+			else
+			{
+				MyCmd.CommandText = @"
+SELECT
+  p.Id As CCode,
+  p.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  1 as CIsAssortment
+FROM
+  catalogs.Producers P
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (p.Id <> 1) 
+and (p.Name like ?filter)
+union
+SELECT
+  p.Id As CCode,
+  pe.Name As CName,
+  if(bps.id is null, 0, 1) as CBlocked,
+  1 as CIsAssortment
+FROM
+  (
+  catalogs.Producers P,
+  catalogs.ProducerEquivalents PE
+  )
+  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
+where
+    (p.Id <> 1)
+and (pe.ProducerId = p.Id)
+and (pe.Name like ?filter)
+order by CName";
+
+				MyCmd.Parameters.Clear();
+				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				MyCmd.Parameters.AddWithValue("?Name", name);
+				MyCmd.Parameters.AddWithValue("?filter", "%" + filter + "%");
+			}
+
+			MyDA.Fill(dtCatalogFirmCr);
+
+			//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
+			DataRow drUnknown = dtCatalogFirmCr.NewRow();
+			drUnknown["CCode"] = 0;
+			drUnknown["CName"] = unknownProducer;
+			drUnknown[CBlocked.ColumnName] = false;
+			drUnknown[CIsAssortment.ColumnName] = true;
 			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
 		}
 
@@ -485,7 +696,7 @@ order by Properties
 				dtProducts.Clear();
 				dtCatalog.Clear();
 
-				CatalogFirmCrGridFill(MyCmd, MyDA);
+				//CatalogFirmCrGridFill(MyCmd, MyDA);
 
 				CatalogNameGridFill(MyCmd, MyDA);
 
@@ -637,6 +848,11 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 
 		private string GetFilterString(string Value, string FieldName)
 		{
+			return GetFilterString(Value, FieldName, "[]");
+		}
+
+		private string GetFilterString(string Value, string FieldName, string fieldQuote)
+		{
 			int FirstLen = 4;
 			string[] flt = Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			ArrayList newflt = new ArrayList();
@@ -652,10 +868,15 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			}
 			string[] flt2 = new string[newflt.Count];
 			newflt.CopyTo(flt2);
-			return "[" + FieldName + "] like '" + String.Join("%' or [" + FieldName + "] like '", flt2) + "%'";
+			return fieldQuote[0] + FieldName + fieldQuote[1] + " like '" + String.Join("%' or " + fieldQuote[0] + FieldName + fieldQuote[1] + " like '", flt2) + "%'";
 		}
 
 		private void GotoCatalogPosition(GridView selected, string Value, string FieldName)
+		{
+			GotoCatalogPosition(selected, Value, FieldName, false, null);
+		}
+
+		private void GotoCatalogPosition(GridView selected, string Value, string FieldName, bool skipBlocked, string blockedFieldName)
 		{
 			int WordLen = 3;
 
@@ -695,6 +916,10 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 				//Значение строки из каталога
 				string PropertiesValue = selected.GetDataRow(i)[FieldName].ToString();
 
+				//Пробрасываем заблокированные
+				if (skipBlocked && (bool)selected.GetDataRow(i)[blockedFieldName])
+					continue;
+
 				//Это значение может быть пустой строкой, если сравниваем со свойствами
 				if (!String.IsNullOrEmpty(PropertiesValue))
 				{
@@ -727,7 +952,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			DataRow dr=gvUnrecExp.GetDataRow(FocusedRowHandle);
 			grpBoxCatalog2.Text = "Каталог товаров";
 			CatalogGridControl.Visible = true;
-			gcFirmCr.Visible = false;
+			pFirmCr.Visible = false;
 
 			CatalogGridControl.FocusedView = gvCatalog;
 			gvCatalog.CollapseAllDetails();
@@ -744,24 +969,33 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 		{
 			DataRow dr=gvUnrecExp.GetDataRow(FocusedRowHandle);
 			grpBoxCatalog2.Text = "Каталог фирм производителей";
-			gcFirmCr.Visible = true;
+			producerSeachText = String.Empty;
+			pFirmCr.Visible = true;
 			CatalogGridControl.Visible = false;
 			
-			if (dr["UEFirmCr"].ToString() != String.Empty)
+			if (dr[UEFirmCr.ColumnName].ToString() != String.Empty)
 			{
-				gvFirmCr.ActiveFilter.Clear();
+				ProducersGridFillByName(
+					dr[UEFirmCr.ColumnName].ToString(),
+					Convert.IsDBNull(dr[UEPriorProductId.ColumnName]) ? null : (long?)dr[UEPriorProductId.ColumnName]);
+				if (gvFirmCr.DataRowCount > 3)
+					GotoCatalogPosition(gvFirmCr, dr[UEFirmCr.ColumnName].ToString(), "CName", true, "CBlocked");
+
+				//gvFirmCr.ActiveFilter.Clear();
 /*
                 Пример того, как можно сделать фильтрацию по двум столбцам с объединением по Or
 				gvFirmCr.ActiveFilterCriteria = CriteriaOperator.Parse(
-					GetFilterString(dr["UEFirmCr"].ToString(), "CName") + 
+					GetFilterString(dr[UEFirmCr.ColumnName].ToString(), "CName") + 
 					" or " + 
-					GetFilterString(dr["UEFirmCr"].ToString(), "CEquivalentName"));
+					GetFilterString(dr[UEFirmCr.ColumnName].ToString(), "CEquivalentName"));
  */ 
-				gvFirmCr.ActiveFilter.Add(gvFirmCr.Columns["CName"], new ColumnFilterInfo(GetFilterString(dr["UEFirmCr"].ToString(), "CName"), ""));
-				if (gvFirmCr.DataRowCount == 0)
-					gvFirmCr.ActiveFilter.Clear();
-				else
-					GotoCatalogPosition(gvFirmCr, dr["UEFirmCr"].ToString(), "CName");
+
+				//gvFirmCr.ActiveFilter.Add(gvFirmCr.Columns["CName"], new ColumnFilterInfo(GetFilterString(dr[UEFirmCr.ColumnName].ToString(), "CName"), ""));
+				//if (gvFirmCr.DataRowCount == 0)
+				//    gvFirmCr.ActiveFilter.Clear();
+				//else
+				//    GotoCatalogPosition(gvFirmCr, dr[UEFirmCr.ColumnName].ToString(), "CName");
+
 			}
 			else
 			{
@@ -858,16 +1092,18 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						//Если нашли такую запись и поле "FirmCr" непустое, то сбрасываем сопоставление по производителю
 						if ((drUN != null) && !String.IsNullOrEmpty(drUN[UEFirmCr].ToString()))
 						{
-							string FirmName = null;
-							//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UEPriorProducerId
-							DataRow[] drFM = dtCatalogFirmCr.Select(
-								"CCode = " + (Convert.IsDBNull(drUN[UEPriorProducerId]) ? "0" : drUN[UEPriorProducerId].ToString()));
-							if (drFM.Length > 0)
-							{
-								FirmName = drFM[0]["CName"].ToString();
-							}
+							//string FirmName = null;
+							object FirmName;
+							if (Convert.IsDBNull(drUN[UEPriorProducerId]))
+								FirmName = unknownProducer;
+							else
+								//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UEPriorProducerId
+								FirmName = MySqlHelper.ExecuteScalar(MyCn,
+								"select Name from catalogs.Producers where ProducerId = " + drUN[UEPriorProducerId].ToString());
 
-							if (!String.IsNullOrEmpty(FirmName) && MessageBox.Show("Производитель: " + FirmName+ "\r\nОтменить сопоставление по производителю?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+							if ((FirmName != null) && (FirmName is string) && 
+								!String.IsNullOrEmpty((string)FirmName) && 
+								(MessageBox.Show("Производитель: " + FirmName+ "\r\nОтменить сопоставление по производителю?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes))
 							{
 								UnmarkUnrecExpAsFirmForm(gvUnrecExp.FocusedRowHandle);
 								flag = true;
@@ -1226,7 +1462,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			{
 				DataRow dr = gvUnrecExp.GetDataRow(FocusedRowHandle);
 				if (dr != null)
-					return dr["UEFirmCr"].ToString();
+					return dr[UEFirmCr.ColumnName].ToString();
 				else
 					return String.Empty;
 			}
@@ -1801,7 +2037,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 		{
 			int DelCount = 0;
 
-			int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm | FormMask.CurrForm);
+			//int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm | FormMask.CurrForm);
+			int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm);
 
 			if (!Convert.IsDBNull(drUpdated[UEPriorProductId]))
 			{
@@ -2145,7 +2382,7 @@ where
 				{
 					if (((FormMask)Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.MarkForb) == FormMask.MarkForb)
 					{
-						string tmp = (UEdr["UECode"].ToString() + " " +UEdr["UEName1"].ToString() + " " + UEdr["UEFirmCr"].ToString()).Trim();
+						string tmp = (UEdr["UECode"].ToString() + " " +UEdr["UEName1"].ToString() + " " + UEdr[UEFirmCr.ColumnName].ToString()).Trim();
 						if (!NameArray.Contains(tmp))
 						{
 							NameArray.Add( tmp );
@@ -2182,7 +2419,7 @@ where
 				{
 					if (((FormMask)Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm)
 					{
-						string tmp = UEdr["UEFirmCr"].ToString().Trim();
+						string tmp = UEdr[UEFirmCr.ColumnName].ToString().Trim();
 						if (!UnrecFirmCr.ContainsKey(tmp))
 							UnrecFirmCr.Add(tmp, UEdr["UEName1"].ToString().Trim());
 					}
@@ -2378,13 +2615,19 @@ and c.Type = ?ContactType;",
 		{
 			//Здесь будет обработка производителя
 			//Снимаем фильтр при поиске
-			if (((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
-				e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
-				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
-				(e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9))
-				&& (gvFirmCr.ActiveFilter.Count > 0))
+			//if (((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
+			//    e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
+			//    e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
+			//    (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9))
+			//    && (gvFirmCr.ActiveFilter.Count > 0))
+			//{
+			//    gvFirmCr.ActiveFilter.Clear();
+			//}
+
+			if (!String.IsNullOrEmpty(tbProducerSearch.Text) && (e.KeyCode == Keys.Enter))
 			{
-				gvFirmCr.ActiveFilter.Clear();
+				PerformProducerSearch();
+				return;
 			}
 
 			if (e.KeyCode == Keys.Enter)
@@ -2462,6 +2705,104 @@ and c.Type = ?ContactType;",
 			}
 
 			UnrecExpGridControl.Focus();
+		}
+
+		private void gvFirmCr_RowStyle(object sender, RowStyleEventArgs e)
+		{
+			if (e.RowHandle != GridControl.InvalidRowHandle)
+			{
+				DataRow drProducer = gvFirmCr.GetDataRow(e.RowHandle);
+				if (drProducer != null)
+					if ((bool)drProducer[CBlocked.ColumnName])
+						e.Appearance.BackColor = Color.OrangeRed;
+					else
+						if (!(bool)drProducer[CIsAssortment.ColumnName])
+							e.Appearance.BackColor = Color.LightGray;
+			}
+		}
+
+		private void gvFirmCr_CustomDrawCell(object sender, DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventArgs e)
+		{
+			if (!String.IsNullOrEmpty(producerSeachText) && !String.IsNullOrEmpty(e.DisplayText) && (e.DisplayText != unknownProducer))
+			{
+				var displayText = e.DisplayText;
+				var index = displayText.IndexOf(producerSeachText, StringComparison.OrdinalIgnoreCase);
+				if (index == 0)
+					//если найденный текст в начале строки
+					e.Cache.Paint.DrawMultiColorString(e.Cache, e.Bounds, displayText, displayText.Substring(index, producerSeachText.Length), e.Appearance, Color.Black, Color.Yellow, false);
+				else
+					if (index + producerSeachText.Length == displayText.Length)
+					{
+						//если найденный текст в конце строки
+						//должен работать вызов этого метода, но он почему-то не работает, поэтому переписано ниже
+						//e.Cache.Paint.DrawMultiColorString(e.Cache, e.Bounds, displayText, displayText.Substring(0, index), e.Appearance, Color.Black, Color.Yellow, true);
+						MultiColorDrawStringParams param = new MultiColorDrawStringParams(e.Appearance);
+						param.Text = displayText;
+						param.Bounds = e.Bounds;
+						param.Ranges = new CharacterRangeWithFormat[] {
+						new CharacterRangeWithFormat(0, index, e.Appearance.GetForeColor(), e.Appearance.GetBackColor()),
+						new CharacterRangeWithFormat(index, producerSeachText.Length, Color.Black, Color.Yellow)};
+						e.Cache.Paint.MultiColorDrawString(e.Cache, param);
+					}
+					else
+					{
+						//если найденный текст в середине строки
+						MultiColorDrawStringParams param = new MultiColorDrawStringParams(e.Appearance);
+						param.Text = displayText;
+						param.Bounds = e.Bounds;
+						param.Ranges = new CharacterRangeWithFormat[] {
+						new CharacterRangeWithFormat(0, index, e.Appearance.GetForeColor(), e.Appearance.GetBackColor()),
+						new CharacterRangeWithFormat(index, producerSeachText.Length, Color.Black, Color.Yellow),
+						new CharacterRangeWithFormat(index+producerSeachText.Length, displayText.Length-(index+producerSeachText.Length), e.Appearance.GetForeColor(), e.Appearance.GetBackColor())};
+						e.Cache.Paint.MultiColorDrawString(e.Cache, param);
+					}
+				e.Handled = true;
+			}
+		}
+
+		private void ProducerSearchTimer_Tick(object sender, EventArgs e)
+		{
+			PerformProducerSearch();
+		}
+
+		private void tbProducerSearch_TextChanged(object sender, EventArgs e)
+		{
+			if (!String.IsNullOrEmpty(tbProducerSearch.Text))
+			{
+				ProducerSearchTimer.Enabled = false;
+				ProducerSearchTimer.Enabled = true;
+			}
+		}
+
+		private void PerformProducerSearch()
+		{
+			if (gvUnrecExp.FocusedRowHandle != GridControl.InvalidRowHandle)
+			{
+				DataRow dr = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
+				string producerSynonym = (string)dr[UEFirmCr.ColumnName];
+				ProducerSearchTimer.Enabled = false;
+				if (!String.IsNullOrEmpty(tbProducerSearch.Text))
+				{
+					producerSeachText = tbProducerSearch.Text;
+					tbProducerSearch.Text = "";
+					ProducersGridFillByFilter(
+						producerSynonym,
+						producerSeachText,
+					    Convert.IsDBNull(dr[UEPriorProductId.ColumnName]) ? null : (long?)dr[UEPriorProductId.ColumnName]);
+				}
+			}
+		}
+
+		private void tbProducerSearch_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+				PerformProducerSearch();
+		}
+
+		private void gcFirmCr_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (!Char.IsControl(e.KeyChar))
+				tbProducerSearch.Text += e.KeyChar;
 		}
 
 	}

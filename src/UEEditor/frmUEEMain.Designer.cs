@@ -222,6 +222,8 @@ namespace Inforoom.UEEditor
 			this.UEAlready = new System.Data.DataColumn();
 			this.UERowID = new System.Data.DataColumn();
 			this.UEHandMade = new System.Data.DataColumn();
+			this.UEProductSynonymId = new System.Data.DataColumn();
+			this.UEProducerSynonymId = new System.Data.DataColumn();
 			this.dtZero = new System.Data.DataTable();
 			this.ZCode = new System.Data.DataColumn();
 			this.ZCodeCr = new System.Data.DataColumn();
@@ -239,6 +241,7 @@ namespace Inforoom.UEEditor
 			this.dtCatalogFirmCr = new System.Data.DataTable();
 			this.CCodeFirmCr = new System.Data.DataColumn();
 			this.CFirmCr = new System.Data.DataColumn();
+			this.CBlocked = new System.Data.DataColumn();
 			this.dtSections = new System.Data.DataTable();
 			this.SSection = new System.Data.DataColumn();
 			this.dtCatalogNames = new System.Data.DataTable();
@@ -313,9 +316,11 @@ namespace Inforoom.UEEditor
 			this.pnlCenter2 = new System.Windows.Forms.Panel();
 			this.pnlLeft2 = new System.Windows.Forms.Panel();
 			this.grpBoxCatalog2 = new System.Windows.Forms.GroupBox();
+			this.pFirmCr = new System.Windows.Forms.Panel();
 			this.gcFirmCr = new DevExpress.XtraGrid.GridControl();
 			this.gvFirmCr = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFirmCrName = new DevExpress.XtraGrid.Columns.GridColumn();
+			this.tbProducerSearch = new System.Windows.Forms.TextBox();
 			this.btnHideUnformFirmCr = new System.Windows.Forms.Button();
 			this.pnlTop2 = new System.Windows.Forms.Panel();
 			this.BigNameLabel2 = new System.Windows.Forms.Label();
@@ -340,8 +345,8 @@ namespace Inforoom.UEEditor
 			this.menuItem4 = new System.Windows.Forms.MenuItem();
 			this.MainTimer = new System.Windows.Forms.Timer(this.components);
 			this.cdLegend = new System.Windows.Forms.ColorDialog();
-			this.UEProductSynonymId = new System.Data.DataColumn();
-			this.UEProducerSynonymId = new System.Data.DataColumn();
+			this.ProducerSearchTimer = new System.Windows.Forms.Timer(this.components);
+			this.CIsAssortment = new System.Data.DataColumn();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dsMain)).BeginInit();
@@ -376,6 +381,7 @@ namespace Inforoom.UEEditor
 			this.pnlCenter2.SuspendLayout();
 			this.pnlLeft2.SuspendLayout();
 			this.grpBoxCatalog2.SuspendLayout();
+			this.pFirmCr.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.gcFirmCr)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvFirmCr)).BeginInit();
 			this.pnlTop2.SuspendLayout();
@@ -689,6 +695,16 @@ namespace Inforoom.UEEditor
 			this.UEHandMade.ColumnName = "UEHandMade";
 			this.UEHandMade.DataType = typeof(byte);
 			// 
+			// UEProductSynonymId
+			// 
+			this.UEProductSynonymId.ColumnName = "UEProductSynonymId";
+			this.UEProductSynonymId.DataType = typeof(long);
+			// 
+			// UEProducerSynonymId
+			// 
+			this.UEProducerSynonymId.ColumnName = "UEProducerSynonymId";
+			this.UEProducerSynonymId.DataType = typeof(long);
+			// 
 			// dtZero
 			// 
 			this.dtZero.Columns.AddRange(new System.Data.DataColumn[] {
@@ -764,7 +780,9 @@ namespace Inforoom.UEEditor
 			// 
 			this.dtCatalogFirmCr.Columns.AddRange(new System.Data.DataColumn[] {
             this.CCodeFirmCr,
-            this.CFirmCr});
+            this.CFirmCr,
+            this.CBlocked,
+            this.CIsAssortment});
 			this.dtCatalogFirmCr.TableName = "CatalogFirmCrGrid";
 			// 
 			// CCodeFirmCr
@@ -776,6 +794,11 @@ namespace Inforoom.UEEditor
 			// CFirmCr
 			// 
 			this.CFirmCr.ColumnName = "CName";
+			// 
+			// CBlocked
+			// 
+			this.CBlocked.ColumnName = "CBlocked";
+			this.CBlocked.DataType = typeof(bool);
 			// 
 			// dtSections
 			// 
@@ -1552,7 +1575,7 @@ namespace Inforoom.UEEditor
 			// 
 			// grpBoxCatalog2
 			// 
-			this.grpBoxCatalog2.Controls.Add(this.gcFirmCr);
+			this.grpBoxCatalog2.Controls.Add(this.pFirmCr);
 			this.grpBoxCatalog2.Controls.Add(this.CatalogGridControl);
 			this.grpBoxCatalog2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpBoxCatalog2.Location = new System.Drawing.Point(0, 0);
@@ -1562,6 +1585,16 @@ namespace Inforoom.UEEditor
 			this.grpBoxCatalog2.TabStop = false;
 			this.grpBoxCatalog2.Text = "Каталог";
 			// 
+			// pFirmCr
+			// 
+			this.pFirmCr.Controls.Add(this.gcFirmCr);
+			this.pFirmCr.Controls.Add(this.tbProducerSearch);
+			this.pFirmCr.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pFirmCr.Location = new System.Drawing.Point(3, 16);
+			this.pFirmCr.Name = "pFirmCr";
+			this.pFirmCr.Size = new System.Drawing.Size(706, 214);
+			this.pFirmCr.TabIndex = 2;
+			// 
 			// gcFirmCr
 			// 
 			this.gcFirmCr.DataMember = "CatalogFirmCrGrid";
@@ -1569,16 +1602,17 @@ namespace Inforoom.UEEditor
 			this.gcFirmCr.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.gcFirmCr.EmbeddedNavigator.Name = "";
 			this.gcFirmCr.Enabled = false;
-			this.gcFirmCr.Location = new System.Drawing.Point(3, 16);
+			this.gcFirmCr.Location = new System.Drawing.Point(0, 20);
 			this.gcFirmCr.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.gcFirmCr.LookAndFeel.UseDefaultLookAndFeel = false;
 			this.gcFirmCr.MainView = this.gvFirmCr;
 			this.gcFirmCr.Name = "gcFirmCr";
-			this.gcFirmCr.Size = new System.Drawing.Size(706, 214);
+			this.gcFirmCr.Size = new System.Drawing.Size(706, 194);
 			this.gcFirmCr.TabIndex = 1;
 			this.gcFirmCr.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvFirmCr});
 			this.gcFirmCr.Visible = false;
+			this.gcFirmCr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.gcFirmCr_KeyPress);
 			this.gcFirmCr.KeyDown += new System.Windows.Forms.KeyEventHandler(this.gcFirmCr_KeyDown);
 			// 
 			// gvFirmCr
@@ -1588,7 +1622,6 @@ namespace Inforoom.UEEditor
             this.colFirmCrName});
 			this.gvFirmCr.GridControl = this.gcFirmCr;
 			this.gvFirmCr.Name = "gvFirmCr";
-			this.gvFirmCr.OptionsBehavior.AllowIncrementalSearch = true;
 			this.gvFirmCr.OptionsCustomization.AllowSort = false;
 			this.gvFirmCr.OptionsDetail.ShowDetailTabs = false;
 			this.gvFirmCr.OptionsMenu.EnableColumnMenu = false;
@@ -1597,7 +1630,9 @@ namespace Inforoom.UEEditor
 			this.gvFirmCr.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvFirmCr.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvFirmCr.OptionsView.ShowGroupPanel = false;
+			this.gvFirmCr.CustomDrawCell += new DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventHandler(this.gvFirmCr_CustomDrawCell);
 			this.gvFirmCr.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
+			this.gvFirmCr.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvFirmCr_RowStyle);
 			// 
 			// colFirmCrName
 			// 
@@ -1610,6 +1645,16 @@ namespace Inforoom.UEEditor
 			this.colFirmCrName.OptionsColumn.ReadOnly = true;
 			this.colFirmCrName.Visible = true;
 			this.colFirmCrName.VisibleIndex = 0;
+			// 
+			// tbProducerSearch
+			// 
+			this.tbProducerSearch.Dock = System.Windows.Forms.DockStyle.Top;
+			this.tbProducerSearch.Location = new System.Drawing.Point(0, 0);
+			this.tbProducerSearch.Name = "tbProducerSearch";
+			this.tbProducerSearch.Size = new System.Drawing.Size(706, 20);
+			this.tbProducerSearch.TabIndex = 2;
+			this.tbProducerSearch.TextChanged += new System.EventHandler(this.tbProducerSearch_TextChanged);
+			this.tbProducerSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProducerSearch_KeyDown);
 			// 
 			// btnHideUnformFirmCr
 			// 
@@ -1831,15 +1876,15 @@ namespace Inforoom.UEEditor
 			this.MainTimer.Interval = 20000;
 			this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
 			// 
-			// UEProductSynonymId
+			// ProducerSearchTimer
 			// 
-			this.UEProductSynonymId.ColumnName = "UEProductSynonymId";
-			this.UEProductSynonymId.DataType = typeof(long);
+			this.ProducerSearchTimer.Interval = 1200;
+			this.ProducerSearchTimer.Tick += new System.EventHandler(this.ProducerSearchTimer_Tick);
 			// 
-			// UEProducerSynonymId
+			// CIsAssortment
 			// 
-			this.UEProducerSynonymId.ColumnName = "UEProducerSynonymId";
-			this.UEProducerSynonymId.DataType = typeof(long);
+			this.CIsAssortment.ColumnName = "CIsAssortment";
+			this.CIsAssortment.DataType = typeof(bool);
 			// 
 			// frmUEEMain
 			// 
@@ -1891,6 +1936,8 @@ namespace Inforoom.UEEditor
 			this.pnlCenter2.ResumeLayout(false);
 			this.pnlLeft2.ResumeLayout(false);
 			this.grpBoxCatalog2.ResumeLayout(false);
+			this.pFirmCr.ResumeLayout(false);
+			this.pFirmCr.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.gcFirmCr)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvFirmCr)).EndInit();
 			this.pnlTop2.ResumeLayout(false);
@@ -1913,5 +1960,10 @@ namespace Inforoom.UEEditor
 		private System.Data.DataColumn JPriceItemId;
 		private System.Data.DataColumn UEProductSynonymId;
 		private System.Data.DataColumn UEProducerSynonymId;
+		private System.Data.DataColumn CBlocked;
+		private System.Windows.Forms.Panel pFirmCr;
+		private System.Windows.Forms.TextBox tbProducerSearch;
+		private System.Windows.Forms.Timer ProducerSearchTimer;
+		private System.Data.DataColumn CIsAssortment;
 	}
 }

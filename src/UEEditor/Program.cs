@@ -4,6 +4,7 @@ using System.Text;
 using log4net;
 using System.Windows.Forms;
 using System.Threading;
+using Subway.Helpers;
 
 namespace Inforoom.UEEditor
 {
@@ -21,6 +22,8 @@ namespace Inforoom.UEEditor
 			//значений столбца "Сегмент" в фильтрах компонентов DevExpress
 			//Application.EnableVisualStyles();
 			//Application.SetCompatibleTextRenderingDefault(false);
+
+			InputLanguageHelper.SetToRussian();
 
 			Application.Run(new frmUEEMain());
 		}
