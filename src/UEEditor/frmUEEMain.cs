@@ -295,8 +295,6 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 			MyCmd.CommandText =
 				@"SELECT RowID As UERowID,
                   Name1 As UEName1, 
-				  Name2 AS UEName2, 
-				  Name3 As UEName3, 
 				  FirmCr As UEFirmCr, 
 				  Code As UECode, 
 				  CodeCr As UECodeCr, 
@@ -306,7 +304,6 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 				  Note, 
 				  Period As UEPeriod, 
 				  Doc, 
-				  BaseCost As UEBaseCost, 
 				  PriorProductId As UEPriorProductId,  
 				  PriorProducerId As UETmpCodeFirmCr, 
 				  Status As UEStatus,
@@ -1829,8 +1826,9 @@ where
 
 			//ѕроизводим проверку того, что синоним может быть уже вставлен в таблицу синонимов
 			object SynonymExists = MySqlHelper.ExecuteScalar(MyCn, 
-				"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(), 
-				new MySqlParameter("?Synonym", String.Format("{0} {1} {2}", drUpdated["UEName1"], drUpdated["UEName2"], drUpdated["UEName3"])));
+				"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
+				//todo: здесь получаетс€ фигн€ с добавлением пробелов в конце строки
+				new MySqlParameter("?Synonym", String.Format("{0}  ", drUpdated["UEName1"])));
 			if ((SynonymExists != null))
 			{
 				//≈сли в процессе распозновани€ синоним уже кто-то добавил, то сбрасываем распознавание
@@ -1976,7 +1974,8 @@ where
 			{
 				DataRow dr = gvUnrecExp.GetDataRow(FocusedRowHandle);
 				if (dr != null)
-					return String.Format("{0} {1} {2}", dr["UEName1"], dr["UEName2"], dr["UEName3"]);
+					//todo: здесь получаетс€ фигн€ с добавлением пробелов в конце строки
+					return String.Format("{0}  ", dr["UEName1"]);
 				else
 					return String.Empty;
 			}
@@ -1991,6 +1990,27 @@ where
 				int v1 = (int)e.Value1;
 				int v2 = (int)e.Value2;
 				e.Handled = true;
+				//todo: здесь происходит сортировка по статусу Already
+				/*
+				 * ѕредыдущие значени€ статуса
+	[FlagsAttribute]
+	public enum FormMask : byte
+	{
+		//—опоставлено по наименованию
+		NameForm = 1,
+		//—опоставлено по производителю
+		FirmForm = 2,
+		//—опоставлено по валюте
+		CurrForm = 4,
+		//ѕомечено как запрещенное
+		MarkForb = 8,
+		//ќтсутствует в ассортименте
+		AssortmentAbsent = 16,
+		//ѕомечено как исключение
+		MarkExclude = 32
+	}
+				 * Ќужно будет переписать сортировку с новыми значени€ми статуса
+				 */
 				if (v1 == v2)
 					e.Result = 0;
 				else

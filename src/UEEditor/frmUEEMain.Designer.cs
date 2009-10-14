@@ -26,7 +26,6 @@ namespace Inforoom.UEEditor
 		private System.Data.DataColumn UECodeCr;
 		private System.Data.DataColumn UEName1;
 		private System.Data.DataColumn UEFirmCr;
-		private System.Data.DataColumn UEBaseCost;
 		private System.Data.DataColumn UEUnit;
 		private System.Data.DataColumn UEVolume;
 		private System.Data.DataColumn UEQuantity;
@@ -36,7 +35,6 @@ namespace Inforoom.UEEditor
 		private System.Data.DataColumn ZCodeCr;
 		private System.Data.DataColumn ZName;
 		private System.Data.DataColumn ZFirmCr;
-		private System.Data.DataColumn ZBaseCost;
 		private System.Data.DataColumn ZUnit;
 		private System.Data.DataColumn ZVolume;
 		private System.Data.DataColumn ZQuantity;
@@ -80,7 +78,6 @@ namespace Inforoom.UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colUECodeCr;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEName1;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEFirmCr;
-		private DevExpress.XtraGrid.Columns.GridColumn colUEBaseCost;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEUnit;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEVolume;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEQuantity;
@@ -100,8 +97,6 @@ namespace Inforoom.UEEditor
 		private DevExpress.XtraGrid.Views.Grid.GridView gvCatForm;
 		private DevExpress.XtraGrid.Columns.GridColumn colCName;
 		private DevExpress.XtraGrid.Columns.GridColumn colFForm;
-		private System.Data.DataColumn UEName2;
-		private System.Data.DataColumn UEName3;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEStatus;
 		private System.Data.DataColumn UEPriorProducerId;
 		private System.Data.DataColumn UEAlready;
@@ -216,7 +211,6 @@ namespace Inforoom.UEEditor
 			this.UECodeCr = new System.Data.DataColumn();
 			this.UEName1 = new System.Data.DataColumn();
 			this.UEFirmCr = new System.Data.DataColumn();
-			this.UEBaseCost = new System.Data.DataColumn();
 			this.UEUnit = new System.Data.DataColumn();
 			this.UEVolume = new System.Data.DataColumn();
 			this.UEQuantity = new System.Data.DataColumn();
@@ -224,8 +218,6 @@ namespace Inforoom.UEEditor
 			this.UEJunk = new System.Data.DataColumn();
 			this.UEStatus = new System.Data.DataColumn();
 			this.UEPriorProductId = new System.Data.DataColumn();
-			this.UEName2 = new System.Data.DataColumn();
-			this.UEName3 = new System.Data.DataColumn();
 			this.UEPriorProducerId = new System.Data.DataColumn();
 			this.UEAlready = new System.Data.DataColumn();
 			this.UERowID = new System.Data.DataColumn();
@@ -235,7 +227,6 @@ namespace Inforoom.UEEditor
 			this.ZCodeCr = new System.Data.DataColumn();
 			this.ZName = new System.Data.DataColumn();
 			this.ZFirmCr = new System.Data.DataColumn();
-			this.ZBaseCost = new System.Data.DataColumn();
 			this.ZUnit = new System.Data.DataColumn();
 			this.ZVolume = new System.Data.DataColumn();
 			this.ZQuantity = new System.Data.DataColumn();
@@ -312,7 +303,6 @@ namespace Inforoom.UEEditor
 			this.colUECodeCr = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEName1 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEFirmCr = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colUEBaseCost = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEUnit = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEVolume = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEQuantity = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -595,7 +585,6 @@ namespace Inforoom.UEEditor
             this.UECodeCr,
             this.UEName1,
             this.UEFirmCr,
-            this.UEBaseCost,
             this.UEUnit,
             this.UEVolume,
             this.UEQuantity,
@@ -603,8 +592,6 @@ namespace Inforoom.UEEditor
             this.UEJunk,
             this.UEStatus,
             this.UEPriorProductId,
-            this.UEName2,
-            this.UEName3,
             this.UEPriorProducerId,
             this.UEAlready,
             this.UERowID,
@@ -642,12 +629,6 @@ namespace Inforoom.UEEditor
 			this.UEFirmCr.Caption = "Производитель";
 			this.UEFirmCr.ColumnName = "UEFirmCr";
 			// 
-			// UEBaseCost
-			// 
-			this.UEBaseCost.Caption = "Базовая цена";
-			this.UEBaseCost.ColumnName = "UEBaseCost";
-			this.UEBaseCost.DataType = typeof(double);
-			// 
 			// UEUnit
 			// 
 			this.UEUnit.Caption = "Ед. измерения";
@@ -684,14 +665,6 @@ namespace Inforoom.UEEditor
 			this.UEPriorProductId.ColumnName = "UEPriorProductId";
 			this.UEPriorProductId.DataType = typeof(long);
 			// 
-			// UEName2
-			// 
-			this.UEName2.ColumnName = "UEName2";
-			// 
-			// UEName3
-			// 
-			this.UEName3.ColumnName = "UEName3";
-			// 
 			// UEPriorProducerId
 			// 
 			this.UEPriorProducerId.ColumnName = "UEPriorProducerId";
@@ -719,7 +692,6 @@ namespace Inforoom.UEEditor
             this.ZCodeCr,
             this.ZName,
             this.ZFirmCr,
-            this.ZBaseCost,
             this.ZUnit,
             this.ZVolume,
             this.ZQuantity,
@@ -742,11 +714,6 @@ namespace Inforoom.UEEditor
 			// ZFirmCr
 			// 
 			this.ZFirmCr.ColumnName = "ZFirmCr";
-			// 
-			// ZBaseCost
-			// 
-			this.ZBaseCost.ColumnName = "ZBaseCost";
-			this.ZBaseCost.DataType = typeof(double);
 			// 
 			// ZUnit
 			// 
@@ -1406,7 +1373,6 @@ namespace Inforoom.UEEditor
             this.colUECodeCr,
             this.colUEName1,
             this.colUEFirmCr,
-            this.colUEBaseCost,
             this.colUEUnit,
             this.colUEVolume,
             this.colUEQuantity,
@@ -1498,16 +1464,6 @@ namespace Inforoom.UEEditor
 			this.colUEFirmCr.VisibleIndex = 5;
 			this.colUEFirmCr.Width = 55;
 			// 
-			// colUEBaseCost
-			// 
-			this.colUEBaseCost.Caption = "Базовая цена";
-			this.colUEBaseCost.FieldName = "UEBaseCost";
-			this.colUEBaseCost.Name = "colUEBaseCost";
-			this.colUEBaseCost.OptionsColumn.AllowEdit = false;
-			this.colUEBaseCost.Visible = true;
-			this.colUEBaseCost.VisibleIndex = 6;
-			this.colUEBaseCost.Width = 55;
-			// 
 			// colUEUnit
 			// 
 			this.colUEUnit.Caption = "Ед. измерения";
@@ -1515,7 +1471,7 @@ namespace Inforoom.UEEditor
 			this.colUEUnit.Name = "colUEUnit";
 			this.colUEUnit.OptionsColumn.AllowEdit = false;
 			this.colUEUnit.Visible = true;
-			this.colUEUnit.VisibleIndex = 7;
+			this.colUEUnit.VisibleIndex = 6;
 			this.colUEUnit.Width = 55;
 			// 
 			// colUEVolume
@@ -1525,7 +1481,7 @@ namespace Inforoom.UEEditor
 			this.colUEVolume.Name = "colUEVolume";
 			this.colUEVolume.OptionsColumn.AllowEdit = false;
 			this.colUEVolume.Visible = true;
-			this.colUEVolume.VisibleIndex = 8;
+			this.colUEVolume.VisibleIndex = 7;
 			this.colUEVolume.Width = 55;
 			// 
 			// colUEQuantity
@@ -1535,7 +1491,7 @@ namespace Inforoom.UEEditor
 			this.colUEQuantity.Name = "colUEQuantity";
 			this.colUEQuantity.OptionsColumn.AllowEdit = false;
 			this.colUEQuantity.Visible = true;
-			this.colUEQuantity.VisibleIndex = 9;
+			this.colUEQuantity.VisibleIndex = 8;
 			this.colUEQuantity.Width = 55;
 			// 
 			// colUEPeriod
@@ -1545,7 +1501,7 @@ namespace Inforoom.UEEditor
 			this.colUEPeriod.Name = "colUEPeriod";
 			this.colUEPeriod.OptionsColumn.AllowEdit = false;
 			this.colUEPeriod.Visible = true;
-			this.colUEPeriod.VisibleIndex = 10;
+			this.colUEPeriod.VisibleIndex = 9;
 			this.colUEPeriod.Width = 55;
 			// 
 			// colUEJunk
@@ -1555,7 +1511,7 @@ namespace Inforoom.UEEditor
 			this.colUEJunk.Name = "colUEJunk";
 			this.colUEJunk.OptionsColumn.AllowEdit = false;
 			this.colUEJunk.Visible = true;
-			this.colUEJunk.VisibleIndex = 11;
+			this.colUEJunk.VisibleIndex = 10;
 			this.colUEJunk.Width = 55;
 			// 
 			// colUEStatus
