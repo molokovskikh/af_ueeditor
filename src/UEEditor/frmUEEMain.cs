@@ -16,24 +16,31 @@ using System.Threading;
 using System.Security.Permissions;
 using Microsoft.Win32;
 using System.Diagnostics;
-using Inforoom.Logging;
 using RemotePricePricessor;
-using UEEditor.Properties;
+using Inforoom.UEEditor.Properties;
 using DevExpress.Data.Filtering;
-
+using log4net;
 
 
 [assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
-namespace UEEditor
+namespace Inforoom.UEEditor
 {
 
 	[FlagsAttribute]
 	public enum FormMask : byte
 	{
+		//Сопоставлено по наименованию
 		NameForm = 1,
+		//Сопоставлено по производителю
 		FirmForm = 2,
+		//Сопоставлено по валюте
 		CurrForm = 4,
-		MarkForb = 8
+		//Помечено как запрещенное
+		MarkForb = 8,
+		//Отсутствует в ассортименте
+		AssortmentAbsent = 16,
+		//Помечено как исключение
+		MarkExclude = 32
 	}
 	/// <summary>
 	/// Summary description for Form1.
@@ -135,17 +142,6 @@ namespace UEEditor
 
 			//
 			JobsGridControl.Select();
-		}
-
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main() 
-		{
-			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(UEEditorExceptionHandler.OnThreadException);
-
-			Application.Run(new frmUEEMain());	
 		}
 
 		private void SaveTableStyle(StreamWriter sr, GridControl dt)
@@ -1396,6 +1392,8 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 
 		private void ApplyChanges()
 		{
+			ILog _logger = LogManager.GetLogger(this.GetType());
+
 			bool res = false;
 			//Имеются ли родительские синонимы
 			bool HasParentSynonym = LockedSynonym != LockedPriceCode;
@@ -1453,7 +1451,7 @@ and pf.Id = fr.PriceFormatId",
 			//Кол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводится
 			int DelCount = 0;
 			
-			f.Pr = 1;
+			f.ApplyProgress = 1;
 			//Заполнение таблиц перед вставкой
 
 			//Заполнили таблицу нераспознанных наименований для обновления
@@ -1485,7 +1483,7 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			daSynonym.InsertCommand.Parameters.Add("?ProductId", MySqlDbType.UInt64, 0, "ProductId");
 			daSynonym.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 			
-			f.Pr += 1;
+			f.ApplyProgress += 1;
 			//Заполнили таблицу синонимов производителей
 			MySqlDataAdapter daSynonymFirmCr = new MySqlDataAdapter("select * from farm.SynonymFirmCr where PriceCode = ?PriceCode limit 0", MyCn);
 			//MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
@@ -1507,7 +1505,7 @@ insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operati
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?CodeFirmCr", MySqlDbType.UInt64, 0, "CodeFirmCr");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 
-			f.Pr += 1;
+			f.ApplyProgress += 1;
 			//Заполнили таблицу запрещённых выражений
 			MySqlDataAdapter daForbidden = new MySqlDataAdapter("select * from farm.Forbidden limit 0", MyCn);
 			//MySqlCommandBuilder cbForbidden = new MySqlCommandBuilder(daForbidden);
@@ -1525,7 +1523,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 			daForbidden.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daForbidden.InsertCommand.Parameters.Add("?Forbidden", MySqlDbType.VarString, 0, "Forbidden");
 
-			f.Pr = 10;
+			f.ApplyProgress = 10;
 
 			for(int i = 0; i < gvUnrecExp.RowCount; i++)
 			{
@@ -1600,7 +1598,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 			f.Status = "Применение изменений в базу данных...";
 			do
 			{
-				f.Pr = 30;
+				f.ApplyProgress = 30;
 				MySqlTransaction tran = null;
 				try
 				{
@@ -1611,7 +1609,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					DataTable dtSynonymCopy = dtSynonym.Copy();
 					daSynonym.Update(dtSynonymCopy);
 
-					f.Pr += 10;
+					f.ApplyProgress += 10;
                     
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Transaction = tran;
@@ -1628,14 +1626,14 @@ where
     pricescosts.PriceCode = ?PriceCode
 and priceitems.Id = pricescosts.PriceItemId",
 								new MySqlParameter("?PriceCode", LockedSynonym)); 
-					f.Pr += 10;
+					f.ApplyProgress += 10;
 					
 					//Заполнили таблицу логов для запрещённых выражений
 					daForbidden.SelectCommand.Transaction = tran;
 					DataTable dtForbiddenCopy = dtForbidden.Copy();
 					daForbidden.Update(dtForbiddenCopy);
 
-					f.Pr += 10;
+					f.ApplyProgress += 10;
                    
 					//Обновление таблицы нераспознанных выражений
 					daUnrecUpdate.SelectCommand.Transaction = tran;
@@ -1661,7 +1659,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					tran.Commit();
 					res = true;
 
-					f.Pr +=10;
+					f.ApplyProgress +=10;
 				}
 				catch(MySqlException ex)
 				{
@@ -1669,7 +1667,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 						tran.Rollback(); } 
 					catch{}
 					f.Error = String.Format("При обновлении синонимов произошла ошибка : {0}\r\n", ex);
-					f.Pr = 50;
+					f.ApplyProgress = 50;
 					Thread.Sleep(500);
 				}
 				finally
@@ -1682,60 +1680,69 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			}
 			while(!res);
 			
-			f.Pr = 80;
+			f.ApplyProgress = 80;
 
 			f.Status = String.Empty;
 			f.Error = String.Empty;
 
-			SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "res : {0}", res);
-
-			bool S = DelCount == dtUnrecExp.Rows.Count;
-			SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "DelCount == dtUnrecExp.Rows.Count : {0}", DelCount == dtUnrecExp.Rows.Count);
-			if (!S)
-				S = (bool)f.Invoke( new ShowRetransPriceDelegate( ShowRetransPrice ) );
-			SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "ShowRetransPrice : {0}", S);
-
-			if (res &&  S)
+			log4net.NDC.Push("ApplyChanges." + LockedPriceCode);
+			try
 			{
-				f.Status = "Перепроведение пpайса...";
-				SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроведение пpайса...");
-				f.Pr = 80;
+				_logger.DebugFormat("res : {0}", res);
 
-				DateTime now = DateTime.Now;
+				bool S = DelCount == dtUnrecExp.Rows.Count;
+				_logger.DebugFormat("DelCount == dtUnrecExp.Rows.Count : {0}", DelCount == dtUnrecExp.Rows.Count);
+				if (!S)
+					S = (bool)f.Invoke(new ShowRetransPriceDelegate(ShowRetransPrice));
+				_logger.DebugFormat("ShowRetransPrice : {0}", S);
 
-				while (RetransedPriceList.Count > 0)
+				if (res && S)
 				{
-					SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроводим : {0}", RetransedPriceList[0].PriceItemId);
-					try
+					f.Status = "Перепроведение пpайса...";
+					_logger.DebugFormat("Перепроведение пpайса...");
+					f.ApplyProgress = 80;
+
+					DateTime now = DateTime.Now;
+
+					while (RetransedPriceList.Count > 0)
 					{
-						remotePriceProcessor.RetransPrice(Convert.ToUInt32(RetransedPriceList[0].PriceItemId));
-						PricesRetrans(now, RetransedPriceList[0].PriceItemId);
-					}
-					catch (PriceProcessorException PriceProcessorException)
-					{
-						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(),
-							"При перепроведении priceitem {0} возникла ошибка : {1}", RetransedPriceList[0].PriceItemId, PriceProcessorException);
-					}
-					catch (Exception retransException)
-					{
-						if (f != null)
-							f.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
-						SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(),
-							"При перепроведении priceitem {0} возникла ошибка : {1}", RetransedPriceList[0].PriceItemId, retransException);
-						UEEditorExceptionHandler.SendMessageOnException(this,
-							new Exception(String.Format("Ошибка при перепроведении priceitem: {0}", RetransedPriceList[0].PriceItemId),
-							retransException));
-						Thread.Sleep(500);
+						_logger.DebugFormat("Перепроводим : {0}", RetransedPriceList[0].PriceItemId);
+						try
+						{
+							remotePriceProcessor.RetransPrice(Convert.ToUInt32(RetransedPriceList[0].PriceItemId));
+							PricesRetrans(now, RetransedPriceList[0].PriceItemId);
+						}
+						catch (PriceProcessorException PriceProcessorException)
+						{
+							_logger.DebugFormat(
+								"При перепроведении priceitem {0} возникла ошибка : {1}", 
+								RetransedPriceList[0].PriceItemId, 
+								PriceProcessorException);
+						}
+						catch (Exception retransException)
+						{
+							if (f != null)
+								f.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
+							_logger.ErrorFormat(
+								"При перепроведении priceitem {0} возникла ошибка : {1}", 
+								RetransedPriceList[0].PriceItemId, 
+								retransException);
+							Thread.Sleep(500);
+						}
+
+						RetransedPriceList.RemoveAt(0);
 					}
 
-					RetransedPriceList.RemoveAt(0);
+					_logger.DebugFormat("Перепроведение пpайса завершено.");
+
 				}
-
-				SimpleLog.Log("ApplyChanges." + LockedPriceCode.ToString(), "Перепроведение пpайса завершено.");
-
+			}
+			finally
+			{
+				log4net.NDC.Pop();
 			}
 
-			f.Pr = 100;
+			f.ApplyProgress = 100;
 		}
 
 		private void PricesRetrans(DateTime now, long retransPriceItemId)
@@ -2100,10 +2107,10 @@ where
 
 				Clipboard.SetDataObject(UnrecName);
 
-				string subject = String.Format(UEEditor.Properties.Settings.Default.AboutNamesSubject, dr["FirmShortName"]);
+				string subject = String.Format(Settings.Default.AboutNamesSubject, dr["FirmShortName"]);
 
 				string body = "";
-                body = UEEditor.Properties.Settings.Default.AboutNamesBody;
+				body = Settings.Default.AboutNamesBody;
 
 				body = String.Format(body, dr["FirmShortName"]);
 
@@ -2140,10 +2147,10 @@ where
 
 				Clipboard.SetDataObject(UnrecFirmCrString);
 
-				string subject = String.Format(UEEditor.Properties.Settings.Default.AboutFirmSubject, dr["FirmShortName"]);
+				string subject = String.Format(Settings.Default.AboutFirmSubject, dr["FirmShortName"]);
 
 				string body = "";
-                body = UEEditor.Properties.Settings.Default.AboutFirmBody;
+                body = Settings.Default.AboutFirmBody;
 
 				body = String.Format(body, dr["FirmShortName"]);
 
@@ -2419,45 +2426,5 @@ and c.Type = ?ContactType;",
 			this.PriceItemId = priceItemId;
 			this.FileExt = AFileExt;
 		}
-	}
-
-	internal class UEEditorExceptionHandler
-	{
-		public static void SendMessageOnException(object sender, Exception exception)
-		{
-			try
-			{
-				System.Net.Mail.MailMessage m = new System.Net.Mail.MailMessage(
-					"service@analit.net",
-#if DEBUG
-					"s.morozov@analit.net",
-#else
-					"service@analit.net",
-#endif
- "Необработанная ошибка в UEEditor",
-String.Format(@"
-Источник     = {0}
-Пользователь = {1}
-Компьютер    = {2}
-Ошибка       =
-{3}",
-						sender,
-						Environment.UserName.ToLower(),
-						Environment.MachineName,
-						exception));
-				System.Net.Mail.SmtpClient sm = new System.Net.Mail.SmtpClient(UEEditor.Properties.Settings.Default.SMTPHost);
-				sm.Send(m);
-			}
-			catch
-			{ }
-		}
-
-		// Handles the exception event.
-		public static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs t)
-		{
-			SendMessageOnException(sender, t.Exception);
-			MessageBox.Show("В приложении возникла необработанная ошибка.\r\nИнформация об ошибке была отправлена разработчику.");
-		}
-
 	}
 }

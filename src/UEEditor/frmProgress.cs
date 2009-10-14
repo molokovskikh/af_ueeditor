@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace UEEditor
+namespace Inforoom.UEEditor
 {
 	/// <summary>
 	/// Summary description for Form1.
@@ -15,13 +15,13 @@ namespace UEEditor
 		private System.Windows.Forms.Label lblWait;
 		public System.Windows.Forms.ProgressBar Progress;
 		private System.ComponentModel.IContainer components;
-		private System.Timers.Timer timer1;
+		private System.Timers.Timer timerProgress;
 
 		public bool Stop = false;
 		private System.Windows.Forms.ImageList imgList;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textBox1;
-		public byte Pr = 0;
+		public byte ApplyProgress = 0;
 		public string Status = String.Empty;
 		public string Error = String.Empty;
 
@@ -60,22 +60,22 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(frmProgress));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProgress));
 			this.btnCancel = new System.Windows.Forms.Button();
+			this.imgList = new System.Windows.Forms.ImageList(this.components);
 			this.Progress = new System.Windows.Forms.ProgressBar();
 			this.lblWait = new System.Windows.Forms.Label();
-			this.timer1 = new System.Timers.Timer();
-			this.imgList = new System.Windows.Forms.ImageList(this.components);
+			this.timerProgress = new System.Timers.Timer();
 			this.label1 = new System.Windows.Forms.Label();
 			this.textBox1 = new System.Windows.Forms.TextBox();
-			((System.ComponentModel.ISupportInitialize)(this.timer1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.timerProgress)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// btnCancel
 			// 
 			this.btnCancel.BackColor = System.Drawing.SystemColors.Control;
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(204)));
+			this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.btnCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.btnCancel.ImageIndex = 0;
 			this.btnCancel.ImageList = this.imgList;
@@ -84,6 +84,13 @@ namespace UEEditor
 			this.btnCancel.Size = new System.Drawing.Size(144, 32);
 			this.btnCancel.TabIndex = 0;
 			this.btnCancel.Text = "Отмена";
+			this.btnCancel.UseVisualStyleBackColor = false;
+			// 
+			// imgList
+			// 
+			this.imgList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imgList.ImageStream")));
+			this.imgList.TransparentColor = System.Drawing.Color.Transparent;
+			this.imgList.Images.SetKeyName(0, "");
 			// 
 			// Progress
 			// 
@@ -94,24 +101,18 @@ namespace UEEditor
 			// 
 			// lblWait
 			// 
-			this.lblWait.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(204)));
+			this.lblWait.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.lblWait.Location = new System.Drawing.Point(69, 24);
 			this.lblWait.Name = "lblWait";
 			this.lblWait.Size = new System.Drawing.Size(288, 23);
 			this.lblWait.TabIndex = 2;
 			this.lblWait.Text = "Подождите, идёт применение изменений...";
 			// 
-			// timer1
+			// timerProgress
 			// 
-			this.timer1.Enabled = true;
-			this.timer1.SynchronizingObject = this;
-			this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
-			// 
-			// imgList
-			// 
-			this.imgList.ImageSize = new System.Drawing.Size(24, 24);
-			this.imgList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imgList.ImageStream")));
-			this.imgList.TransparentColor = System.Drawing.Color.Transparent;
+			this.timerProgress.Enabled = true;
+			this.timerProgress.SynchronizingObject = this;
+			this.timerProgress.Elapsed += new System.Timers.ElapsedEventHandler(this.timerProgress_Elapsed);
 			// 
 			// label1
 			// 
@@ -129,7 +130,6 @@ namespace UEEditor
 			this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBox1.Size = new System.Drawing.Size(336, 64);
 			this.textBox1.TabIndex = 4;
-			this.textBox1.Text = "";
 			// 
 			// frmProgress
 			// 
@@ -147,22 +147,16 @@ namespace UEEditor
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "frmProgress";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Load += new System.EventHandler(this.frmProgress_Load);
-			((System.ComponentModel.ISupportInitialize)(this.timer1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.timerProgress)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
 
-		private void frmProgress_Load(object sender, System.EventArgs e)
+    	private void timerProgress_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-//			for (int i=0; i<10; i++)
-//				Progress.PerformStep();
-		}
-
-		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-		{
-			Progress.Value = Pr;
+			Progress.Value = ApplyProgress;
 			label1.Text = Status;
 			textBox1.Text = Error;
 			if (Stop)
