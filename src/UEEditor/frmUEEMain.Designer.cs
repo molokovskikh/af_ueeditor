@@ -180,8 +180,8 @@ namespace Inforoom.UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -242,6 +242,7 @@ namespace Inforoom.UEEditor
 			this.CCodeFirmCr = new System.Data.DataColumn();
 			this.CFirmCr = new System.Data.DataColumn();
 			this.CBlocked = new System.Data.DataColumn();
+			this.CIsAssortment = new System.Data.DataColumn();
 			this.dtSections = new System.Data.DataTable();
 			this.SSection = new System.Data.DataColumn();
 			this.dtCatalogNames = new System.Data.DataTable();
@@ -346,7 +347,8 @@ namespace Inforoom.UEEditor
 			this.MainTimer = new System.Windows.Forms.Timer(this.components);
 			this.cdLegend = new System.Windows.Forms.ColorDialog();
 			this.ProducerSearchTimer = new System.Windows.Forms.Timer(this.components);
-			this.CIsAssortment = new System.Data.DataColumn();
+			this.UEColumn3 = new System.Data.DataColumn();
+			this.colUEColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dsMain)).BeginInit();
@@ -436,14 +438,14 @@ namespace Inforoom.UEEditor
 			this.CatalogGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode1.LevelTemplate = this.gvCatForm;
-			gridLevelNode2.LevelTemplate = this.gvProducts;
-			gridLevelNode2.RelationName = "Products";
-			gridLevelNode1.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode2});
-			gridLevelNode1.RelationName = "CatalogNames";
+			gridLevelNode3.LevelTemplate = this.gvCatForm;
+			gridLevelNode4.LevelTemplate = this.gvProducts;
+			gridLevelNode4.RelationName = "Products";
+			gridLevelNode3.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode4});
+			gridLevelNode3.RelationName = "CatalogNames";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1});
+            gridLevelNode3});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.CatalogGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
@@ -605,7 +607,8 @@ namespace Inforoom.UEEditor
             this.UERowID,
             this.UEHandMade,
             this.UEProductSynonymId,
-            this.UEProducerSynonymId});
+            this.UEProducerSynonymId,
+            this.UEColumn3});
 			this.dtUnrecExp.TableName = "UnrecExpGrid";
 			// 
 			// EUColumn1
@@ -799,6 +802,11 @@ namespace Inforoom.UEEditor
 			// 
 			this.CBlocked.ColumnName = "CBlocked";
 			this.CBlocked.DataType = typeof(bool);
+			// 
+			// CIsAssortment
+			// 
+			this.CIsAssortment.ColumnName = "CIsAssortment";
+			this.CIsAssortment.DataType = typeof(bool);
 			// 
 			// dtSections
 			// 
@@ -1396,6 +1404,7 @@ namespace Inforoom.UEEditor
 			this.gvUnrecExp.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colUEColumn1,
             this.colUEColumn2,
+            this.colUEColumn3,
             this.colUECode,
             this.colUECodeCr,
             this.colUEName1,
@@ -1881,10 +1890,24 @@ namespace Inforoom.UEEditor
 			this.ProducerSearchTimer.Interval = 1200;
 			this.ProducerSearchTimer.Tick += new System.EventHandler(this.ProducerSearchTimer_Tick);
 			// 
-			// CIsAssortment
+			// UEColumn3
 			// 
-			this.CIsAssortment.ColumnName = "CIsAssortment";
-			this.CIsAssortment.DataType = typeof(bool);
+			this.UEColumn3.Caption = "";
+			this.UEColumn3.ColumnName = "UEColumn3";
+			// 
+			// colUEColumn3
+			// 
+			this.colUEColumn3.Caption = "FormStatus";
+			this.colUEColumn3.FieldName = "UEColumn3";
+			this.colUEColumn3.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Left;
+			this.colUEColumn3.Name = "colUEColumn3";
+			this.colUEColumn3.OptionsColumn.AllowEdit = false;
+			this.colUEColumn3.OptionsColumn.AllowSize = false;
+			this.colUEColumn3.OptionsColumn.FixedWidth = true;
+			this.colUEColumn3.ToolTip = "ѕризнак того, что позици€ распознана по ассортименту или помечена как исключение";
+			this.colUEColumn3.Visible = true;
+			this.colUEColumn3.VisibleIndex = 2;
+			this.colUEColumn3.Width = 20;
 			// 
 			// frmUEEMain
 			// 
@@ -1965,5 +1988,7 @@ namespace Inforoom.UEEditor
 		private System.Windows.Forms.TextBox tbProducerSearch;
 		private System.Windows.Forms.Timer ProducerSearchTimer;
 		private System.Data.DataColumn CIsAssortment;
+		private System.Data.DataColumn UEColumn3;
+		private DevExpress.XtraGrid.Columns.GridColumn colUEColumn3;
 	}
 }

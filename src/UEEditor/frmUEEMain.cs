@@ -21,6 +21,8 @@ using Inforoom.UEEditor.Properties;
 using DevExpress.Data.Filtering;
 using log4net;
 using DevExpress.Utils.Paint;
+using System.Configuration;
+using Inforoom.UEEditor.Helpers;
 
 
 [assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
@@ -69,9 +71,9 @@ namespace Inforoom.UEEditor
 	public partial class frmUEEMain : System.Windows.Forms.Form
 	{
 
-		private MySqlConnection MyCn = new MySqlConnection();
-		private MySqlCommand MyCmd = new MySqlCommand();
-		private MySqlDataAdapter MyDA = new MySqlDataAdapter();
+		private MySqlConnection _connection = new MySqlConnection();
+		private MySqlCommand _command = new MySqlCommand();
+		private MySqlDataAdapter _dataAdapter = new MySqlDataAdapter();
 		private MySqlDataAdapter daJobs;
 
 		private string BaseRegKey = "Software\\Inforoom\\UEEditor";
@@ -137,13 +139,10 @@ namespace Inforoom.UEEditor
 			{
 			}
 
-			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true; pooling=true;Allow user variables=true;";
-#if DEBUG
-			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;  pooling=true;Allow user variables=true;";
-#endif
-			MyCn.Open();
-			MyDA = new MySqlDataAdapter(MyCmd);
-			MyCmd.Connection = MyCn;
+			_connection.ConnectionString = ConfigurationManager.ConnectionStrings[MySqlHelperTransaction.slave].ConnectionString;
+
+			_dataAdapter = new MySqlDataAdapter(_command);
+			_command.Connection = _connection;
 
 			tcMain.TabPages.Remove(tpUnrecExp);
 			tcMain.TabPages.Remove(tpZero);
@@ -156,11 +155,9 @@ namespace Inforoom.UEEditor
 			JobsGridFill();
 
 			//Запоняем каталожные таблицы
-			//CatalogFirmCrGridFill(MyCmd, MyDA);
+			CatalogNameGridFill();
 
-			CatalogNameGridFill(MyCmd, MyDA);
-
-			FormGridFill(MyCmd, MyDA);
+			FormGridFill();
 
 			catalogUpdate = DateTime.Now;
 
@@ -209,7 +206,7 @@ namespace Inforoom.UEEditor
 			ForbGridControl.MainView.SaveLayoutToRegistry(FregKey);
 			ZeroGridControl.MainView.SaveLayoutToRegistry(ZregKey);
 
-			MyCn.Close();
+			_connection.Close();
 		}
 
 		private void DAJobsCreate()
@@ -273,7 +270,7 @@ and synonympc.PriceCode = synonympd.PriceCode
 and synonympc.BaseCost = 1
 and synonympim.Id = synonympc.PriceItemId
 and synonymcd.FirmCode = synonympd.FirmCode", 
-				MyCn);
+				_connection);
 		}
 
 		private void JobsGridFill()
@@ -312,11 +309,11 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 			statusBar1.Panels[0].Text = "Заданий в очереди: " + dtJobs.Rows.Count;
 		}
 
-		private void UnrecExpGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
+		private void UnrecExpGridFill()
 		{
 			dtUnrecExp.Clear();
 
-			MyCmd.CommandText =
+			_command.CommandText =
 				@"SELECT RowID As UERowID,
                   Name1 As UEName1, 
 				  FirmCr As UEFirmCr, 
@@ -339,13 +336,13 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 				  FROM farm.UnrecExp 
 				  WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1";
 
-			MyCmd.Parameters.Clear();
-			MyCmd.Parameters.AddWithValue("?LockedPriceItemId", LockedPriceItemId);
+			_command.Parameters.Clear();
+			_command.Parameters.AddWithValue("?LockedPriceItemId", LockedPriceItemId);
 			
 			UnrecExpGridControl.BeginUpdate();
 			try
 			{
-				MyDA.Fill(dtUnrecExp);
+				_dataAdapter.Fill(dtUnrecExp);
 			}
 			finally
 			{
@@ -353,10 +350,12 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 			}
 		}
 
-		private void CatalogNameGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
+		private void CatalogNameGridFill()
 		{
 			dtCatalogNames.Clear();
-			MyCmd.CommandText = @"
+			_command.Parameters.Clear();
+
+			_command.CommandText = @"
 SELECT
  distinct cn.Id, cn.Name
 from
@@ -369,40 +368,7 @@ and cat.Hidden = 0
 and p.CatalogId = cat.Id
 and p.Hidden = 0
 order by Name";
-			MyDA.Fill(dtCatalogNames);
-
-		}
-		
-		private void CatalogFirmCrGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
-		{
-			dtCatalogFirmCr.Clear();
-			MyCmd.CommandText = @"
-SELECT
-  p.Id As CCode,
-  p.Name As CName
-FROM
-  catalogs.Producers P
-where
-    (p.Id <> 1)
-union
-SELECT
-  p.Id As CCode,
-  pe.Name As CName
-FROM
-  catalogs.Producers P,
-  catalogs.ProducerEquivalents PE
-where
-    (p.Id <> 1)
-and (pe.ProducerId = p.Id)
-order by CName";
-
-			MyDA.Fill(dtCatalogFirmCr);
-
-			//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
-			DataRow drUnknown = dtCatalogFirmCr.NewRow();
-			drUnknown["CCode"] = 0;
-			drUnknown["CName"] = unknownProducer;
-			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
+			_dataAdapter.Fill(dtCatalogNames);
 		}
 
 		private void ProducersGridFillByName(string name, long? productId)
@@ -410,7 +376,7 @@ order by CName";
 			dtCatalogFirmCr.Clear();
 			if (productId.HasValue)
 			{
-				MyCmd.CommandText = @"
+				_command.CommandText = @"
 SELECT
   p.Id As CCode,
   p.Name As CName,
@@ -446,14 +412,14 @@ and (pe.ProducerId = p.Id)
 and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
 	"order by CName";
 
-				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
-				MyCmd.Parameters.AddWithValue("?Name", name);
-				MyCmd.Parameters.AddWithValue("?ProductId", productId.Value);
+				_command.Parameters.Clear();
+				_command.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				_command.Parameters.AddWithValue("?Name", name);
+				_command.Parameters.AddWithValue("?ProductId", productId.Value);
 			}
 			else
 			{
-				MyCmd.CommandText = @"
+				_command.CommandText = @"
 SELECT
   p.Id As CCode,
   p.Name As CName,
@@ -483,12 +449,12 @@ where
 and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
 	"order by CName";
 
-				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
-				MyCmd.Parameters.AddWithValue("?Name", name);
+				_command.Parameters.Clear();
+				_command.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				_command.Parameters.AddWithValue("?Name", name);
 			}
 
-			MyDA.Fill(dtCatalogFirmCr);
+			_dataAdapter.Fill(dtCatalogFirmCr);
 
 			//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
 			DataRow drUnknown = dtCatalogFirmCr.NewRow();
@@ -505,7 +471,7 @@ and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
 
 			if (productId.HasValue)
 			{
-				MyCmd.CommandText = @"
+				_command.CommandText = @"
 SELECT
   p.Id As CCode,
   p.Name As CName,
@@ -537,15 +503,15 @@ and (pe.ProducerId = p.Id)
 and (pe.Name like ?filter)
 order by CName";
 
-				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
-				MyCmd.Parameters.AddWithValue("?Name", name);
-				MyCmd.Parameters.AddWithValue("?filter", "%" + filter + "%");
-				MyCmd.Parameters.AddWithValue("?ProductId", productId.Value);
+				_command.Parameters.Clear();
+				_command.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				_command.Parameters.AddWithValue("?Name", name);
+				_command.Parameters.AddWithValue("?filter", "%" + filter + "%");
+				_command.Parameters.AddWithValue("?ProductId", productId.Value);
 			}
 			else
 			{
-				MyCmd.CommandText = @"
+				_command.CommandText = @"
 SELECT
   p.Id As CCode,
   p.Name As CName,
@@ -575,13 +541,13 @@ and (pe.ProducerId = p.Id)
 and (pe.Name like ?filter)
 order by CName";
 
-				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
-				MyCmd.Parameters.AddWithValue("?Name", name);
-				MyCmd.Parameters.AddWithValue("?filter", "%" + filter + "%");
+				_command.Parameters.Clear();
+				_command.Parameters.AddWithValue("?LockedSynonym", LockedSynonym);
+				_command.Parameters.AddWithValue("?Name", name);
+				_command.Parameters.AddWithValue("?filter", "%" + filter + "%");
 			}
 
-			MyDA.Fill(dtCatalogFirmCr);
+			_dataAdapter.Fill(dtCatalogFirmCr);
 
 			//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
 			DataRow drUnknown = dtCatalogFirmCr.NewRow();
@@ -592,9 +558,10 @@ order by CName";
 			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
 		}
 
-		private void FormGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
+		private void FormGridFill()
 		{
-			MyCmd.CommandText =
+			_command.Parameters.Clear();
+			_command.CommandText =
 				@"
 select
   Catalog.*,
@@ -612,14 +579,14 @@ and products.CatalogId = Catalog.id
 and products.Hidden = 0
 group by Catalog.id
 order by Form";
-			MyDA.Fill(dtCatalog);
+			_dataAdapter.Fill(dtCatalog);
 		}
 
-		private void ProductsFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA, ulong CatalogId)
+		private void ProductsFill(ulong CatalogId)
 		{
-			MyCmd.Parameters.Clear();
-			MyCmd.Parameters.AddWithValue("?CatalogId", CatalogId);
-			MyCmd.CommandText =
+			_command.Parameters.Clear();
+			_command.Parameters.AddWithValue("?CatalogId", CatalogId);
+			_command.CommandText =
 				@"
 SELECT
   Products.Id,
@@ -644,14 +611,14 @@ group by Products.Id
 order by Properties
 ";
 
-			MyDA.Fill(dtProducts);
+			_dataAdapter.Fill(dtProducts);
 		}
 
-		private void ProductsFillByProductId(MySqlCommand MyCmd, MySqlDataAdapter MyDA, ulong ProductId)
+		private void ProductsFillByProductId(ulong ProductId)
 		{
-			MyCmd.Parameters.Clear();
-			MyCmd.Parameters.AddWithValue("?ProductId", ProductId);
-			MyCmd.CommandText =
+			_command.Parameters.Clear();
+			_command.Parameters.AddWithValue("?ProductId", ProductId);
+			_command.CommandText =
 				@"
 SELECT
   Products.Id,
@@ -676,13 +643,13 @@ group by Products.Id
 order by Properties
 ";
 
-			MyDA.Fill(dtProducts);
+			_dataAdapter.Fill(dtProducts);
 		}
 
 		private void CheckCatalog()
 		{
-			DateTime CatalogUpdateTime = Convert.ToDateTime(MySqlHelper.ExecuteScalar(MyCn, "select max(UpdateTime) from catalogs.catalog"));
-			DateTime ProductsUpdateTime = Convert.ToDateTime(MySqlHelper.ExecuteScalar(MyCn, "select max(UpdateTime) from catalogs.products"));
+			DateTime CatalogUpdateTime = Convert.ToDateTime(MySqlHelper.ExecuteScalar(_connection, "select max(UpdateTime) from catalogs.catalog"));
+			DateTime ProductsUpdateTime = Convert.ToDateTime(MySqlHelper.ExecuteScalar(_connection, "select max(UpdateTime) from catalogs.products"));
 			if ((catalogUpdate < CatalogUpdateTime) || (catalogUpdate < ProductsUpdateTime))
 				if (MessageBox.Show("Каталог был изменен. Произвести обновление каталога?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 					UpdateCatalog(); 
@@ -696,11 +663,9 @@ order by Properties
 				dtProducts.Clear();
 				dtCatalog.Clear();
 
-				//CatalogFirmCrGridFill(MyCmd, MyDA);
+				CatalogNameGridFill();
 
-				CatalogNameGridFill(MyCmd, MyDA);
-
-				FormGridFill(MyCmd, MyDA);
+				FormGridFill();
 
 				catalogUpdate = DateTime.Now;
 			}
@@ -725,11 +690,8 @@ order by Properties
 						if (rowHandle != GridControl.InvalidRowHandle)
 							selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceItemId.ColumnName]);
 
-					//удаляем задания
-					foreach (long selectedPrice in selectedPrices)
-					{
-						MySqlTransaction tran = MyCn.BeginTransaction();
-						try
+					MySqlHelperTransaction.Transaction(
+						(connection, transaction) =>
 						{
 							MySqlCommand cmdDeleteJob = new MySqlCommand(@"
 DELETE FROM 
@@ -737,22 +699,16 @@ DELETE FROM
 WHERE 
     PriceItemId = ?PriceItemId
 AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.PriceItemId)",
-								MyCn, tran);
-							cmdDeleteJob.Parameters.AddWithValue("?PriceItemId", selectedPrice);
-							cmdDeleteJob.ExecuteNonQuery();
-							tran.Commit();
-						}
-						catch
-						{ 
-							if (tran != null)
-								try
-								{
-									tran.Rollback();
-								}
-								catch { }
-							throw;
-						}
-					}
+								connection, transaction);
+							cmdDeleteJob.Parameters.Add("?PriceItemId", MySqlDbType.Int64);
+
+							//удаляем задания
+							foreach (long selectedPrice in selectedPrices)
+							{
+								cmdDeleteJob.Parameters["?PriceItemId"].Value = selectedPrice;
+								cmdDeleteJob.ExecuteNonQuery();
+							}
+						});
 
 					JobsGridFill();
 				}
@@ -784,14 +740,14 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 				ForbGridControl.Select();
 				dtForb.Clear();
 
-				MyCmd.CommandText = 
+				_command.CommandText = 
 					@"SELECT Forb As FForb 
 					            FROM farm.Forb 
 					            WHERE PriceItemId= ?PriceItemId";
-				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
+				_command.Parameters.Clear();
+				_command.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
 
-				MyDA.Fill(dtForb);
+				_dataAdapter.Fill(dtForb);
 
 			}
 
@@ -801,7 +757,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 
 				dsMain.Tables["ZeroGrid"].Clear();
 
-				MyCmd.CommandText = 
+				_command.CommandText = 
 					@"SELECT 
 									Code As ZCode, 
 									CodeCr As ZCodeCr, 
@@ -814,9 +770,9 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 								FROM farm.Zero 
 								WHERE PriceItemId= ?PriceItemId";
 
-				MyCmd.Parameters.Clear();
-				MyCmd.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
-				MyDA.Fill(dtZero);
+				_command.Parameters.Clear();
+				_command.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
+				_dataAdapter.Fill(dtZero);
 			}
 
      	}
@@ -1029,7 +985,28 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 					gcFirmCr.Focus();
 				}
 				else
-						if (7 == (int)dr[UEStatus.ColumnName])
+						//Проверка того, что не распознано как в соответствии с асортиментом, так и не помечено как исключение
+					if (((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.AssortmentForm) != FormMask.AssortmentForm) && ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.MarkExclude) != FormMask.MarkExclude))
+				{
+					if (!Convert.IsDBNull(dr[UEPriorProductId.ColumnName]) && !Convert.IsDBNull(dr[UEPriorProducerId.ColumnName]))
+					{
+						object assortmentExists = MySqlHelper.ExecuteScalar(_connection,
+							"select ProductId from catalogs.assortment where ProductId = ?ProductId and ProducerId = ?ProducerId",
+							new MySqlParameter("?ProductId", (long)dr[UEPriorProductId.ColumnName]),
+							new MySqlParameter("?ProducerId", (long)dr[UEPriorProducerId.ColumnName]));
+						if (assortmentExists != null)
+						{
+							MessageBox.Show("Сопоставление как запрещенное выражение невозможно, т.к. для данного наименования существует синоним.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						}
+						else
+						{ 
+							dr[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(dr[UEStatus.ColumnName]) | FormMask.AssortmentForm);
+						}
+						GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle + 1);
+					}
+				}
+				else
+					if (((int)dr[UEStatus.ColumnName] == (int)FormMask.FullForm) || ((int)dr[UEStatus.ColumnName] == (int)FormMask.ExcludeForm))
 				{
 					CatalogGridControl.Enabled = false;
 					ClearCatalogGrid();
@@ -1067,7 +1044,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						if (drUN != null)
 						{
 							dtProducts.Clear();
-							ProductsFillByProductId(MyCmd, MyDA, Convert.ToUInt64(drUN[UEPriorProductId]));
+							ProductsFillByProductId(Convert.ToUInt64(drUN[UEPriorProductId]));
 
 							DataRow[] drProducts = dtProducts.Select("Id = " + drUN[UEPriorProductId].ToString());
 
@@ -1098,7 +1075,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 								FirmName = unknownProducer;
 							else
 								//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UEPriorProducerId
-								FirmName = MySqlHelper.ExecuteScalar(MyCn,
+								FirmName = MySqlHelper.ExecuteScalar(_connection,
 								"select Name from catalogs.Producers where ProducerId = " + drUN[UEPriorProducerId].ToString());
 
 							if ((FirmName != null) && (FirmName is string) && 
@@ -1225,7 +1202,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			if (!Convert.IsDBNull(drUnrecExp[UEProductSynonymId.ColumnName]))
 			{
 				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-				object SynonymExists = MySqlHelper.ExecuteScalar(MyCn,
+				object SynonymExists = MySqlHelper.ExecuteScalar(_connection,
 					"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
 					//todo: здесь получается фигня с добавлением пробелов в конце строки
 					new MySqlParameter("?Synonym", String.Format("{0}  ", drUnrecExp["UEName1"])));
@@ -1336,7 +1313,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						{
 							DataRow drCatalog = FocusedView.GetDataRow(FocusedView.FocusedRowHandle);
 							dtProducts.Clear();
-							ProductsFill(MyCmd, MyDA, (ulong)drCatalog[colCatalogID]);
+							ProductsFill((ulong)drCatalog[colCatalogID]);
 
 							FocusedView.ExpandMasterRow(FocusedView.FocusedRowHandle);
 							GridView bv = (GridView)FocusedView.GetDetailView(FocusedView.FocusedRowHandle, 0);
@@ -1393,7 +1370,10 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			for(int i = FromFocusHandle; i < gvUnrecExp.RowCount; i++)
 			{
 				if (i != GridControl.InvalidRowHandle)
-					if (((GetMask(i, "UEStatus") & FormMask.NameForm) != FormMask.NameForm) || ((GetMask(i, "UEStatus") & FormMask.FirmForm) != FormMask.FirmForm))
+					if (((GetMask(i, "UEStatus") & FormMask.NameForm) != FormMask.NameForm) 
+						|| ((GetMask(i, "UEStatus") & FormMask.FirmForm) != FormMask.FirmForm)
+						|| (((GetMask(i, "UEStatus") & FormMask.AssortmentForm) != FormMask.AssortmentForm)
+						&& ((GetMask(i, "UEStatus") & FormMask.MarkExclude) != FormMask.MarkExclude)))
 					{
 						gvUnrecExp.FocusedRowHandle = i;
 						break;
@@ -1406,7 +1386,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 		private bool IsForbiddenExists(string forbidden)
 		{
 			//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-			object ForbiddenExists = MySqlHelper.ExecuteScalar(MyCn,
+			object ForbiddenExists = MySqlHelper.ExecuteScalar(_connection,
 				"select RowId from farm.forbidden where forbidden = ?forbidden and PriceCode=" + LockedSynonym.ToString(),
 				//todo: здесь получается фигня с добавлением пробелов в конце строки
 				new MySqlParameter("?forbidden", forbidden));
@@ -1518,49 +1498,52 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 		//Блокируем задачу
 		private void LockJob()
 		{
-			JobsGridFill();
 			if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow dr = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
 				if ((dr[colJBlockBy.FieldName].ToString() == String.Empty) || dr[colJBlockBy.FieldName].ToString().Equals(Environment.UserName.ToLower(), StringComparison.OrdinalIgnoreCase) )
 				{
-					LockedPriceCode = Convert.ToInt64(dr[JPriceCode.ColumnName]);
 					LockedPriceItemId = Convert.ToInt64(dr[JPriceItemId.ColumnName]);
-                    PriceFMT = dr[JPriceFMT].ToString();
-                    FileExt = dr[JExt].ToString();
-                    if (dr[JParentSynonym] is DBNull)
-						LockedSynonym = LockedPriceCode;
-					else
-						LockedSynonym = Convert.ToInt64(dr[JParentSynonym]);
-					LockedInBlockedPrice(LockedPriceItemId, Environment.UserName);
-					grpBoxCatalog2.Text = "Каталог";
-
-					tcMain.TabPages.Add(tpUnrecExp);
-					tcMain.TabPages.Add(tpZero);
-					tcMain.TabPages.Add(tpForb);
-
-					this.Text += String.Format("   --  {0}", dr[colJName.FieldName].ToString());
-					
-					tcMain.TabPages.Remove(tpJobs);
-
-					tcMain.SelectedTab = tpUnrecExp;
-
-					UnrecExpGridFill(MyCmd, MyDA);
-
-					dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 5";
-					if (dtUnrecExp.DefaultView.Count == 0)
+					if (LockedInBlockedPrice(LockedPriceItemId, Environment.UserName))
 					{
-						dtUnrecExp.DefaultView.RowFilter = null;
-						btnHideUnformFirmCr.Text = "Скрыть нераспознанные только по производителю";
+						LockedPriceCode = Convert.ToInt64(dr[JPriceCode.ColumnName]);
+						PriceFMT = dr[JPriceFMT].ToString();
+						FileExt = dr[JExt].ToString();
+						if (dr[JParentSynonym] is DBNull)
+							LockedSynonym = LockedPriceCode;
+						else
+							LockedSynonym = Convert.ToInt64(dr[JParentSynonym]);
+						grpBoxCatalog2.Text = "Каталог";
+
+						tcMain.TabPages.Add(tpUnrecExp);
+						tcMain.TabPages.Add(tpZero);
+						tcMain.TabPages.Add(tpForb);
+
+						this.Text += String.Format("   --  {0}", dr[colJName.FieldName].ToString());
+
+						tcMain.TabPages.Remove(tpJobs);
+
+						tcMain.SelectedTab = tpUnrecExp;
+
+						UnrecExpGridFill();
+
+						dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 5";
+						if (dtUnrecExp.DefaultView.Count == 0)
+						{
+							dtUnrecExp.DefaultView.RowFilter = null;
+							btnHideUnformFirmCr.Text = "Скрыть нераспознанные только по производителю";
+						}
+						else
+							btnHideUnformFirmCr.Text = "Показать все";
+
+						UnrecExpGridControl.Focus();
+						gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
+						gvUnrecExp.FocusedRowHandle = 0;
+						GoToNextUnrecExp(0);
+						sbpAll.Text = String.Format("Общее количество: {0}", dtUnrecExp.Rows.Count);
 					}
 					else
-						btnHideUnformFirmCr.Text = "Показать все";
-
-					UnrecExpGridControl.Focus();
-					gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
-					gvUnrecExp.FocusedRowHandle = 0;
-					GoToNextUnrecExp(0);
-					sbpAll.Text = String.Format("Общее количество: {0}", dtUnrecExp.Rows.Count);
+						JobsGridFill();
 				}
 			}
 		}
@@ -1666,7 +1649,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			List<RetransedPrice> RetransedPriceList = new List<RetransedPrice>();
 
 			//Попытка найти всех потомков, которые используют родительские синонимы
-			DataSet dsInerPrices = MySqlHelper.ExecuteDataset(MyCn, @"
+			DataSet dsInerPrices = MySqlHelper.ExecuteDataset(_connection, @"
 select
   pc.PriceItemId,
   pf.FileExtention
@@ -1718,7 +1701,7 @@ and pf.Id = fr.PriceFormatId",
 			//Заполнение таблиц перед вставкой
 
 			//Заполнили таблицу нераспознанных наименований для обновления
-			MySqlDataAdapter daUnrecUpdate = new MySqlDataAdapter("select * from farm.UnrecExp where PriceItemId = ?PriceItemId", MyCn);
+			MySqlDataAdapter daUnrecUpdate = new MySqlDataAdapter("select * from farm.UnrecExp where PriceItemId = ?PriceItemId", _connection);
 			MySqlCommandBuilder cbUnrecUpdate = new MySqlCommandBuilder(daUnrecUpdate);
 			daUnrecUpdate.SelectCommand.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
 			DataTable dtUnrecUpdate = new DataTable();
@@ -1726,7 +1709,7 @@ and pf.Id = fr.PriceFormatId",
 			dtUnrecUpdate.Constraints.Add("UnicNameCode", dtUnrecUpdate.Columns["RowID"], true);
 
 			//Заполнили таблицу синонимов наименований
-			MySqlDataAdapter daSynonym = new MySqlDataAdapter("select * from farm.Synonym where PriceCode = ?PriceCode limit 0", MyCn);
+			MySqlDataAdapter daSynonym = new MySqlDataAdapter("select * from farm.Synonym where PriceCode = ?PriceCode limit 0", _connection);
 			//MySqlCommandBuilder cbSynonym = new MySqlCommandBuilder(daSynonym);
 			daSynonym.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 			DataTable dtSynonym = new DataTable();
@@ -1737,7 +1720,7 @@ and pf.Id = fr.PriceFormatId",
 				@"
 insert into farm.synonym (PriceCode, Synonym, Junk, ProductId) values (?PriceCode, ?Synonym, ?Junk, ?ProductId);
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
-  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", MyCn);
+  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", _connection);
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonym.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
@@ -1748,7 +1731,7 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			
 			f.ApplyProgress += 1;
 			//Заполнили таблицу синонимов производителей
-			MySqlDataAdapter daSynonymFirmCr = new MySqlDataAdapter("select * from farm.SynonymFirmCr where PriceCode = ?PriceCode limit 0", MyCn);
+			MySqlDataAdapter daSynonymFirmCr = new MySqlDataAdapter("select * from farm.SynonymFirmCr where PriceCode = ?PriceCode limit 0", _connection);
 			//MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
 			daSynonymFirmCr.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 			DataTable dtSynonymFirmCr = new DataTable();
@@ -1758,9 +1741,11 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			daSynonymFirmCr.InsertCommand = new MySqlCommand(
 				@"
 insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym) values (?PriceCode, ?CodeFirmCr, ?Synonym);
+set @LastSynonymFirmCrID = last_insert_id();
 insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operation, SynonymFirmCrCode, PriceCode, CodeFirmCr, Synonym, ChildPriceCode) 
-  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?CodeFirmCr, ?Synonym, ?ChildPriceCode)", 
-				MyCn);
+  values (now(), ?OperatorName, ?OperatorHost, 0, @LastSynonymFirmCrID, ?PriceCode, ?CodeFirmCr, ?Synonym, ?ChildPriceCode);", 
+				_connection);
+			var insertSynonymProducerEtalonSQL = daSynonymFirmCr.InsertCommand.CommandText;
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
@@ -1770,7 +1755,7 @@ insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operati
 
 			f.ApplyProgress += 1;
 			//Заполнили таблицу запрещённых выражений
-			MySqlDataAdapter daForbidden = new MySqlDataAdapter("select * from farm.Forbidden limit 0", MyCn);
+			MySqlDataAdapter daForbidden = new MySqlDataAdapter("select * from farm.Forbidden limit 0", _connection);
 			//MySqlCommandBuilder cbForbidden = new MySqlCommandBuilder(daForbidden);
 			DataTable dtForbidden = new DataTable();
 			daForbidden.Fill(dtForbidden);
@@ -1780,7 +1765,8 @@ insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operati
 insert into farm.Forbidden (PriceCode, Forbidden) values (?PriceCode, ?Forbidden);
 insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, ForbiddenRowID, PriceCode, Forbidden) 
   values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Forbidden);", 
-				MyCn);
+				_connection);
+
 			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
 			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daForbidden.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
@@ -1835,25 +1821,31 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							}
 						}
 
-						//Вставили новую запись в таблицу синонимов производителей
-						if (NotFirmForm(i, "UEAlready") && !NotFirmForm(i, "UEStatus"))
+						//Добавляем синоним по производителю, если позиция полностью распознанна по ассортименту,
+						//либо помечена как исключение
+						if (((GetMask(i, "UEAlready") != FormMask.AssortmentForm) && (GetMask(i, "UEStatus") != FormMask.AssortmentForm))
+							|| ((GetMask(i, "UEAlready") != FormMask.ExcludeForm) && (GetMask(i, "UEStatus") != FormMask.ExcludeForm)))
 						{
-							DataRow newDR = dtSynonymFirmCr.NewRow();
+							//Вставили новую запись в таблицу синонимов производителей
+							if (NotFirmForm(i, "UEAlready") && !NotFirmForm(i, "UEStatus"))
+							{
+								DataRow newDR = dtSynonymFirmCr.NewRow();
 
-							newDR["PriceCode"] = LockedSynonym;
-							newDR["CodeFirmCr"] = dr[UEPriorProducerId];
-							newDR["Synonym"] = GetFirmCr(i);
-							if (LockedSynonym != LockedPriceCode)
-								newDR["ChildPriceCode"] = LockedPriceCode;
-							try
-							{
-								dtSynonymFirmCr.Rows.Add(newDR);
-								SynonymFirmCrCount +=1;
+								newDR["PriceCode"] = LockedSynonym;
+								newDR["CodeFirmCr"] = dr[UEPriorProducerId];
+								newDR["Synonym"] = GetFirmCr(i);
+								if (LockedSynonym != LockedPriceCode)
+									newDR["ChildPriceCode"] = LockedPriceCode;
+								try
+								{
+									dtSynonymFirmCr.Rows.Add(newDR);
+									SynonymFirmCrCount += 1;
+								}
+								catch (ConstraintException)
+								{
+								}
 							}
-							catch(ConstraintException)
-							{
-							}
-						} 
+						}
 					}
 				}
 			}
@@ -1865,7 +1857,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 				MySqlTransaction tran = null;
 				try
 				{
-					tran = MyCn.BeginTransaction(IsolationLevel.RepeatableRead);
+					tran = _connection.BeginTransaction(IsolationLevel.RepeatableRead);
 
 					//Заполнили таблицу логов для синонимов наименований
 					daSynonym.SelectCommand.Transaction = tran;
@@ -1877,9 +1869,27 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Transaction = tran;
 					DataTable dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
-					daSynonymFirmCr.Update(dtSynonymFirmCrCopy);
+					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
+					{
+						daSynonymFirmCr.InsertCommand.CommandText = insertSynonymProducerEtalonSQL;
+						DataRow[] drExcludes = dtUnrecUpdate.Select(
+							"PriorProducerId = " + drInsertProducerSynonym["CodeFirmCr"].ToString() +
+							" Status = " + (int)FormMask.ExcludeForm +
+							" FirmCr = \"" + drInsertProducerSynonym["Synonym"].ToString() + "\"");
+						if ((drExcludes != null) && (drExcludes.Length > 0))
+							foreach (DataRow drExclude in drExcludes)
+								daSynonymFirmCr.InsertCommand.CommandText +=
+									String.Format(
+									"insert ignore into farm.Excludes (ProductId, PriceCode, ProducerSynonymId) " +
+									"values ({0}, {1}, @LastSynonymFirmCrID);",
+									drExclude["PriorProductId"],
+									drInsertProducerSynonym["PriceCode"]);
+									
+						//обновляем по одному синониму производителя, т.к. может быть добавление в исключение
+						daSynonymFirmCr.Update(new DataRow[] { drInsertProducerSynonym });
+					}
 
-					MySqlHelper.ExecuteNonQuery(MyCn, @"
+					MySqlHelper.ExecuteNonQuery(_connection, @"
 update 
   usersettings.pricescosts,
   usersettings.priceitems
@@ -1906,7 +1916,7 @@ and priceitems.Id = pricescosts.PriceItemId",
 					if (HasParentSynonym)
 					{
 						foreach (RetransedPrice rp in RetransedPriceList)
-							MySqlHelper.ExecuteNonQuery(MyCn, @"
+							MySqlHelper.ExecuteNonQuery(_connection, @"
 delete
 from
   farm.UnrecExp
@@ -2011,7 +2021,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 		private void PricesRetrans(DateTime now, long retransPriceItemId)
 		{
 			MySqlCommand mcInsert = new MySqlCommand();
-			mcInsert.Connection = MyCn;
+			mcInsert.Connection = _connection;
 			mcInsert.Parameters.Clear();
 			mcInsert.Parameters.AddWithValue("?RetransPriceItemId", retransPriceItemId);
 			mcInsert.Parameters.AddWithValue("?UserName", Environment.UserName.ToLower());
@@ -2037,14 +2047,11 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 		{
 			int DelCount = 0;
 
-			//int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm | FormMask.CurrForm);
-			int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm);
-
 			if (!Convert.IsDBNull(drUpdated[UEPriorProductId]))
 			{
 				//Производим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
 				bool HidedSynonym = Convert.ToBoolean(
-					MySqlHelper.ExecuteScalar(MyCn,
+					MySqlHelper.ExecuteScalar(_connection,
 					String.Format(@"
 select
   (products.Hidden or catalog.Hidden) as Hidden
@@ -2062,6 +2069,8 @@ and catalog.Id = products.CatalogId", drUpdated[UEPriorProductId]
 					//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
 					drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
 					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.AssortmentForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.ExcludeForm));
 					HideSynonymCount++;
 				}
 			}
@@ -2070,7 +2079,7 @@ and catalog.Id = products.CatalogId", drUpdated[UEPriorProductId]
 			{
 				//Производим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
 				bool HidedSynonymFirmCr = Convert.ToBoolean(
-					MySqlHelper.ExecuteScalar(MyCn,
+					MySqlHelper.ExecuteScalar(_connection,
 					String.Format(@"
 select
   Hidden
@@ -2086,13 +2095,15 @@ where
 					//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
 					drUpdated[UEPriorProducerId] = DBNull.Value;
 					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.FirmForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.AssortmentForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.ExcludeForm));
 					HideSynonymFirmCrCount++;
 				}
 			}
 
 
 			//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-			object SynonymExists = MySqlHelper.ExecuteScalar(MyCn, 
+			object SynonymExists = MySqlHelper.ExecuteScalar(_connection, 
 				"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
 				//todo: здесь получается фигня с добавлением пробелов в конце строки
 				new MySqlParameter("?Synonym", String.Format("{0}  ", drUpdated["UEName1"])));
@@ -2101,6 +2112,8 @@ where
 				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
 				drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
 				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
+				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.AssortmentForm));
+				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.ExcludeForm));
 				DuplicateSynonymCount++;
 			}
 
@@ -2109,7 +2122,7 @@ where
 			if (drNew != null)
 			{
 
-				if ((int)drUpdated[UEStatus.ColumnName] == FULLFORM)
+				if (((int)drUpdated[UEStatus.ColumnName] == (int)FormMask.FullForm) || ((int)drUpdated[UEStatus.ColumnName] == (int)FormMask.ExcludeForm))
 				{
 					drNew.Delete();
 					DelCount++;
@@ -2187,29 +2200,50 @@ where
 			}
 		}
 
-		private void LockedInBlockedPrice(long lockPriceItemId, string BlockBy)
+		private bool LockedInBlockedPrice(long lockPriceItemId, string BlockBy)
 		{
-			MySqlCommand mcInsert = new MySqlCommand("select * from blockedprice where PriceItemId = ?LockPriceItemId", MyCn);
-			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.AddWithValue("?LockPriceItemId", lockPriceItemId);
-			MySqlDataReader drInsert = mcInsert.ExecuteReader();
-			bool NotExist = !drInsert.Read();
-			drInsert.Close();
-			drInsert = null;
-			if (NotExist)
+			try
 			{
-				mcInsert.CommandText = @"insert into blockedprice (PriceItemId, BlockBy) values (?LockPriceItemId, ?BlockBy)";
-				mcInsert.Parameters.AddWithValue("?BlockBy", BlockBy.ToLower());
-				mcInsert.ExecuteNonQuery();
+				var blocked = false;
+				MySqlHelperTransaction.Transaction(
+					(connection, transaction) =>
+					{
+						var currentBlockBy = MySqlHelper.ExecuteScalar(
+							connection, 
+							"select BlockBy from blockedprice where PriceItemId = ?LockPriceItemId",
+							new MySqlParameter("?LockPriceItemId", lockPriceItemId));
+						if (currentBlockBy == null)
+						{
+							MySqlHelper.ExecuteNonQuery(
+								connection,
+								"insert into blockedprice (PriceItemId, BlockBy) values (?LockPriceItemId, ?BlockBy)",
+								new MySqlParameter("?LockPriceItemId", lockPriceItemId),
+								new MySqlParameter("?BlockBy", BlockBy.ToLower()));
+							blocked = true;
+						}
+						else
+							blocked = BlockBy.Equals((string)currentBlockBy, StringComparison.OrdinalIgnoreCase);
+					});
+				return blocked;
+			}
+			catch (Exception exception)
+			{
+				ILog _logger = LogManager.GetLogger(this.GetType());
+				_logger.Error("Ошибка при блокировании задания", exception);				
+				return false;
 			}
 		}
 
 		private void UnLockedInBlockedPrice(long unLockPriceItemId)
 		{
-			MySqlCommand mcInsert = new MySqlCommand("delete from blockedprice where PriceItemId = ?unLockPriceItemId", MyCn);
-			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.AddWithValue("?unLockPriceItemId", unLockPriceItemId);
-			mcInsert.ExecuteNonQuery();
+			MySqlHelperTransaction.Transaction(
+				(connection, transaction) =>
+				{
+					MySqlHelper.ExecuteNonQuery(
+						connection,
+						"delete from blockedprice where PriceItemId = ?unLockPriceItemId",
+						new MySqlParameter("?unLockPriceItemId", unLockPriceItemId));
+				});
 		}
 
 		private void ChangeBigName(int FocusedRowHandle)
@@ -2454,7 +2488,7 @@ where
 		/// <returns>Текст контактов, разделенный ";"</returns>
 		private string GetContactText(long FirmCode, byte ContactGroupType, byte ContactType)
 		{
-			DataSet dsContacts = MySqlHelper.ExecuteDataset(MyCn, @"
+			DataSet dsContacts = MySqlHelper.ExecuteDataset(_connection, @"
 select distinct c.contactText
 from usersettings.clientsdata cd
   join contacts.contact_groups cg on cd.ContactGroupOwnerId = cg.ContactGroupOwnerId
@@ -2526,6 +2560,30 @@ and c.Type = ?ContactType;",
 						System.Drawing.Brush br = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Control);
 						e.Graphics.FillRectangle(br, r);
 						e.Graphics.DrawImageUnscaled(imageList2.Images[1], r.X, r.Y);
+						ControlPaint.DrawBorder3D(e.Graphics, e.Bounds, Border3DStyle.Adjust);
+						e.Handled = true;
+					}
+				}
+
+				if (e.Column == colUEColumn3)
+				{
+					if (((GetMask(e.RowHandle, "UEStatus") & FormMask.AssortmentForm) == FormMask.AssortmentForm) && ((GetMask(e.RowHandle, "UEStatus") & FormMask.MarkForb) != FormMask.MarkForb))
+					{
+						Rectangle r = e.Bounds;
+						r.Inflate(-1, -1);
+						System.Drawing.Brush br = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Control);
+						e.Graphics.FillRectangle(br, r);
+						e.Graphics.DrawImageUnscaled(imageList2.Images[0], r.X, r.Y);
+						ControlPaint.DrawBorder3D(e.Graphics, e.Bounds, Border3DStyle.Adjust);
+						e.Handled = true;
+					}
+					if (((GetMask(e.RowHandle, "UEStatus") & FormMask.MarkExclude) == FormMask.MarkExclude) && ((GetMask(e.RowHandle, "UEStatus") & FormMask.MarkForb) != FormMask.MarkForb))
+					{
+						Rectangle r = e.Bounds;
+						r.Inflate(-1, -1);
+						System.Drawing.Brush br = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Control);
+						e.Graphics.FillRectangle(br, r);
+						e.Graphics.DrawImageUnscaled(imageList2.Images[4], r.X, r.Y);
 						ControlPaint.DrawBorder3D(e.Graphics, e.Bounds, Border3DStyle.Adjust);
 						e.Handled = true;
 					}
