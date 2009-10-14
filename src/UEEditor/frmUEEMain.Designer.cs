@@ -87,7 +87,7 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colUEPeriod;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEJunk;
 		private System.Data.DataColumn UEStatus;
-		private System.Data.DataColumn UETmpProductId;
+		private System.Data.DataColumn UEPriorProductId;
 		private System.Data.DataTable dtCatalogFirmCr;
 		private System.Windows.Forms.Timer MainTimer;
 
@@ -103,7 +103,7 @@ namespace UEEditor
 		private System.Data.DataColumn UEName2;
 		private System.Data.DataColumn UEName3;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEStatus;
-		private System.Data.DataColumn UETmpCodeFirmCr;
+		private System.Data.DataColumn UEPriorProducerId;
 		private System.Data.DataColumn UEAlready;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEAlready;
 		private System.Data.DataColumn JParentSynonym;
@@ -223,10 +223,10 @@ namespace UEEditor
 			this.UEPeriod = new System.Data.DataColumn();
 			this.UEJunk = new System.Data.DataColumn();
 			this.UEStatus = new System.Data.DataColumn();
-			this.UETmpProductId = new System.Data.DataColumn();
+			this.UEPriorProductId = new System.Data.DataColumn();
 			this.UEName2 = new System.Data.DataColumn();
 			this.UEName3 = new System.Data.DataColumn();
-			this.UETmpCodeFirmCr = new System.Data.DataColumn();
+			this.UEPriorProducerId = new System.Data.DataColumn();
 			this.UEAlready = new System.Data.DataColumn();
 			this.UERowID = new System.Data.DataColumn();
 			this.UEHandMade = new System.Data.DataColumn();
@@ -602,10 +602,10 @@ namespace UEEditor
             this.UEPeriod,
             this.UEJunk,
             this.UEStatus,
-            this.UETmpProductId,
+            this.UEPriorProductId,
             this.UEName2,
             this.UEName3,
-            this.UETmpCodeFirmCr,
+            this.UEPriorProducerId,
             this.UEAlready,
             this.UERowID,
             this.UEHandMade});
@@ -679,10 +679,10 @@ namespace UEEditor
 			this.UEStatus.ColumnName = "UEStatus";
 			this.UEStatus.DataType = typeof(int);
 			// 
-			// UETmpProductId
+			// UEPriorProductId
 			// 
-			this.UETmpProductId.ColumnName = "UETmpProductId";
-			this.UETmpProductId.DataType = typeof(long);
+			this.UEPriorProductId.ColumnName = "UEPriorProductId";
+			this.UEPriorProductId.DataType = typeof(long);
 			// 
 			// UEName2
 			// 
@@ -692,10 +692,10 @@ namespace UEEditor
 			// 
 			this.UEName3.ColumnName = "UEName3";
 			// 
-			// UETmpCodeFirmCr
+			// UEPriorProducerId
 			// 
-			this.UETmpCodeFirmCr.ColumnName = "UETmpCodeFirmCr";
-			this.UETmpCodeFirmCr.DataType = typeof(long);
+			this.UEPriorProducerId.ColumnName = "UEPriorProducerId";
+			this.UEPriorProducerId.DataType = typeof(long);
 			// 
 			// UEAlready
 			// 
@@ -794,11 +794,6 @@ namespace UEEditor
 			this.dtCatalogFirmCr.Columns.AddRange(new System.Data.DataColumn[] {
             this.CCodeFirmCr,
             this.CFirmCr});
-			this.dtCatalogFirmCr.Constraints.AddRange(new System.Data.Constraint[] {
-            new System.Data.UniqueConstraint("Constraint1", new string[] {
-                        "CCode"}, true)});
-			this.dtCatalogFirmCr.PrimaryKey = new System.Data.DataColumn[] {
-        this.CCodeFirmCr};
 			this.dtCatalogFirmCr.TableName = "CatalogFirmCrGrid";
 			// 
 			// CCodeFirmCr
@@ -1597,8 +1592,8 @@ namespace UEEditor
 			// 
 			// grpBoxCatalog2
 			// 
-			this.grpBoxCatalog2.Controls.Add(this.CatalogGridControl);
 			this.grpBoxCatalog2.Controls.Add(this.gcFirmCr);
+			this.grpBoxCatalog2.Controls.Add(this.CatalogGridControl);
 			this.grpBoxCatalog2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpBoxCatalog2.Location = new System.Drawing.Point(0, 0);
 			this.grpBoxCatalog2.Name = "grpBoxCatalog2";

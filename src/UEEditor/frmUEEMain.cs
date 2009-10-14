@@ -19,6 +19,7 @@ using System.Diagnostics;
 using Inforoom.Logging;
 using RemotePricePricessor;
 using UEEditor.Properties;
+using DevExpress.Data.Filtering;
 
 
 
@@ -105,9 +106,9 @@ namespace UEEditor
 			{
 			}
 
-			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true; pooling=true;";
+			MyCn.ConnectionString = "server=sql.analit.net; user id=AppUEEditor; password=samepass; database=farm;convert zero datetime=true; pooling=true;Allow user variables=true;";
 #if DEBUG
-			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;  pooling=true;";
+			MyCn.ConnectionString = "server=testsql.analit.net; user id=system; password=newpass; database=farm;convert zero datetime=true;  pooling=true;Allow user variables=true;";
 #endif
 			MyCn.Open();
 			MyDA = new MySqlDataAdapter(MyCmd);
@@ -220,7 +221,7 @@ FROM
    (select
       unrecexp.PriceItemId,
       count(unrecexp.RowID) as Pos,
-      COUNT(IF(unrecexp.TmpProductId is null, 1, null)) as NamePos
+      COUNT(IF(unrecexp.PriorProductId is null, 1, null)) as NamePos
     from
       farm.unrecexp
     group by unrecexp.PriceItemId) statunrecexp,
@@ -310,8 +311,8 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 				  Period As UEPeriod, 
 				  Doc, 
 				  BaseCost As UEBaseCost, 
-				  TmpProductId As UETmpProductId,  
-				  TmpCodeFirmCr As UETmpCodeFirmCr, 
+				  PriorProductId As UEPriorProductId,  
+				  PriorProducerId As UETmpCodeFirmCr, 
 				  Status As UEStatus,
                   Already As UEAlready, 
 				  Junk As UEJunk,
@@ -356,14 +357,25 @@ order by Name";
 		private void CatalogFirmCrGridFill(MySqlCommand MyCmd, MySqlDataAdapter MyDA)
 		{
 			dtCatalogFirmCr.Clear();
-			MyCmd.CommandText =
-				@"SELECT 
-					CodeFirmCr As CCode, 
-					FirmCr As CName 
-				FROM CatalogFirmCr
-                where CodeFirmCr <> 1
-                and Hidden = 0 
-				Order By FirmCr";
+			MyCmd.CommandText = @"
+SELECT
+  p.Id As CCode,
+  p.Name As CName
+FROM
+  catalogs.Producers P
+where
+    (p.Id <> 1)
+union
+SELECT
+  p.Id As CCode,
+  pe.Name As CName
+FROM
+  catalogs.Producers P,
+  catalogs.ProducerEquivalents PE
+where
+    (p.Id <> 1)
+and (pe.ProducerId = p.Id)
+order by CName";
 
 			MyDA.Fill(dtCatalogFirmCr);
 
@@ -743,6 +755,13 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			if (dr["UEFirmCr"].ToString() != String.Empty)
 			{
 				gvFirmCr.ActiveFilter.Clear();
+/*
+                Пример того, как можно сделать фильтрацию по двум столбцам с объединением по Or
+				gvFirmCr.ActiveFilterCriteria = CriteriaOperator.Parse(
+					GetFilterString(dr["UEFirmCr"].ToString(), "CName") + 
+					" or " + 
+					GetFilterString(dr["UEFirmCr"].ToString(), "CEquivalentName"));
+ */ 
 				gvFirmCr.ActiveFilter.Add(gvFirmCr.Columns["CName"], new ColumnFilterInfo(GetFilterString(dr["UEFirmCr"].ToString(), "CName"), ""));
 				if (gvFirmCr.DataRowCount == 0)
 					gvFirmCr.ActiveFilter.Clear();
@@ -781,7 +800,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 					gcFirmCr.Focus();
 				}
 				else
-					if( 7 == (int)dr["UEStatus"])
+						if (7 == (int)dr[UEStatus.ColumnName])
 				{
 					CatalogGridControl.Enabled = false;
 					ClearCatalogGrid();
@@ -819,9 +838,9 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						if (drUN != null)
 						{
 							dtProducts.Clear();
-							ProductsFillByProductId(MyCmd, MyDA, Convert.ToUInt64(drUN[UETmpProductId]));
+							ProductsFillByProductId(MyCmd, MyDA, Convert.ToUInt64(drUN[UEPriorProductId]));
 
-							DataRow[] drProducts = dtProducts.Select("Id = " + drUN[UETmpProductId].ToString());
+							DataRow[] drProducts = dtProducts.Select("Id = " + drUN[UEPriorProductId].ToString());
 
 							if (drProducts.Length > 0)
 							{
@@ -845,9 +864,9 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						if ((drUN != null) && !String.IsNullOrEmpty(drUN[UEFirmCr].ToString()))
 						{
 							string FirmName = null;
-							//Если сопоставлено и (UETmpCodeFirmCr is DBNull), то значение кода = 0, иначе берем значение кода из поля UETmpCodeFirmCr
+							//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UETmpCodeFirmCr
 							DataRow[] drFM = dtCatalogFirmCr.Select(
-								"CCode = " + (Convert.IsDBNull(drUN[UETmpCodeFirmCr]) ? "0" : drUN[UETmpCodeFirmCr].ToString()));
+								"CCode = " + (Convert.IsDBNull(drUN[UEPriorProducerId]) ? "0" : drUN[UEPriorProducerId].ToString()));
 							if (drFM.Length > 0)
 							{
 								FirmName = drFM[0]["CName"].ToString();
@@ -886,8 +905,8 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 				if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.NameForm) == FormMask.NameForm)
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.NameForm));
-					drUnrecExp["UETmpProductId"] = DBNull.Value;
+					drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & (~FormMask.NameForm));
+					drUnrecExp[UEPriorProductId.ColumnName] = DBNull.Value;
 				}
 			}
 			catch
@@ -902,8 +921,8 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 				if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm)
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-					drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.FirmForm));
-					drUnrecExp["UETmpCodeFirmCr"] = DBNull.Value;
+					drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & (~FormMask.FirmForm));
+					drUnrecExp[UEPriorProducerId.ColumnName] = DBNull.Value;
 				}
 			}
 			catch
@@ -916,7 +935,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb)
 			{
 				DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & (~FormMask.MarkForb));
+				drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & (~FormMask.MarkForb));
 			}
 		}
 
@@ -945,13 +964,13 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 
 		private void MarkUnrecExpAsNameForm(DataRow drUnrecExp, bool MarkAsJUNK)
 		{
-			if (((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) &  FormMask.NameForm) != FormMask.NameForm)
+			if (((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & FormMask.NameForm) != FormMask.NameForm)
 			{
 				//TODO: Здесь потребуется завести дополнительный столбец в таблицу нераспознанных выражений
-				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) | FormMask.NameForm);
+				drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) | FormMask.NameForm);
 				drUnrecExp["UEJunk"] = Convert.ToByte(MarkAsJUNK);
 				GridView bv = (GridView)CatalogGridControl.FocusedView;
-				drUnrecExp["UETmpProductId"] = bv.GetDataRow(bv.FocusedRowHandle)["Id"];
+				drUnrecExp[UEPriorProductId.ColumnName] = bv.GetDataRow(bv.FocusedRowHandle)["Id"];
 			}
 		}
 
@@ -959,21 +978,21 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 		{
 			DataRow drCatalogFirmCr = gvFirmCr.GetDataRow(gvFirmCr.FocusedRowHandle);
 
-			if (((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) &  FormMask.FirmForm) != FormMask.FirmForm)
+			if (((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm)
 			{
-				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) | FormMask.FirmForm);
+				drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) | FormMask.FirmForm);
 				//Если выбранный код является записью "производитель не известен", то устанавливаем DBNull, иначе рельное значение
 				if ((long)drCatalogFirmCr["CCode"] == 0)
-					drUnrecExp["UETmpCodeFirmCr"] = DBNull.Value;
+					drUnrecExp[UEPriorProducerId.ColumnName] = DBNull.Value;
 				else
-					drUnrecExp["UETmpCodeFirmCr"] = drCatalogFirmCr["CCode"];
+					drUnrecExp[UEPriorProducerId.ColumnName] = drCatalogFirmCr["CCode"];
 			}
 		}
 
 		private void MarkUnrecExpAsForbidden(DataRow drUnrecExp)
 		{
-			if (((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) &  FormMask.MarkForb) != FormMask.MarkForb)
-				drUnrecExp["UEStatus"] = (int)((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) | FormMask.MarkForb);
+			if (((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & FormMask.MarkForb) != FormMask.MarkForb)
+				drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) | FormMask.MarkForb);
 		}
 
 
@@ -1541,7 +1560,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 
 							newDR["PriceCode"] = LockedSynonym;
 							newDR["Synonym"] = GetFullUnrecName(i);
-							newDR["ProductId"] = dr[UETmpProductId];
+							newDR["ProductId"] = dr[UEPriorProductId];
 							newDR["Junk"] = dr[UEJunk];
 							if (LockedSynonym != LockedPriceCode)
 								newDR["ChildPriceCode"] = LockedPriceCode;
@@ -1561,7 +1580,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							DataRow newDR = dtSynonymFirmCr.NewRow();
 
 							newDR["PriceCode"] = LockedSynonym;
-							newDR["CodeFirmCr"] = dr[UETmpCodeFirmCr];
+							newDR["CodeFirmCr"] = dr[UEPriorProducerId];
 							newDR["Synonym"] = GetFirmCr(i);
 							if (LockedSynonym != LockedPriceCode)
 								newDR["ChildPriceCode"] = LockedPriceCode;
@@ -1750,7 +1769,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 
 			int FULLFORM = (int)(FormMask.NameForm | FormMask.FirmForm | FormMask.CurrForm);
 
-			if (!Convert.IsDBNull(drUpdated[UETmpProductId]))
+			if (!Convert.IsDBNull(drUpdated[UEPriorProductId]))
 			{
 				//Производим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
 				bool HidedSynonym = Convert.ToBoolean(
@@ -1763,20 +1782,20 @@ from
   catalogs.products
 where
     products.Id = {0}
-and catalog.Id = products.CatalogId", drUpdated[UETmpProductId]
+and catalog.Id = products.CatalogId", drUpdated[UEPriorProductId]
 						)
 					)
 				);
 				if (HidedSynonym)
 				{
 					//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
-					drUpdated["UETmpProductId"] = DBNull.Value;
-					drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
+					drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
 					HideSynonymCount++;
 				}
 			}
 
-			if (!Convert.IsDBNull(drUpdated[UETmpCodeFirmCr]))
+			if (!Convert.IsDBNull(drUpdated[UEPriorProducerId]))
 			{
 				//Производим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
 				bool HidedSynonymFirmCr = Convert.ToBoolean(
@@ -1787,15 +1806,15 @@ select
 from
   farm.catalogfirmcr
 where
-    CodeFirmCr = {0}", drUpdated[UETmpCodeFirmCr]
+    CodeFirmCr = {0}", drUpdated[UEPriorProducerId]
 						)
 					)
 				);
 				if (HidedSynonymFirmCr)
 				{
 					//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
-					drUpdated[UETmpCodeFirmCr] = DBNull.Value;
-					drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.FirmForm));
+					drUpdated[UEPriorProducerId] = DBNull.Value;
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.FirmForm));
 					HideSynonymFirmCrCount++;
 				}
 			}
@@ -1808,8 +1827,8 @@ where
 			if ((SynonymExists != null))
 			{
 				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
-				drUpdated["UETmpProductId"] = DBNull.Value;
-				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
+				drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
+				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
 				DuplicateSynonymCount++;
 			}
 
@@ -1818,20 +1837,20 @@ where
 			if (drNew != null)
 			{
 
-				if ((int)drUpdated["UEStatus"] == FULLFORM)
+				if ((int)drUpdated[UEStatus.ColumnName] == FULLFORM)
 				{
 					drNew.Delete();
 					DelCount++;
 				}
 				else
 				{
-					drNew["Status"] = drUpdated["UEStatus"];
-					drNew["TmpProductId"] = drUpdated["UETmpProductId"];
-					drNew["TmpCodeFirmCr"] = drUpdated["UETmpCodeFirmCr"];
+					drNew["Status"] = drUpdated[UEStatus.ColumnName];
+					drNew["PriorProductId"] = drUpdated[UEPriorProductId.ColumnName];
+					drNew["PriorProducerId"] = drUpdated[UEPriorProducerId.ColumnName];
 					drNew["RowID"] = drUpdated["UERowID"];
 					if ((byte)drUpdated["UEHandMade"] == 0)
 					{
-						int r = (int)drUpdated["UEStatus"] ^ (int)drUpdated["UEAlready"];
+						int r = (int)drUpdated[UEStatus.ColumnName] ^ (int)drUpdated["UEAlready"];
 						if ( (r > 0 && (r & (int)FormMask.MarkForb) == 0))
 						{
 							drNew["HandMade"] = 1;
@@ -2067,7 +2086,7 @@ where
 
 				foreach(DataRow UEdr in dtUnrecExp.Rows)
 				{
-					if ( ((FormMask)Convert.ToByte(UEdr["UEStatus"]) & FormMask.MarkForb) == FormMask.MarkForb )
+					if (((FormMask)Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.MarkForb) == FormMask.MarkForb)
 					{
 						string tmp = (UEdr["UECode"].ToString() + " " +UEdr["UEName1"].ToString() + " " + UEdr["UEFirmCr"].ToString()).Trim();
 						if (!NameArray.Contains(tmp))
@@ -2104,7 +2123,7 @@ where
 
 				foreach(DataRow UEdr in dtUnrecExp.Rows)
 				{
-					if ( ((FormMask)Convert.ToByte(UEdr["UEStatus"]) & FormMask.FirmForm) != FormMask.FirmForm )
+					if (((FormMask)Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm)
 					{
 						string tmp = UEdr["UEFirmCr"].ToString().Trim();
 						if (!UnrecFirmCr.ContainsKey(tmp))
@@ -2241,7 +2260,7 @@ and c.Type = ?ContactType;",
 						e.Appearance.BackColor = Color.White;
 					else
 					{
-						if (7 == (int)UEdr["UEStatus"])
+						if (7 == (int)UEdr[UEStatus.ColumnName])
 							e.Appearance.BackColor = Color.Lime;
 						else
 							if (((GetMask(i, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb))
@@ -2315,7 +2334,7 @@ and c.Type = ?ContactType;",
 				if (gvFirmCr.FocusedRowHandle != GridControl.InvalidRowHandle)
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
-					if (((FormMask)Convert.ToByte(drUnrecExp["UEStatus"]) & FormMask.FirmForm) != FormMask.FirmForm)
+					if (((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm)
 					{
 						DoSynonymFirmCr();
 						ChangeBigName(gvUnrecExp.FocusedRowHandle);
@@ -2410,8 +2429,12 @@ and c.Type = ?ContactType;",
 			{
 				System.Net.Mail.MailMessage m = new System.Net.Mail.MailMessage(
 					"service@analit.net",
+#if DEBUG
+					"s.morozov@analit.net",
+#else
 					"service@analit.net",
-					"Необработанная ошибка в UEEditor",
+#endif
+ "Необработанная ошибка в UEEditor",
 String.Format(@"
 Источник     = {0}
 Пользователь = {1}
