@@ -305,7 +305,9 @@ and synonymcd.FirmCode = synonympd.FirmCode",
 				  Period As UEPeriod, 
 				  Doc, 
 				  PriorProductId As UEPriorProductId,  
-				  PriorProducerId As UETmpCodeFirmCr, 
+				  PriorProducerId As UEPriorProducerId, 
+				  ProductSynonymId As UEProductSynonymId,  
+				  ProducerSynonymId As UEProducerSynonymId, 
 				  Status As UEStatus,
                   Already As UEAlready, 
 				  Junk As UEJunk,
@@ -857,7 +859,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						if ((drUN != null) && !String.IsNullOrEmpty(drUN[UEFirmCr].ToString()))
 						{
 							string FirmName = null;
-							//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UETmpCodeFirmCr
+							//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UEPriorProducerId
 							DataRow[] drFM = dtCatalogFirmCr.Select(
 								"CCode = " + (Convert.IsDBNull(drUN[UEPriorProducerId]) ? "0" : drUN[UEPriorProducerId].ToString()));
 							if (drFM.Length > 0)
@@ -877,10 +879,10 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						MoveToCatalog();
 				}
 
-				if (e.KeyCode == Keys.F2 && (byte)UEdr["UEHandMade"] != 1)
+				if ((e.KeyCode == Keys.F2) && ((byte)UEdr["UEHandMade"] != 1))
 				{
-					MarkUnrecExpAsForbidden(UEdr);
-					GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle+1);
+					if (MarkUnrecExpAsForbidden(UEdr))
+						GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle+1);
 				}
 			}
 		}
@@ -982,10 +984,24 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			}
 		}
 
-		private void MarkUnrecExpAsForbidden(DataRow drUnrecExp)
+		private bool MarkUnrecExpAsForbidden(DataRow drUnrecExp)
 		{
+			if (!Convert.IsDBNull(drUnrecExp[UEProductSynonymId.ColumnName]))
+			{
+				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
+				object SynonymExists = MySqlHelper.ExecuteScalar(MyCn,
+					"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
+					//todo: здесь получается фигня с добавлением пробелов в конце строки
+					new MySqlParameter("?Synonym", String.Format("{0}  ", drUnrecExp["UEName1"])));
+				if (SynonymExists != null)
+				{
+					MessageBox.Show("Сопоставление как запрещенное выражение невозможно, т.к. для данного наименования существует синоним.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					return false;
+				}
+			}
 			if (((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & FormMask.MarkForb) != FormMask.MarkForb)
 				drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) | FormMask.MarkForb);
+			return true;
 		}
 
 
@@ -1070,8 +1086,8 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 
 					if ((byte)UEdr["UEHandMade"] != 1)
 					{
-						MarkUnrecExpAsForbidden(UEdr);
-						GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle + 1);
+						if (MarkUnrecExpAsForbidden(UEdr))
+							GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle + 1);
 					}
 				}
 			}
@@ -1151,6 +1167,20 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			MoveToCatalog();
 		}
 
+		private bool IsForbiddenExists(string forbidden)
+		{
+			//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
+			object ForbiddenExists = MySqlHelper.ExecuteScalar(MyCn,
+				"select RowId from farm.forbidden where forbidden = ?forbidden and PriceCode=" + LockedSynonym.ToString(),
+				//todo: здесь получается фигня с добавлением пробелов в конце строки
+				new MySqlParameter("?forbidden", forbidden));
+			if (ForbiddenExists != null)
+			{
+				MessageBox.Show("Сопоставление по наименование невозможно, т.к. для данного наименования существует запрещенное выражение.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return true;
+			}
+			return false;
+		}
 		private void DoSynonym(bool MarkAsJUNK)
 		{
 			int CurrentFocusHandle = gvUnrecExp.FocusedRowHandle;
@@ -2383,8 +2413,8 @@ and c.Type = ?ContactType;",
 
 				if ((byte)UEdr["UEHandMade"] != 1)
 				{
-					MarkUnrecExpAsForbidden(UEdr);
-					GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle + 1);
+					if (MarkUnrecExpAsForbidden(UEdr))
+						GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle + 1);
 				}
 			}
 		}

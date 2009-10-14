@@ -340,6 +340,8 @@ namespace Inforoom.UEEditor
 			this.menuItem4 = new System.Windows.Forms.MenuItem();
 			this.MainTimer = new System.Windows.Forms.Timer(this.components);
 			this.cdLegend = new System.Windows.Forms.ColorDialog();
+			this.UEProductSynonymId = new System.Data.DataColumn();
+			this.UEProducerSynonymId = new System.Data.DataColumn();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dsMain)).BeginInit();
@@ -595,7 +597,9 @@ namespace Inforoom.UEEditor
             this.UEPriorProducerId,
             this.UEAlready,
             this.UERowID,
-            this.UEHandMade});
+            this.UEHandMade,
+            this.UEProductSynonymId,
+            this.UEProducerSynonymId});
 			this.dtUnrecExp.TableName = "UnrecExpGrid";
 			// 
 			// EUColumn1
@@ -1827,6 +1831,16 @@ namespace Inforoom.UEEditor
 			this.MainTimer.Interval = 20000;
 			this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
 			// 
+			// UEProductSynonymId
+			// 
+			this.UEProductSynonymId.ColumnName = "UEProductSynonymId";
+			this.UEProductSynonymId.DataType = typeof(long);
+			// 
+			// UEProducerSynonymId
+			// 
+			this.UEProducerSynonymId.ColumnName = "UEProducerSynonymId";
+			this.UEProducerSynonymId.DataType = typeof(long);
+			// 
 			// frmUEEMain
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -1897,5 +1911,7 @@ namespace Inforoom.UEEditor
 		private System.Data.DataColumn colCatalogProductsCount;
 		private System.Windows.Forms.Button btnHideUnformFirmCr;
 		private System.Data.DataColumn JPriceItemId;
+		private System.Data.DataColumn UEProductSynonymId;
+		private System.Data.DataColumn UEProducerSynonymId;
 	}
 }
