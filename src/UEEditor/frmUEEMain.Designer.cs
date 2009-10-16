@@ -180,8 +180,8 @@ namespace Inforoom.UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -224,6 +224,7 @@ namespace Inforoom.UEEditor
 			this.UEHandMade = new System.Data.DataColumn();
 			this.UEProductSynonymId = new System.Data.DataColumn();
 			this.UEProducerSynonymId = new System.Data.DataColumn();
+			this.UEColumn3 = new System.Data.DataColumn();
 			this.dtZero = new System.Data.DataTable();
 			this.ZCode = new System.Data.DataColumn();
 			this.ZCodeCr = new System.Data.DataColumn();
@@ -303,6 +304,7 @@ namespace Inforoom.UEEditor
 			this.gvUnrecExp = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colUEColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
+			this.colUEColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUECode = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUECodeCr = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEName1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -347,8 +349,6 @@ namespace Inforoom.UEEditor
 			this.MainTimer = new System.Windows.Forms.Timer(this.components);
 			this.cdLegend = new System.Windows.Forms.ColorDialog();
 			this.ProducerSearchTimer = new System.Windows.Forms.Timer(this.components);
-			this.UEColumn3 = new System.Data.DataColumn();
-			this.colUEColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dsMain)).BeginInit();
@@ -438,14 +438,14 @@ namespace Inforoom.UEEditor
 			this.CatalogGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode3.LevelTemplate = this.gvCatForm;
-			gridLevelNode4.LevelTemplate = this.gvProducts;
-			gridLevelNode4.RelationName = "Products";
-			gridLevelNode3.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode4});
-			gridLevelNode3.RelationName = "CatalogNames";
+			gridLevelNode1.LevelTemplate = this.gvCatForm;
+			gridLevelNode2.LevelTemplate = this.gvProducts;
+			gridLevelNode2.RelationName = "Products";
+			gridLevelNode1.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode2});
+			gridLevelNode1.RelationName = "CatalogNames";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode3});
+            gridLevelNode1});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.CatalogGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
@@ -707,6 +707,11 @@ namespace Inforoom.UEEditor
 			// 
 			this.UEProducerSynonymId.ColumnName = "UEProducerSynonymId";
 			this.UEProducerSynonymId.DataType = typeof(long);
+			// 
+			// UEColumn3
+			// 
+			this.UEColumn3.Caption = "";
+			this.UEColumn3.ColumnName = "UEColumn3";
 			// 
 			// dtZero
 			// 
@@ -1460,6 +1465,20 @@ namespace Inforoom.UEEditor
 			this.colUEColumn2.VisibleIndex = 1;
 			this.colUEColumn2.Width = 20;
 			// 
+			// colUEColumn3
+			// 
+			this.colUEColumn3.Caption = "FormStatus";
+			this.colUEColumn3.FieldName = "UEColumn3";
+			this.colUEColumn3.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Left;
+			this.colUEColumn3.Name = "colUEColumn3";
+			this.colUEColumn3.OptionsColumn.AllowEdit = false;
+			this.colUEColumn3.OptionsColumn.AllowSize = false;
+			this.colUEColumn3.OptionsColumn.FixedWidth = true;
+			this.colUEColumn3.ToolTip = "Признак того, что позиция распознана по ассортименту или помечена как исключение";
+			this.colUEColumn3.Visible = true;
+			this.colUEColumn3.VisibleIndex = 2;
+			this.colUEColumn3.Width = 20;
+			// 
 			// colUECode
 			// 
 			this.colUECode.Caption = "Код";
@@ -1467,7 +1486,7 @@ namespace Inforoom.UEEditor
 			this.colUECode.Name = "colUECode";
 			this.colUECode.OptionsColumn.AllowEdit = false;
 			this.colUECode.Visible = true;
-			this.colUECode.VisibleIndex = 2;
+			this.colUECode.VisibleIndex = 3;
 			this.colUECode.Width = 55;
 			// 
 			// colUECodeCr
@@ -1477,7 +1496,7 @@ namespace Inforoom.UEEditor
 			this.colUECodeCr.Name = "colUECodeCr";
 			this.colUECodeCr.OptionsColumn.AllowEdit = false;
 			this.colUECodeCr.Visible = true;
-			this.colUECodeCr.VisibleIndex = 3;
+			this.colUECodeCr.VisibleIndex = 4;
 			this.colUECodeCr.Width = 55;
 			// 
 			// colUEName1
@@ -1487,7 +1506,7 @@ namespace Inforoom.UEEditor
 			this.colUEName1.Name = "colUEName1";
 			this.colUEName1.OptionsColumn.AllowEdit = false;
 			this.colUEName1.Visible = true;
-			this.colUEName1.VisibleIndex = 4;
+			this.colUEName1.VisibleIndex = 5;
 			this.colUEName1.Width = 55;
 			// 
 			// colUEFirmCr
@@ -1497,7 +1516,7 @@ namespace Inforoom.UEEditor
 			this.colUEFirmCr.Name = "colUEFirmCr";
 			this.colUEFirmCr.OptionsColumn.AllowEdit = false;
 			this.colUEFirmCr.Visible = true;
-			this.colUEFirmCr.VisibleIndex = 5;
+			this.colUEFirmCr.VisibleIndex = 6;
 			this.colUEFirmCr.Width = 55;
 			// 
 			// colUEUnit
@@ -1507,7 +1526,7 @@ namespace Inforoom.UEEditor
 			this.colUEUnit.Name = "colUEUnit";
 			this.colUEUnit.OptionsColumn.AllowEdit = false;
 			this.colUEUnit.Visible = true;
-			this.colUEUnit.VisibleIndex = 6;
+			this.colUEUnit.VisibleIndex = 7;
 			this.colUEUnit.Width = 55;
 			// 
 			// colUEVolume
@@ -1517,7 +1536,7 @@ namespace Inforoom.UEEditor
 			this.colUEVolume.Name = "colUEVolume";
 			this.colUEVolume.OptionsColumn.AllowEdit = false;
 			this.colUEVolume.Visible = true;
-			this.colUEVolume.VisibleIndex = 7;
+			this.colUEVolume.VisibleIndex = 8;
 			this.colUEVolume.Width = 55;
 			// 
 			// colUEQuantity
@@ -1527,7 +1546,7 @@ namespace Inforoom.UEEditor
 			this.colUEQuantity.Name = "colUEQuantity";
 			this.colUEQuantity.OptionsColumn.AllowEdit = false;
 			this.colUEQuantity.Visible = true;
-			this.colUEQuantity.VisibleIndex = 8;
+			this.colUEQuantity.VisibleIndex = 9;
 			this.colUEQuantity.Width = 55;
 			// 
 			// colUEPeriod
@@ -1537,7 +1556,7 @@ namespace Inforoom.UEEditor
 			this.colUEPeriod.Name = "colUEPeriod";
 			this.colUEPeriod.OptionsColumn.AllowEdit = false;
 			this.colUEPeriod.Visible = true;
-			this.colUEPeriod.VisibleIndex = 9;
+			this.colUEPeriod.VisibleIndex = 10;
 			this.colUEPeriod.Width = 55;
 			// 
 			// colUEJunk
@@ -1547,7 +1566,7 @@ namespace Inforoom.UEEditor
 			this.colUEJunk.Name = "colUEJunk";
 			this.colUEJunk.OptionsColumn.AllowEdit = false;
 			this.colUEJunk.Visible = true;
-			this.colUEJunk.VisibleIndex = 10;
+			this.colUEJunk.VisibleIndex = 11;
 			this.colUEJunk.Width = 55;
 			// 
 			// colUEStatus
@@ -1620,7 +1639,6 @@ namespace Inforoom.UEEditor
 			this.gcFirmCr.TabIndex = 1;
 			this.gcFirmCr.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvFirmCr});
-			this.gcFirmCr.Visible = false;
 			this.gcFirmCr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.gcFirmCr_KeyPress);
 			this.gcFirmCr.KeyDown += new System.Windows.Forms.KeyEventHandler(this.gcFirmCr_KeyDown);
 			// 
@@ -1889,25 +1907,6 @@ namespace Inforoom.UEEditor
 			// 
 			this.ProducerSearchTimer.Interval = 1200;
 			this.ProducerSearchTimer.Tick += new System.EventHandler(this.ProducerSearchTimer_Tick);
-			// 
-			// UEColumn3
-			// 
-			this.UEColumn3.Caption = "";
-			this.UEColumn3.ColumnName = "UEColumn3";
-			// 
-			// colUEColumn3
-			// 
-			this.colUEColumn3.Caption = "FormStatus";
-			this.colUEColumn3.FieldName = "UEColumn3";
-			this.colUEColumn3.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Left;
-			this.colUEColumn3.Name = "colUEColumn3";
-			this.colUEColumn3.OptionsColumn.AllowEdit = false;
-			this.colUEColumn3.OptionsColumn.AllowSize = false;
-			this.colUEColumn3.OptionsColumn.FixedWidth = true;
-			this.colUEColumn3.ToolTip = "Признак того, что позиция распознана по ассортименту или помечена как исключение";
-			this.colUEColumn3.Visible = true;
-			this.colUEColumn3.VisibleIndex = 2;
-			this.colUEColumn3.Width = 20;
 			// 
 			// frmUEEMain
 			// 

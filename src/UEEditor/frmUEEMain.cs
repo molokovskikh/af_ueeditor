@@ -140,6 +140,7 @@ namespace Inforoom.UEEditor
 			}
 
 			_connection.ConnectionString = ConfigurationManager.ConnectionStrings[MySqlHelperTransaction.slave].ConnectionString;
+			_connection.Open();
 
 			_dataAdapter = new MySqlDataAdapter(_command);
 			_command.Connection = _connection;
@@ -994,9 +995,11 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 							"select ProductId from catalogs.assortment where ProductId = ?ProductId and ProducerId = ?ProducerId",
 							new MySqlParameter("?ProductId", (long)dr[UEPriorProductId.ColumnName]),
 							new MySqlParameter("?ProducerId", (long)dr[UEPriorProducerId.ColumnName]));
-						if (assortmentExists != null)
+						if (assortmentExists == null)
 						{
-							MessageBox.Show("—опоставление как запрещенное выражение невозможно, т.к. дл€ данного наименовани€ существует синоним.", "ѕредупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							var dialogResult = MessageBox.Show("—опоставление по ассортименту не возможно. ƒобавить в исключение?", "ѕредупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+							if (dialogResult == DialogResult.Yes)
+								dr[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(dr[UEStatus.ColumnName]) | FormMask.MarkExclude);
 						}
 						else
 						{ 
@@ -1367,6 +1370,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 
 		private void GoToNextUnrecExp(int FromFocusHandle)
 		{
+			var setNext = false;
 			for(int i = FromFocusHandle; i < gvUnrecExp.RowCount; i++)
 			{
 				if (i != GridControl.InvalidRowHandle)
@@ -1376,11 +1380,13 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 						&& ((GetMask(i, "UEStatus") & FormMask.MarkExclude) != FormMask.MarkExclude)))
 					{
 						gvUnrecExp.FocusedRowHandle = i;
+						setNext = true;
 						break;
 					}
 			}
 			ClearCatalogGrid();
-			MoveToCatalog();
+			if (setNext)
+				MoveToCatalog();
 		}
 
 		private bool IsForbiddenExists(string forbidden)
@@ -1754,6 +1760,23 @@ insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operati
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 
 			f.ApplyProgress += 1;
+			//«аполнили таблицу исключений
+			MySqlDataAdapter daExcludes = new MySqlDataAdapter("select * from farm.Excludes where PriceCode = ?PriceCode limit 0", _connection);
+			//MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
+			daExcludes.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
+			DataTable dtExcludes = new DataTable();
+			daExcludes.Fill(dtExcludes);
+			dtExcludes.Constraints.Add("UnicNameCode", new DataColumn[] { dtExcludes.Columns["ProductId"], dtExcludes.Columns["PriceCode"], dtExcludes.Columns["ProducerSynonymId"] }, false);
+			daExcludes.InsertCommand = new MySqlCommand(
+				@"
+insert ignore into farm.Excludes (ProductId, PriceCode, ProducerSynonymId) 
+values (?ProductId, ?PriceCode, ?ProducerSynonymId);",
+				_connection);
+			daExcludes.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
+			daExcludes.InsertCommand.Parameters.Add("?ProductId", MySqlDbType.VarString, 0, "ProductId");
+			daExcludes.InsertCommand.Parameters.Add("?ProducerSynonymId", MySqlDbType.UInt64, 0, "ProducerSynonymId");
+
+			f.ApplyProgress += 1;
 			//«аполнили таблицу запрещЄнных выражений
 			MySqlDataAdapter daForbidden = new MySqlDataAdapter("select * from farm.Forbidden limit 0", _connection);
 			//MySqlCommandBuilder cbForbidden = new MySqlCommandBuilder(daForbidden);
@@ -1845,6 +1868,23 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 								{
 								}
 							}
+							else
+								if ((GetMask(i, "UEAlready") != FormMask.ExcludeForm) && (GetMask(i, "UEStatus") == FormMask.ExcludeForm)
+									&& !Convert.IsDBNull(dr[UEPriorProductId.ColumnName]) && !Convert.IsDBNull(dr[UEProducerSynonymId.ColumnName]))
+								{
+									DataRow newDR = dtExcludes.NewRow();
+
+									newDR["PriceCode"] = LockedSynonym;
+									newDR["ProductId"] = dr[UEPriorProductId.ColumnName];
+									newDR["ProducerSynonymId"] = dr[UEProducerSynonymId.ColumnName];
+									try
+									{
+										dtExcludes.Rows.Add(newDR);
+									}
+									catch (ConstraintException)
+									{
+									}
+								}
 						}
 					}
 				}
@@ -1865,6 +1905,11 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					daSynonym.Update(dtSynonymCopy);
 
 					f.ApplyProgress += 10;
+					
+					//ѕримен€ем исключени€
+					daExcludes.SelectCommand.Transaction = tran;
+					DataTable dtExcludesCopy = dtExcludes.Copy();
+					daExcludes.Update(dtExcludesCopy);
                     
 					//«аполнили таблицу логов дл€ синонимов производителей
 					daSynonymFirmCr.SelectCommand.Transaction = tran;
@@ -1872,17 +1917,17 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
 					{
 						daSynonymFirmCr.InsertCommand.CommandText = insertSynonymProducerEtalonSQL;
-						DataRow[] drExcludes = dtUnrecUpdate.Select(
-							"PriorProducerId = " + drInsertProducerSynonym["CodeFirmCr"].ToString() +
-							" Status = " + (int)FormMask.ExcludeForm +
-							" FirmCr = \"" + drInsertProducerSynonym["Synonym"].ToString() + "\"");
+						DataRow[] drExcludes = dtUnrecExp.Select(
+							"UEPriorProducerId = " + drInsertProducerSynonym["CodeFirmCr"].ToString() +
+							" and UEStatus = " + (int)FormMask.ExcludeForm +
+							" and UEFirmCr = '" + drInsertProducerSynonym["Synonym"].ToString() + "'");
 						if ((drExcludes != null) && (drExcludes.Length > 0))
 							foreach (DataRow drExclude in drExcludes)
 								daSynonymFirmCr.InsertCommand.CommandText +=
 									String.Format(
 									"insert ignore into farm.Excludes (ProductId, PriceCode, ProducerSynonymId) " +
 									"values ({0}, {1}, @LastSynonymFirmCrID);",
-									drExclude["PriorProductId"],
+									drExclude["UEPriorProductId"],
 									drInsertProducerSynonym["PriceCode"]);
 									
 						//обновл€ем по одному синониму производител€, т.к. может быть добавление в исключение
@@ -2102,19 +2147,22 @@ where
 			}
 
 
-			//ѕроизводим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-			object SynonymExists = MySqlHelper.ExecuteScalar(_connection, 
-				"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
-				//todo: здесь получаетс€ фигн€ с добавлением пробелов в конце строки
-				new MySqlParameter("?Synonym", String.Format("{0}  ", drUpdated["UEName1"])));
-			if ((SynonymExists != null))
+			if (Convert.IsDBNull(drUpdated[UEProductSynonymId.ColumnName]))
 			{
-				//≈сли в процессе распозновани€ синоним уже кто-то добавил, то сбрасываем распознавание
-				drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
-				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
-				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.AssortmentForm));
-				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.ExcludeForm));
-				DuplicateSynonymCount++;
+				//ѕроизводим проверку того, что синоним может быть уже вставлен в таблицу синонимов
+				object SynonymExists = MySqlHelper.ExecuteScalar(_connection,
+					"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
+					//todo: здесь получаетс€ фигн€ с добавлением пробелов в конце строки
+					new MySqlParameter("?Synonym", String.Format("{0}  ", drUpdated["UEName1"])));
+				if ((SynonymExists != null))
+				{
+					//≈сли в процессе распозновани€ синоним уже кто-то добавил, то сбрасываем распознавание
+					drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.AssortmentForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.ExcludeForm));
+					DuplicateSynonymCount++;
+				}
 			}
 
 			DataRow drNew = dtUnrecExpUpdate.Rows.Find( Convert.ToUInt32( drUpdated["UERowID"] ) );
@@ -2591,6 +2639,26 @@ and c.Type = ?ContactType;",
 			}		
 		}
 
+		//ћетод дл€ комбинировани€ цветов, чтобы цвета не сливались
+		//Ёто работает плохо, т.к. надо учитывать цвет шрифта, которым отображаетс€ наименование
+		private Color CombineColors(Color source, Color sample)
+		{
+			Color clrPixel1 = source;
+			Color clrPixel2 = sample;
+			int alpha = 255;
+			int redMix, greenMix, blueMix;
+			redMix = ((int)clrPixel1.R + (int)clrPixel2.R);
+			if (redMix > 255) redMix = 255;
+			greenMix = ((int)clrPixel1.G + (int)clrPixel2.G);
+			if (greenMix > 255) greenMix = 255;
+			blueMix = ((int)clrPixel1.B + (int)clrPixel2.B);
+			if (blueMix > 255) blueMix = 255;
+			return Color.FromArgb(alpha,
+				  (byte)redMix,
+				  (byte)greenMix,
+				  (byte)blueMix);
+		}
+
 		private void gvUnrecExp_RowCellStyle(object sender, DevExpress.XtraGrid.Views.Grid.RowCellStyleEventArgs e)
 		{
 			if (e.RowHandle != GridControl.InvalidRowHandle)
@@ -2613,13 +2681,17 @@ and c.Type = ?ContactType;",
 					else
 					{
 						if (7 == (int)UEdr[UEStatus.ColumnName])
-							e.Appearance.BackColor = Color.Lime;
+						{
+							e.Appearance.BackColor = CombineColors(e.Appearance.BackColor, Color.Lime);
+						}
 						else
 							if (((GetMask(i, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb))
-							e.Appearance.BackColor = SystemColors.GrayText;
-						else
-							if (((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
-							e.Appearance.BackColor = Color.PaleGreen;
+								e.Appearance.BackColor = CombineColors(e.Appearance.BackColor, SystemColors.GrayText);
+							else
+								if (((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
+								{
+									e.Appearance.BackColor = CombineColors(e.Appearance.BackColor, Color.PaleGreen);
+								}
 					}
 				}
 			}
@@ -2862,7 +2934,6 @@ and c.Type = ?ContactType;",
 			if (!Char.IsControl(e.KeyChar))
 				tbProducerSearch.Text += e.KeyChar;
 		}
-
 	}
 
 	public class RetransedPrice
