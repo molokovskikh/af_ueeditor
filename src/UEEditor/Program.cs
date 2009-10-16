@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Threading;
 using Subway.Helpers;
 
-namespace Inforoom.UEEditor
+namespace UEEditor
 {
 	static class Program
 	{

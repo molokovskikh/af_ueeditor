@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Inforoom.UEEditor
+namespace UEEditor
 {
 	/// <summary>
 	/// Summary description for Form1.

@@ -17,16 +17,16 @@ using System.Security.Permissions;
 using Microsoft.Win32;
 using System.Diagnostics;
 using RemotePricePricessor;
-using Inforoom.UEEditor.Properties;
+using UEEditor.Properties;
 using DevExpress.Data.Filtering;
 using log4net;
 using DevExpress.Utils.Paint;
 using System.Configuration;
-using Inforoom.UEEditor.Helpers;
+using UEEditor.Helpers;
 
 
 [assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
-namespace Inforoom.UEEditor
+namespace UEEditor
 {
 
 	/*

@@ -1,4 +1,4 @@
-namespace Inforoom.UEEditor
+namespace UEEditor
 {
 	partial class frmUEEMain
 	{

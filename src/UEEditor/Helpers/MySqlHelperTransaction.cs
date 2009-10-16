@@ -4,7 +4,7 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using System.Configuration;
 
-namespace Inforoom.UEEditor.Helpers
+namespace UEEditor.Helpers
 {
 	public class MySqlHelperTransaction
 	{
