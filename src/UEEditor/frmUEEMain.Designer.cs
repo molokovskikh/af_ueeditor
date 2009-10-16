@@ -180,8 +180,8 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -224,7 +224,6 @@ namespace UEEditor
 			this.UEHandMade = new System.Data.DataColumn();
 			this.UEProductSynonymId = new System.Data.DataColumn();
 			this.UEProducerSynonymId = new System.Data.DataColumn();
-			this.UEColumn3 = new System.Data.DataColumn();
 			this.dtZero = new System.Data.DataTable();
 			this.ZCode = new System.Data.DataColumn();
 			this.ZCodeCr = new System.Data.DataColumn();
@@ -304,7 +303,6 @@ namespace UEEditor
 			this.gvUnrecExp = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colUEColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colUEColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUECode = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUECodeCr = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEName1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -438,14 +436,14 @@ namespace UEEditor
 			this.CatalogGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode1.LevelTemplate = this.gvCatForm;
-			gridLevelNode2.LevelTemplate = this.gvProducts;
-			gridLevelNode2.RelationName = "Products";
-			gridLevelNode1.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode2});
-			gridLevelNode1.RelationName = "CatalogNames";
+			gridLevelNode3.LevelTemplate = this.gvCatForm;
+			gridLevelNode4.LevelTemplate = this.gvProducts;
+			gridLevelNode4.RelationName = "Products";
+			gridLevelNode3.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode4});
+			gridLevelNode3.RelationName = "CatalogNames";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1});
+            gridLevelNode3});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.CatalogGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
@@ -607,8 +605,7 @@ namespace UEEditor
             this.UERowID,
             this.UEHandMade,
             this.UEProductSynonymId,
-            this.UEProducerSynonymId,
-            this.UEColumn3});
+            this.UEProducerSynonymId});
 			this.dtUnrecExp.TableName = "UnrecExpGrid";
 			// 
 			// EUColumn1
@@ -707,11 +704,6 @@ namespace UEEditor
 			// 
 			this.UEProducerSynonymId.ColumnName = "UEProducerSynonymId";
 			this.UEProducerSynonymId.DataType = typeof(long);
-			// 
-			// UEColumn3
-			// 
-			this.UEColumn3.Caption = "";
-			this.UEColumn3.ColumnName = "UEColumn3";
 			// 
 			// dtZero
 			// 
@@ -1409,7 +1401,6 @@ namespace UEEditor
 			this.gvUnrecExp.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colUEColumn1,
             this.colUEColumn2,
-            this.colUEColumn3,
             this.colUECode,
             this.colUECodeCr,
             this.colUEName1,
@@ -1464,20 +1455,6 @@ namespace UEEditor
 			this.colUEColumn2.Visible = true;
 			this.colUEColumn2.VisibleIndex = 1;
 			this.colUEColumn2.Width = 20;
-			// 
-			// colUEColumn3
-			// 
-			this.colUEColumn3.Caption = "FormStatus";
-			this.colUEColumn3.FieldName = "UEColumn3";
-			this.colUEColumn3.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Left;
-			this.colUEColumn3.Name = "colUEColumn3";
-			this.colUEColumn3.OptionsColumn.AllowEdit = false;
-			this.colUEColumn3.OptionsColumn.AllowSize = false;
-			this.colUEColumn3.OptionsColumn.FixedWidth = true;
-			this.colUEColumn3.ToolTip = "ѕризнак того, что позици€ распознана по ассортименту или помечена как исключение";
-			this.colUEColumn3.Visible = true;
-			this.colUEColumn3.VisibleIndex = 2;
-			this.colUEColumn3.Width = 20;
 			// 
 			// colUECode
 			// 
@@ -1987,7 +1964,5 @@ namespace UEEditor
 		private System.Windows.Forms.TextBox tbProducerSearch;
 		private System.Windows.Forms.Timer ProducerSearchTimer;
 		private System.Data.DataColumn CIsAssortment;
-		private System.Data.DataColumn UEColumn3;
-		private DevExpress.XtraGrid.Columns.GridColumn colUEColumn3;
 	}
 }

@@ -2612,30 +2612,6 @@ and c.Type = ?ContactType;",
 						e.Handled = true;
 					}
 				}
-
-				if (e.Column == colUEColumn3)
-				{
-					if (((GetMask(e.RowHandle, "UEStatus") & FormMask.AssortmentForm) == FormMask.AssortmentForm) && ((GetMask(e.RowHandle, "UEStatus") & FormMask.MarkForb) != FormMask.MarkForb))
-					{
-						Rectangle r = e.Bounds;
-						r.Inflate(-1, -1);
-						System.Drawing.Brush br = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Control);
-						e.Graphics.FillRectangle(br, r);
-						e.Graphics.DrawImageUnscaled(imageList2.Images[0], r.X, r.Y);
-						ControlPaint.DrawBorder3D(e.Graphics, e.Bounds, Border3DStyle.Adjust);
-						e.Handled = true;
-					}
-					if (((GetMask(e.RowHandle, "UEStatus") & FormMask.MarkExclude) == FormMask.MarkExclude) && ((GetMask(e.RowHandle, "UEStatus") & FormMask.MarkForb) != FormMask.MarkForb))
-					{
-						Rectangle r = e.Bounds;
-						r.Inflate(-1, -1);
-						System.Drawing.Brush br = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Control);
-						e.Graphics.FillRectangle(br, r);
-						e.Graphics.DrawImageUnscaled(imageList2.Images[4], r.X, r.Y);
-						ControlPaint.DrawBorder3D(e.Graphics, e.Bounds, Border3DStyle.Adjust);
-						e.Handled = true;
-					}
-				}
 			}		
 		}
 
