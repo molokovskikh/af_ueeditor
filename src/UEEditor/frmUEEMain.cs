@@ -2639,26 +2639,6 @@ and c.Type = ?ContactType;",
 			}		
 		}
 
-		//Метод для комбинирования цветов, чтобы цвета не сливались
-		//Это работает плохо, т.к. надо учитывать цвет шрифта, которым отображается наименование
-		private Color CombineColors(Color source, Color sample)
-		{
-			Color clrPixel1 = source;
-			Color clrPixel2 = sample;
-			int alpha = 255;
-			int redMix, greenMix, blueMix;
-			redMix = ((int)clrPixel1.R + (int)clrPixel2.R);
-			if (redMix > 255) redMix = 255;
-			greenMix = ((int)clrPixel1.G + (int)clrPixel2.G);
-			if (greenMix > 255) greenMix = 255;
-			blueMix = ((int)clrPixel1.B + (int)clrPixel2.B);
-			if (blueMix > 255) blueMix = 255;
-			return Color.FromArgb(alpha,
-				  (byte)redMix,
-				  (byte)greenMix,
-				  (byte)blueMix);
-		}
-
 		private void gvUnrecExp_RowCellStyle(object sender, DevExpress.XtraGrid.Views.Grid.RowCellStyleEventArgs e)
 		{
 			if (e.RowHandle != GridControl.InvalidRowHandle)
@@ -2682,15 +2662,15 @@ and c.Type = ?ContactType;",
 					{
 						if (7 == (int)UEdr[UEStatus.ColumnName])
 						{
-							e.Appearance.BackColor = CombineColors(e.Appearance.BackColor, Color.Lime);
+							e.Appearance.BackColor = Color.Lime;
 						}
 						else
 							if (((GetMask(i, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb))
-								e.Appearance.BackColor = CombineColors(e.Appearance.BackColor, SystemColors.GrayText);
+								e.Appearance.BackColor = SystemColors.GrayText;
 							else
 								if (((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
 								{
-									e.Appearance.BackColor = CombineColors(e.Appearance.BackColor, Color.PaleGreen);
+									e.Appearance.BackColor = Color.PaleGreen;
 								}
 					}
 				}
