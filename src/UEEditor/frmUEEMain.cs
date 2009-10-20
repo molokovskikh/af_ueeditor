@@ -383,7 +383,6 @@ order by Name";
 SELECT
   p.Id As CCode,
   p.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   1 as CIsAssortment
 FROM
   catalogs.assortment a,
@@ -400,7 +399,6 @@ union
 SELECT
   p.Id As CCode,
   pe.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   1 as CIsAssortment
 FROM
   (
@@ -428,7 +426,6 @@ and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
 SELECT
   p.Id As CCode,
   p.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   1 as CIsAssortment
 FROM
   catalogs.Producers P
@@ -442,7 +439,6 @@ union
 SELECT
   p.Id As CCode,
   pe.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   1 as CIsAssortment
 FROM
   (
@@ -467,7 +463,6 @@ and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
 			DataRow drUnknown = dtCatalogFirmCr.NewRow();
 			drUnknown["CCode"] = 0;
 			drUnknown["CName"] = unknownProducer;
-			drUnknown[CBlocked.ColumnName] = false;
 			drUnknown[CIsAssortment.ColumnName] = true;
 			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
 
@@ -519,7 +514,6 @@ order by Name";
 SELECT
   p.Id As CCode,
   p.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   (a.ProductId is not null) as CIsAssortment
 FROM
   catalogs.Producers P
@@ -533,7 +527,6 @@ union
 SELECT
   p.Id As CCode,
   pe.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   (a.ProductId is not null) as CIsAssortment
 FROM
   (
@@ -561,7 +554,6 @@ order by CName";
 SELECT
   p.Id As CCode,
   p.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   1 as CIsAssortment
 FROM
   catalogs.Producers P
@@ -574,7 +566,6 @@ union
 SELECT
   p.Id As CCode,
   pe.Name As CName,
-  if(bps.id is null, 0, 1) as CBlocked,
   1 as CIsAssortment
 FROM
   (
@@ -601,7 +592,6 @@ order by CName";
 			DataRow drUnknown = dtCatalogFirmCr.NewRow();
 			drUnknown["CCode"] = 0;
 			drUnknown["CName"] = unknownProducer;
-			drUnknown[CBlocked.ColumnName] = false;
 			drUnknown[CIsAssortment.ColumnName] = true;
 			dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
 		}
@@ -983,7 +973,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 					dr[UEFirmCr.ColumnName].ToString(),
 					Convert.IsDBNull(dr[UEPriorProductId.ColumnName]) ? null : (long?)dr[UEPriorProductId.ColumnName]);
 				if (gvFirmCr.DataRowCount > 3)
-					GotoCatalogPosition(gvFirmCr, dr[UEFirmCr.ColumnName].ToString(), "CName", true, "CBlocked");
+					GotoCatalogPosition(gvFirmCr, dr[UEFirmCr.ColumnName].ToString(), "CName");
 
 				//gvFirmCr.ActiveFilter.Clear();
 /*
@@ -2793,8 +2783,7 @@ and c.Type = ?ContactType;",
 				if (gvFirmCr.FocusedRowHandle != GridControl.InvalidRowHandle)
 				{
 					DataRow drUnrecExp = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
-					DataRow drCatalogFirmCr = gvFirmCr.GetDataRow(gvFirmCr.FocusedRowHandle);
-					if (!(bool)drCatalogFirmCr[CBlocked.ColumnName] && (((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm))
+					if ((((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm))
 					{
 						DoSynonymFirmCr();
 						ChangeBigName(gvUnrecExp.FocusedRowHandle);
@@ -2873,11 +2862,8 @@ and c.Type = ?ContactType;",
 			{
 				DataRow drProducer = gvFirmCr.GetDataRow(e.RowHandle);
 				if (drProducer != null)
-					if ((bool)drProducer[CBlocked.ColumnName])
-						e.Appearance.BackColor = Color.OrangeRed;
-					else
-						if (!(bool)drProducer[CIsAssortment.ColumnName])
-							e.Appearance.BackColor = Color.LightGray;
+					if (!(bool)drProducer[CIsAssortment.ColumnName])
+						e.Appearance.BackColor = Color.LightGray;
 			}
 		}
 

@@ -241,7 +241,6 @@ namespace UEEditor
 			this.dtCatalogFirmCr = new System.Data.DataTable();
 			this.CCodeFirmCr = new System.Data.DataColumn();
 			this.CFirmCr = new System.Data.DataColumn();
-			this.CBlocked = new System.Data.DataColumn();
 			this.CIsAssortment = new System.Data.DataColumn();
 			this.dtSections = new System.Data.DataTable();
 			this.SSection = new System.Data.DataColumn();
@@ -792,7 +791,6 @@ namespace UEEditor
 			this.dtCatalogFirmCr.Columns.AddRange(new System.Data.DataColumn[] {
             this.CCodeFirmCr,
             this.CFirmCr,
-            this.CBlocked,
             this.CIsAssortment});
 			this.dtCatalogFirmCr.TableName = "CatalogFirmCrGrid";
 			// 
@@ -805,11 +803,6 @@ namespace UEEditor
 			// CFirmCr
 			// 
 			this.CFirmCr.ColumnName = "CName";
-			// 
-			// CBlocked
-			// 
-			this.CBlocked.ColumnName = "CBlocked";
-			this.CBlocked.DataType = typeof(bool);
 			// 
 			// CIsAssortment
 			// 
@@ -2042,7 +2035,6 @@ namespace UEEditor
 		private System.Data.DataColumn JPriceItemId;
 		private System.Data.DataColumn UEProductSynonymId;
 		private System.Data.DataColumn UEProducerSynonymId;
-		private System.Data.DataColumn CBlocked;
 		private System.Windows.Forms.Panel pFirmCr;
 		private System.Windows.Forms.TextBox tbProducerSearch;
 		private System.Windows.Forms.Timer ProducerSearchTimer;
