@@ -180,8 +180,8 @@ namespace UEEditor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
-			DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+			DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmUEEMain));
 			this.gvCatForm = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFForm = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -258,6 +258,10 @@ namespace UEEditor
 			this.colProductId = new System.Data.DataColumn();
 			this.colProductCatalogId = new System.Data.DataColumn();
 			this.colProductProperties = new System.Data.DataColumn();
+			this.dtBlockedProducers = new System.Data.DataTable();
+			this.colBlockedId = new System.Data.DataColumn();
+			this.colBlockedProducerId = new System.Data.DataColumn();
+			this.colBlockedName = new System.Data.DataColumn();
 			this.gvCatalog = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colCName = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.gvProducts = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -321,6 +325,9 @@ namespace UEEditor
 			this.gcFirmCr = new DevExpress.XtraGrid.GridControl();
 			this.gvFirmCr = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colFirmCrName = new DevExpress.XtraGrid.Columns.GridColumn();
+			this.gcBlockedProducers = new DevExpress.XtraGrid.GridControl();
+			this.gvBlockedProducers = new DevExpress.XtraGrid.Views.Grid.GridView();
+			this.colBlockedProducerName = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.tbProducerSearch = new System.Windows.Forms.TextBox();
 			this.btnHideUnformFirmCr = new System.Windows.Forms.Button();
 			this.pnlTop2 = new System.Windows.Forms.Panel();
@@ -360,6 +367,7 @@ namespace UEEditor
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalogNames)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalog)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtProducts)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtBlockedProducers)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatalog)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvProducts)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
@@ -384,6 +392,8 @@ namespace UEEditor
 			this.pFirmCr.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.gcFirmCr)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvFirmCr)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.gcBlockedProducers)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.gvBlockedProducers)).BeginInit();
 			this.pnlTop2.SuspendLayout();
 			this.tpZero.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ZeroGridControl)).BeginInit();
@@ -436,14 +446,14 @@ namespace UEEditor
 			this.CatalogGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
-			gridLevelNode3.LevelTemplate = this.gvCatForm;
-			gridLevelNode4.LevelTemplate = this.gvProducts;
-			gridLevelNode4.RelationName = "Products";
-			gridLevelNode3.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode4});
-			gridLevelNode3.RelationName = "CatalogNames";
+			gridLevelNode1.LevelTemplate = this.gvCatForm;
+			gridLevelNode2.LevelTemplate = this.gvProducts;
+			gridLevelNode2.RelationName = "Products";
+			gridLevelNode1.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode2});
+			gridLevelNode1.RelationName = "CatalogNames";
 			this.CatalogGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode3});
+            gridLevelNode1});
 			this.CatalogGridControl.Location = new System.Drawing.Point(3, 16);
 			this.CatalogGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
 			this.CatalogGridControl.LookAndFeel.UseDefaultLookAndFeel = false;
@@ -478,7 +488,8 @@ namespace UEEditor
             this.dtSections,
             this.dtCatalogNames,
             this.dtCatalog,
-            this.dtProducts});
+            this.dtProducts,
+            this.dtBlockedProducers});
 			// 
 			// dtJobs
 			// 
@@ -899,6 +910,28 @@ namespace UEEditor
 			// colProductProperties
 			// 
 			this.colProductProperties.ColumnName = "Properties";
+			// 
+			// dtBlockedProducers
+			// 
+			this.dtBlockedProducers.Columns.AddRange(new System.Data.DataColumn[] {
+            this.colBlockedId,
+            this.colBlockedProducerId,
+            this.colBlockedName});
+			this.dtBlockedProducers.TableName = "dtBlockedProducers";
+			// 
+			// colBlockedId
+			// 
+			this.colBlockedId.ColumnName = "Id";
+			this.colBlockedId.DataType = typeof(long);
+			// 
+			// colBlockedProducerId
+			// 
+			this.colBlockedProducerId.ColumnName = "ProducerId";
+			this.colBlockedProducerId.DataType = typeof(long);
+			// 
+			// colBlockedName
+			// 
+			this.colBlockedName.ColumnName = "Name";
 			// 
 			// gvCatalog
 			// 
@@ -1463,7 +1496,7 @@ namespace UEEditor
 			this.colUECode.Name = "colUECode";
 			this.colUECode.OptionsColumn.AllowEdit = false;
 			this.colUECode.Visible = true;
-			this.colUECode.VisibleIndex = 3;
+			this.colUECode.VisibleIndex = 2;
 			this.colUECode.Width = 55;
 			// 
 			// colUECodeCr
@@ -1473,7 +1506,7 @@ namespace UEEditor
 			this.colUECodeCr.Name = "colUECodeCr";
 			this.colUECodeCr.OptionsColumn.AllowEdit = false;
 			this.colUECodeCr.Visible = true;
-			this.colUECodeCr.VisibleIndex = 4;
+			this.colUECodeCr.VisibleIndex = 3;
 			this.colUECodeCr.Width = 55;
 			// 
 			// colUEName1
@@ -1483,7 +1516,7 @@ namespace UEEditor
 			this.colUEName1.Name = "colUEName1";
 			this.colUEName1.OptionsColumn.AllowEdit = false;
 			this.colUEName1.Visible = true;
-			this.colUEName1.VisibleIndex = 5;
+			this.colUEName1.VisibleIndex = 4;
 			this.colUEName1.Width = 55;
 			// 
 			// colUEFirmCr
@@ -1493,7 +1526,7 @@ namespace UEEditor
 			this.colUEFirmCr.Name = "colUEFirmCr";
 			this.colUEFirmCr.OptionsColumn.AllowEdit = false;
 			this.colUEFirmCr.Visible = true;
-			this.colUEFirmCr.VisibleIndex = 6;
+			this.colUEFirmCr.VisibleIndex = 5;
 			this.colUEFirmCr.Width = 55;
 			// 
 			// colUEUnit
@@ -1503,7 +1536,7 @@ namespace UEEditor
 			this.colUEUnit.Name = "colUEUnit";
 			this.colUEUnit.OptionsColumn.AllowEdit = false;
 			this.colUEUnit.Visible = true;
-			this.colUEUnit.VisibleIndex = 7;
+			this.colUEUnit.VisibleIndex = 6;
 			this.colUEUnit.Width = 55;
 			// 
 			// colUEVolume
@@ -1513,7 +1546,7 @@ namespace UEEditor
 			this.colUEVolume.Name = "colUEVolume";
 			this.colUEVolume.OptionsColumn.AllowEdit = false;
 			this.colUEVolume.Visible = true;
-			this.colUEVolume.VisibleIndex = 8;
+			this.colUEVolume.VisibleIndex = 7;
 			this.colUEVolume.Width = 55;
 			// 
 			// colUEQuantity
@@ -1523,7 +1556,7 @@ namespace UEEditor
 			this.colUEQuantity.Name = "colUEQuantity";
 			this.colUEQuantity.OptionsColumn.AllowEdit = false;
 			this.colUEQuantity.Visible = true;
-			this.colUEQuantity.VisibleIndex = 9;
+			this.colUEQuantity.VisibleIndex = 8;
 			this.colUEQuantity.Width = 55;
 			// 
 			// colUEPeriod
@@ -1533,7 +1566,7 @@ namespace UEEditor
 			this.colUEPeriod.Name = "colUEPeriod";
 			this.colUEPeriod.OptionsColumn.AllowEdit = false;
 			this.colUEPeriod.Visible = true;
-			this.colUEPeriod.VisibleIndex = 10;
+			this.colUEPeriod.VisibleIndex = 9;
 			this.colUEPeriod.Width = 55;
 			// 
 			// colUEJunk
@@ -1543,7 +1576,7 @@ namespace UEEditor
 			this.colUEJunk.Name = "colUEJunk";
 			this.colUEJunk.OptionsColumn.AllowEdit = false;
 			this.colUEJunk.Visible = true;
-			this.colUEJunk.VisibleIndex = 11;
+			this.colUEJunk.VisibleIndex = 10;
 			this.colUEJunk.Width = 55;
 			// 
 			// colUEStatus
@@ -1593,12 +1626,14 @@ namespace UEEditor
 			// pFirmCr
 			// 
 			this.pFirmCr.Controls.Add(this.gcFirmCr);
+			this.pFirmCr.Controls.Add(this.gcBlockedProducers);
 			this.pFirmCr.Controls.Add(this.tbProducerSearch);
 			this.pFirmCr.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pFirmCr.Location = new System.Drawing.Point(3, 16);
 			this.pFirmCr.Name = "pFirmCr";
 			this.pFirmCr.Size = new System.Drawing.Size(706, 214);
 			this.pFirmCr.TabIndex = 2;
+			this.pFirmCr.SizeChanged += new System.EventHandler(this.pFirmCr_SizeChanged);
 			// 
 			// gcFirmCr
 			// 
@@ -1612,8 +1647,8 @@ namespace UEEditor
 			this.gcFirmCr.LookAndFeel.UseDefaultLookAndFeel = false;
 			this.gcFirmCr.MainView = this.gvFirmCr;
 			this.gcFirmCr.Name = "gcFirmCr";
-			this.gcFirmCr.Size = new System.Drawing.Size(706, 194);
-			this.gcFirmCr.TabIndex = 1;
+			this.gcFirmCr.Size = new System.Drawing.Size(383, 194);
+			this.gcFirmCr.TabIndex = 0;
 			this.gcFirmCr.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvFirmCr});
 			this.gcFirmCr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.gcFirmCr_KeyPress);
@@ -1650,13 +1685,58 @@ namespace UEEditor
 			this.colFirmCrName.Visible = true;
 			this.colFirmCrName.VisibleIndex = 0;
 			// 
+			// gcBlockedProducers
+			// 
+			this.gcBlockedProducers.DataMember = "dtBlockedProducers";
+			this.gcBlockedProducers.DataSource = this.dsMain;
+			this.gcBlockedProducers.Dock = System.Windows.Forms.DockStyle.Right;
+			this.gcBlockedProducers.EmbeddedNavigator.Name = "";
+			this.gcBlockedProducers.Enabled = false;
+			this.gcBlockedProducers.Location = new System.Drawing.Point(383, 20);
+			this.gcBlockedProducers.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
+			this.gcBlockedProducers.LookAndFeel.UseDefaultLookAndFeel = false;
+			this.gcBlockedProducers.MainView = this.gvBlockedProducers;
+			this.gcBlockedProducers.Name = "gcBlockedProducers";
+			this.gcBlockedProducers.Size = new System.Drawing.Size(323, 194);
+			this.gcBlockedProducers.TabIndex = 2;
+			this.gcBlockedProducers.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gvBlockedProducers});
+			// 
+			// gvBlockedProducers
+			// 
+			this.gvBlockedProducers.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.colBlockedProducerName});
+			this.gvBlockedProducers.GridControl = this.gcBlockedProducers;
+			this.gvBlockedProducers.Name = "gvBlockedProducers";
+			this.gvBlockedProducers.OptionsCustomization.AllowSort = false;
+			this.gvBlockedProducers.OptionsDetail.ShowDetailTabs = false;
+			this.gvBlockedProducers.OptionsMenu.EnableColumnMenu = false;
+			this.gvBlockedProducers.OptionsMenu.EnableFooterMenu = false;
+			this.gvBlockedProducers.OptionsMenu.EnableGroupPanelMenu = false;
+			this.gvBlockedProducers.OptionsSelection.EnableAppearanceFocusedCell = false;
+			this.gvBlockedProducers.OptionsSelection.EnableAppearanceFocusedRow = false;
+			this.gvBlockedProducers.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
+			this.gvBlockedProducers.OptionsView.ShowGroupPanel = false;
+			// 
+			// colBlockedProducerName
+			// 
+			this.colBlockedProducerName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.colBlockedProducerName.AppearanceCell.Options.UseFont = true;
+			this.colBlockedProducerName.Caption = "Запрещенные производители";
+			this.colBlockedProducerName.FieldName = "Name";
+			this.colBlockedProducerName.Name = "colBlockedProducerName";
+			this.colBlockedProducerName.OptionsColumn.AllowEdit = false;
+			this.colBlockedProducerName.OptionsColumn.ReadOnly = true;
+			this.colBlockedProducerName.Visible = true;
+			this.colBlockedProducerName.VisibleIndex = 0;
+			// 
 			// tbProducerSearch
 			// 
 			this.tbProducerSearch.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tbProducerSearch.Location = new System.Drawing.Point(0, 0);
 			this.tbProducerSearch.Name = "tbProducerSearch";
 			this.tbProducerSearch.Size = new System.Drawing.Size(706, 20);
-			this.tbProducerSearch.TabIndex = 2;
+			this.tbProducerSearch.TabIndex = 1;
 			this.tbProducerSearch.TextChanged += new System.EventHandler(this.tbProducerSearch_TextChanged);
 			this.tbProducerSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProducerSearch_KeyDown);
 			// 
@@ -1914,6 +1994,7 @@ namespace UEEditor
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalogNames)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtCatalog)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtProducts)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtBlockedProducers)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvCatalog)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvProducts)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).EndInit();
@@ -1939,6 +2020,8 @@ namespace UEEditor
 			this.pFirmCr.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.gcFirmCr)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvFirmCr)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.gcBlockedProducers)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.gvBlockedProducers)).EndInit();
 			this.pnlTop2.ResumeLayout(false);
 			this.tpZero.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.ZeroGridControl)).EndInit();
@@ -1964,5 +2047,12 @@ namespace UEEditor
 		private System.Windows.Forms.TextBox tbProducerSearch;
 		private System.Windows.Forms.Timer ProducerSearchTimer;
 		private System.Data.DataColumn CIsAssortment;
+		private DevExpress.XtraGrid.GridControl gcBlockedProducers;
+		private DevExpress.XtraGrid.Views.Grid.GridView gvBlockedProducers;
+		private DevExpress.XtraGrid.Columns.GridColumn colBlockedProducerName;
+		private System.Data.DataTable dtBlockedProducers;
+		private System.Data.DataColumn colBlockedId;
+		private System.Data.DataColumn colBlockedProducerId;
+		private System.Data.DataColumn colBlockedName;
 	}
 }
