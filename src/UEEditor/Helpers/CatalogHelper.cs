@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 using MySql.Data.MySqlClient;
+using Common.MySql;
 
 namespace UEEditor.Helpers
 {
@@ -16,10 +17,14 @@ namespace UEEditor.Helpers
 
 		public static bool IsAssortmentExists(long productId, long producerId)
 		{
-			object assortmentExists = MySqlHelper.ExecuteScalar(ConnectionString(),
+			object assortmentExists = null;
+			With.Slave((slaveConnection) =>
+			{
+				assortmentExists = MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(slaveConnection,
 				"select ProductId from catalogs.assortment where ProductId = ?ProductId and ProducerId = ?ProducerId",
 				new MySqlParameter("?ProductId", productId),
 				new MySqlParameter("?ProducerId", producerId));
+			});
 			return (assortmentExists != null);
 		}
 	}
