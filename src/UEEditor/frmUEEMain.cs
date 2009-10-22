@@ -1058,9 +1058,9 @@ WHERE PriceItemId= ?PriceItemId",
 						//Проверка того, что не распознано как в соответствии с асортиментом, так и не помечено как исключение
 					if (((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.AssortmentForm) != FormMask.AssortmentForm) && ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.MarkExclude) != FormMask.MarkExclude))
 				{
-					if (!Convert.IsDBNull(dr[UEPriorProductId.ColumnName]) && !Convert.IsDBNull(dr[UEPriorProducerId.ColumnName]))
+					if (!Convert.IsDBNull(dr[UEPriorProductId.ColumnName]) && ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm))
 					{
-						if (CatalogHelper.IsAssortmentExists((long)dr[UEPriorProductId.ColumnName], (long)dr[UEPriorProducerId.ColumnName]))
+						if (Convert.IsDBNull(dr[UEPriorProducerId.ColumnName]) || CatalogHelper.IsAssortmentExists((long)dr[UEPriorProductId.ColumnName], (long)dr[UEPriorProducerId.ColumnName]))
 							dr[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(dr[UEStatus.ColumnName]) | FormMask.AssortmentForm);
 						else
 							dr[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(dr[UEStatus.ColumnName]) | FormMask.MarkExclude);
@@ -2010,6 +2010,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					{
 						daSynonymFirmCr.InsertCommand.CommandText = insertSynonymProducerEtalonSQL;
 						daSynonymFirmCr.UpdateCommand.CommandText = updateSynonymProducerEtalonSQL;
+						if (!Convert.IsDBNull(drInsertProducerSynonym["CodeFirmCr"]))
 						if (drInsertProducerSynonym.RowState == DataRowState.Added)
 						{
 							DataRow[] drExcludes = dtUnrecExp.Select(
