@@ -5,6 +5,15 @@ import System.IO
 import System.Security.Cryptography.X509Certificates
 import Microsoft.Win32
 import Microsoft.Build.Tasks.Deployment.ManifestUtilities
+import file from Deploy.bake
+
+
+Global(
+	project : "UEEditor",
+	editor : "vim",
+	humanReadableName : "Редактор нераспознанных выражений"
+)
+
 
 def Copy(fileSet as FileSet, destination as string):
 	for file in fileSet.Files:
@@ -109,7 +118,7 @@ Task "clean publish package":
 	RmDir(buildPublishTo, true) if Exist(buildPublishTo)
 	MkDir(buildPublishTo)			
 			
-Task "publish", ["build publish package", "clean publish dir"]:
+Task "publish", ["build publish package", "clean publish dir", @SendDeployNotification]:
 	Copy(FileSet("**\\*.*", BaseDirectory : buildPublishTo), publishTo)
 
 Task "clean publish dir":
