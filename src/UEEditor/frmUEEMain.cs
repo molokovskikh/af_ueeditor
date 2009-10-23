@@ -1993,6 +1993,10 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 				}
 			}
 
+			var changes = dtSynonymFirmCr.GetChanges(DataRowState.Modified);
+			if (changes != null)
+				SynonymFirmCrCount += changes.Rows.Count;
+
 			f.Status = "Применение изменений в базу данных...";
 			do
 			{
