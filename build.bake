@@ -21,7 +21,7 @@ def CopyWithDeploy(fileSet as FileSet, destination as string):
 		Cp(file, file.Replace(fileSet.BaseDirectory, destination) + ".deploy")
 
 def GeneratePublishPage(file as string, version as string, productName as string):
-	template = System.IO.File.ReadAllText("publish.htm.template")
+	template = System.IO.File.ReadAllText(".\\build\\publish.htm.template")
 	result = template.Replace("{version}", version)
 	result = result.Replace("{name}", productName)
 	System.IO.File.AppendAllText(file, result)
@@ -53,11 +53,11 @@ def ClearDir(dirname as string):
 projectName = "UEEditor"
 productName = "Редактор нераспознанных выражений"
 configuration = "release"
-projectPath = Path.GetFullPath("..\\src\\${projectName}\\")
+projectPath = Path.GetFullPath(".\\src\\${projectName}\\")
 projectFile = "${projectPath}${projectName}.csproj"
-buildTo = Path.GetFullPath(".\\${projectName}\\")
+buildTo = Path.GetFullPath(".\\build\\${projectName}\\")
 publishTo = "\\\\acdcserv\\Publish\\${projectName}\\"
-buildPublishTo = Path.GetFullPath(".\\${projectName}Publish\\")
+buildPublishTo = Path.GetFullPath(".\\build\\${projectName}Publish\\")
 deploymentUrl = "http://publish.analit.net/${projectName}/"
 publishVersion = "0.0.0.0";
 
@@ -84,9 +84,9 @@ Task "clean":
 	MkDir(buildTo)
 			
 Task "build publish package", ["build", "clean publish package"]:
-	certPath = Path.GetFullPath("..\\lib\\InforoomCodeSign.pfx")
+	certPath = Path.GetFullPath(".\\lib\\InforoomCodeSign.pfx")
 	password = "зфыыцщкв"
-	Cp("publish.build", "${buildPublishTo}publish.build")
+	Cp(".\\build\\publish.build", "${buildPublishTo}publish.build")
 	MsBuild("${buildPublishTo}publish.build", 
 			Parameters : { "Version" : publishVersion,
 							"MinVersion" : publishVersion,
