@@ -10,11 +10,6 @@ namespace UEEditor.Helpers
 {
 	public class CatalogHelper
 	{
-		static string ConnectionString()
-		{
-			return ConfigurationManager.ConnectionStrings[MySqlHelperTransaction.slave].ConnectionString;
-		}
-
 		public static bool IsAssortmentExists(long productId, long producerId)
 		{
 			object assortmentExists = null;

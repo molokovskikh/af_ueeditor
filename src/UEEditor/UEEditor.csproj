@@ -191,7 +191,6 @@
     </Compile>
     <Compile Include="Helpers\CatalogHelper.cs" />
     <Compile Include="Helpers\InputLanguageHelper.cs" />
-    <Compile Include="Helpers\MySqlHelperTransaction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

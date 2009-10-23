@@ -766,7 +766,7 @@ order by Properties
 						if (rowHandle != GridControl.InvalidRowHandle)
 							selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceItemId.ColumnName]);
 
-					MySqlHelperTransaction.Transaction(
+					With.Transaction(
 						(connection, transaction) =>
 						{
 							MySqlCommand cmdDeleteJob = new MySqlCommand(@"
@@ -784,7 +784,8 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 								cmdDeleteJob.Parameters["?PriceItemId"].Value = selectedPrice;
 								cmdDeleteJob.ExecuteNonQuery();
 							}
-						});
+						}
+					);
 
 					JobsGridFill();
 				}

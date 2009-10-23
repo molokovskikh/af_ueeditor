@@ -27,7 +27,7 @@ using log4net.Config;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.2.27.187")]
+[assembly: AssemblyVersion("1.2.28.188")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
