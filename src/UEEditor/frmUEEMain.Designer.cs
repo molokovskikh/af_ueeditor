@@ -1955,7 +1955,7 @@ namespace UEEditor
 			// 
 			// ProducerSearchTimer
 			// 
-			this.ProducerSearchTimer.Interval = 1200;
+			this.ProducerSearchTimer.Interval = 2500;
 			this.ProducerSearchTimer.Tick += new System.EventHandler(this.ProducerSearchTimer_Tick);
 			// 
 			// frmUEEMain
