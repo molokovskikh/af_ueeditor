@@ -1100,7 +1100,8 @@ WHERE PriceItemId= ?PriceItemId",
 
 				if (e.KeyCode == Keys.Back)
 				{
-					if ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb)
+					if (((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb) 
+						&& ((GetMask(gvUnrecExp.FocusedRowHandle, "UEAlready") & FormMask.MarkForb) != FormMask.MarkForb))
 						if(MessageBox.Show("Отменить запрещение?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 						{
 							UnmarkUnrecExpAsForbidden(gvUnrecExp.FocusedRowHandle);
@@ -1109,7 +1110,8 @@ WHERE PriceItemId= ?PriceItemId",
 						else
 							return;
 
-					if ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.NameForm) == FormMask.NameForm)
+					if (((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.NameForm) == FormMask.NameForm)
+						&& ((GetMask(gvUnrecExp.FocusedRowHandle, "UEAlready") & FormMask.NameForm) != FormMask.NameForm))
 					{
 						DataRow drUN = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
 						if (drUN != null)
@@ -1134,7 +1136,8 @@ WHERE PriceItemId= ?PriceItemId",
 						}
 					}
 
-					if ((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm)
+					if (((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm)
+						&& ((GetMask(gvUnrecExp.FocusedRowHandle, "UEAlready") & FormMask.FirmForm) != FormMask.FirmForm))
 					{
 						DataRow drUN = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
 						//Если нашли такую запись и поле "FirmCr" непустое, то сбрасываем сопоставление по производителю
@@ -1150,7 +1153,7 @@ WHERE PriceItemId= ?PriceItemId",
 								With.Slave((slaveConnection) =>
 								{
 									FirmName = GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
-									"select Name from catalogs.Producers where ProducerId = " + drUN[UEPriorProducerId].ToString());
+									"select Name from catalogs.Producers where Id = " + drUN[UEPriorProducerId].ToString());
 								});
 							}
 
