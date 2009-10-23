@@ -379,11 +379,13 @@ SELECT
   p.Name As CName,
   1 as CIsAssortment
 FROM
+  catalogs.products, 
   catalogs.assortment a,
   catalogs.Producers P
   left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
-    (a.ProductId = ?ProductId)
+    (products.Id = ?ProductId)
+and (a.CatalogId = products.CatalogId)
 and (p.Id = a.ProducerId)
 and (p.Id <> 1) 
 and (bps.id is null)
@@ -396,13 +398,15 @@ SELECT
   1 as CIsAssortment
 FROM
   (
+  catalogs.products, 
   catalogs.assortment a,
   catalogs.Producers P,
   catalogs.ProducerEquivalents PE
   )
   left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
-    (a.ProductId = ?ProductId)
+    (products.Id = ?ProductId)
+and (a.CatalogId = products.CatalogId)
 and (p.Id = a.ProducerId)
 and (pe.ProducerId = p.Id)
 and (bps.id is null)
@@ -516,14 +520,18 @@ order by Name"
 
 				if (productId.HasValue)
 				{
+					long catalogId = Convert.ToInt64( GlobalMySql.MySqlHelper.ExecuteScalar(
+						slaveConnection, 
+						"select CatalogId from catalogs.products where Id = ?ProductId",
+						new MySqlParameter("?ProductId", productId)));
 					commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT
   p.Id As CCode,
   p.Name As CName,
-  (a.ProductId is not null) as CIsAssortment
+  (a.CatalogId is not null) as CIsAssortment
 FROM
   catalogs.Producers P
-  left join catalogs.assortment a on (a.ProductId = ?ProductId) and (a.ProducerId = p.Id)
+  left join catalogs.assortment a on (a.CatalogId = ?CatalogId) and (a.ProducerId = p.Id)
   left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
     (p.Id <> 1) 
@@ -533,13 +541,13 @@ union
 SELECT
   p.Id As CCode,
   pe.Name As CName,
-  (a.ProductId is not null) as CIsAssortment
+  (a.CatalogId is not null) as CIsAssortment
 FROM
   (
   catalogs.Producers P,
   catalogs.ProducerEquivalents PE
   )
-  left join catalogs.assortment a on (a.ProductId = ?ProductId) and (a.ProducerId = p.Id)
+  left join catalogs.assortment a on (a.CatalogId = ?CatalogId) and (a.ProducerId = p.Id)
   left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
     (p.Id <> 1)
@@ -553,7 +561,7 @@ order by CName"
 					commandHelper.AddParameter("?LockedSynonym", LockedSynonym);
 					commandHelper.AddParameter("?Name", name);
 					commandHelper.AddParameter("?filter", "%" + filter + "%");
-					commandHelper.AddParameter("?ProductId", productId.Value);
+					commandHelper.AddParameter("?CatalogId", catalogId);
 				}
 				else
 				{
@@ -1829,8 +1837,7 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 				@"
 insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym) values (?PriceCode, ?CodeFirmCr, ?Synonym);
 set @LastSynonymFirmCrID = last_insert_id();
-insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operation, SynonymFirmCrCode, PriceCode, CodeFirmCr, Synonym, ChildPriceCode) 
-  values (now(), ?OperatorName, ?OperatorHost, 0, @LastSynonymFirmCrID, ?PriceCode, ?CodeFirmCr, ?Synonym, ?ChildPriceCode);", 
+", 
 				_connection);
 			var insertSynonymProducerEtalonSQL = daSynonymFirmCr.InsertCommand.CommandText;
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
@@ -1843,8 +1850,7 @@ insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operati
 				@"
 update farm.synonymFirmCr set CodeFirmCr = ?CodeFirmCr where SynonymFirmCrCode = ?SynonymFirmCrCode;
 delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFirmCrCode;
-insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operation, SynonymFirmCrCode, PriceCode, CodeFirmCr, Synonym, ChildPriceCode) 
-  values (now(), ?OperatorName, ?OperatorHost, 0, ?SynonymFirmCrCode, ?PriceCode, ?CodeFirmCr, ?Synonym, ?ChildPriceCode);",
+",
 				_connection);
 			var updateSynonymProducerEtalonSQL = daSynonymFirmCr.UpdateCommand.CommandText;
 			daSynonymFirmCr.UpdateCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
@@ -1856,6 +1862,7 @@ insert into logs.synonymFirmCrLogs (LogTime, OperatorName, OperatorHost, Operati
 			daSynonymFirmCr.UpdateCommand.Parameters.Add("?SynonymFirmCrCode", MySqlDbType.Int64, 0, "SynonymFirmCrCode");
 
 			f.ApplyProgress += 1;
+			/*
 			//Заполнили таблицу исключений
 			MySqlDataAdapter daExcludes = new MySqlDataAdapter("select * from farm.Excludes where PriceCode = ?PriceCode limit 0", _connection);
 			//MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
@@ -1871,6 +1878,7 @@ values (?ProductId, ?PriceCode, ?ProducerSynonymId);",
 			daExcludes.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daExcludes.InsertCommand.Parameters.Add("?ProductId", MySqlDbType.VarString, 0, "ProductId");
 			daExcludes.InsertCommand.Parameters.Add("?ProducerSynonymId", MySqlDbType.UInt64, 0, "ProducerSynonymId");
+			 */ 
 
 			f.ApplyProgress += 1;
 			//Заполнили таблицу запрещённых выражений
@@ -1991,6 +1999,13 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 				{
 					tran = _connection.BeginTransaction(IsolationLevel.RepeatableRead);
 
+					//Заполнили переменные для логирования триггеров
+					var helper = new Common.MySql.MySqlHelper(_connection, tran);
+					var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
+					commandHelper.AddParameter("?Host", Environment.MachineName);
+					commandHelper.AddParameter("?UserName", Environment.UserName.ToLower());
+					commandHelper.Execute();
+
 					//Заполнили таблицу логов для синонимов наименований
 					daSynonym.SelectCommand.Transaction = tran;
 					DataTable dtSynonymCopy = dtSynonym.Copy();
@@ -1999,9 +2014,9 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					f.ApplyProgress += 10;
 					
 					//Применяем исключения
-					daExcludes.SelectCommand.Transaction = tran;
-					DataTable dtExcludesCopy = dtExcludes.Copy();
-					daExcludes.Update(dtExcludesCopy);
+					//daExcludes.SelectCommand.Transaction = tran;
+					//DataTable dtExcludesCopy = dtExcludes.Copy();
+					//daExcludes.Update(dtExcludesCopy);
                     
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Transaction = tran;
@@ -2021,9 +2036,9 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							{
 								foreach (DataRow drExclude in drExcludes)
 									daSynonymFirmCr.InsertCommand.CommandText +=
-										String.Format(
-										"insert ignore into farm.Excludes (ProductId, PriceCode, ProducerSynonymId) " +
-										"values ({0}, {1}, @LastSynonymFirmCrID);",
+										String.Format(@"
+insert ignore into farm.Excludes (CatalogId, PriceCode, ProducerSynonymId)
+select products.CatalogId, {1}, @LastSynonymFirmCrID from catalogs.products where (products.Id = {0});",
 										drExclude["UEPriorProductId"],
 										drInsertProducerSynonym["PriceCode"]);
 							}
@@ -2037,10 +2052,10 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							if ((drExcludes != null) && (drExcludes.Length > 0))
 							{
 								foreach (DataRow drExclude in drExcludes)
-									daSynonymFirmCr.InsertCommand.CommandText +=
-										String.Format(
-										"insert ignore into farm.Excludes (ProductId, PriceCode, ProducerSynonymId) " +
-										"values ({0}, ?PriceCode, ?SynonymFirmCrCode);",
+									daSynonymFirmCr.UpdateCommand.CommandText +=
+										String.Format(@"
+insert ignore into farm.Excludes (CatalogId, PriceCode, ProducerSynonymId)
+select products.CatalogId, ?PriceCode, ?SynonymFirmCrCode from catalogs.products where (products.Id = {0});",
 										drExclude["UEPriorProductId"]);
 							}
 						}

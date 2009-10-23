@@ -5,6 +5,7 @@ using log4net;
 using System.Windows.Forms;
 using System.Threading;
 using Subway.Helpers;
+using log4net.Config;
 
 namespace UEEditor
 {
@@ -16,6 +17,8 @@ namespace UEEditor
 		[STAThread]
 		static void Main()
 		{
+			XmlConfigurator.Configure();
+
 			Application.ThreadException += new ThreadExceptionEventHandler(OnThreadException);
 
 			//Эти две строчки есть в StatViewer'е, возможно, из-за одной из них не работает "корректное" отображение 
