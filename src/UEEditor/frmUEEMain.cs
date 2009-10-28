@@ -93,6 +93,7 @@ namespace UEEditor
 		public int HideSynonymCount = 0;
 		public int HideSynonymFirmCrCount = 0;
 		public int DuplicateSynonymCount = 0;
+		public int DuplicateProducerSynonymCount = 0;
 		public int SynonymFirmCrCount = 0;
 		public int ForbiddenCount = 0;
 		public string producerSeachText;
@@ -1722,8 +1723,9 @@ WHERE PriceItemId= ?PriceItemId",
 Отклонено скрытых синонимов: {3}
 Отклонено дублирующихся синонимов: {4}
 Отклонено скрытых синонимов производителей: {5}
+Отклонено дублирующихся синонимов производителей: {6}
 
-Перепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, HideSynonymCount, DuplicateSynonymCount, HideSynonymFirmCrCount);
+Перепровести прайс?", ForbiddenCount, SynonymCount, SynonymFirmCrCount, HideSynonymCount, DuplicateSynonymCount, HideSynonymFirmCrCount, DuplicateProducerSynonymCount);
 			return (MessageBox.Show(str, "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
 		}
 
@@ -1791,6 +1793,7 @@ and pf.Id = fr.PriceFormatId",
 			HideSynonymCount = 0;
 			HideSynonymFirmCrCount = 0;
 			DuplicateSynonymCount = 0;
+			DuplicateProducerSynonymCount = 0;
 
 			//Кол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводится
 			int DelCount = 0;
@@ -1834,7 +1837,6 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			daSynonymFirmCr.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 			DataTable dtSynonymFirmCr = new DataTable();
 			daSynonymFirmCr.Fill(dtSynonymFirmCr);
-			dtSynonymFirmCr.PrimaryKey = new DataColumn[] {dtSynonymFirmCr.Columns["SynonymFirmCrCode"]};
 			dtSynonymFirmCr.Constraints.Add("UnicNameCode", new DataColumn[] {dtSynonymFirmCr.Columns["Synonym"]}, false);
 			dtSynonymFirmCr.Columns.Add("ChildPriceCode", typeof(long));
 			daSynonymFirmCr.InsertCommand = new MySqlCommand(
@@ -1866,23 +1868,6 @@ delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFir
 			daSynonymFirmCr.UpdateCommand.Parameters.Add("?SynonymFirmCrCode", MySqlDbType.Int64, 0, "SynonymFirmCrCode");
 
 			f.ApplyProgress += 1;
-			/*
-			//Заполнили таблицу исключений
-			MySqlDataAdapter daExcludes = new MySqlDataAdapter("select * from farm.Excludes where PriceCode = ?PriceCode limit 0", _connection);
-			//MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
-			daExcludes.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
-			DataTable dtExcludes = new DataTable();
-			daExcludes.Fill(dtExcludes);
-			dtExcludes.Constraints.Add("UnicNameCode", new DataColumn[] { dtExcludes.Columns["ProductId"], dtExcludes.Columns["PriceCode"], dtExcludes.Columns["ProducerSynonymId"] }, false);
-			daExcludes.InsertCommand = new MySqlCommand(
-				@"
-insert ignore into farm.Excludes (ProductId, PriceCode, ProducerSynonymId) 
-values (?ProductId, ?PriceCode, ?ProducerSynonymId);",
-				_connection);
-			daExcludes.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
-			daExcludes.InsertCommand.Parameters.Add("?ProductId", MySqlDbType.VarString, 0, "ProductId");
-			daExcludes.InsertCommand.Parameters.Add("?ProducerSynonymId", MySqlDbType.UInt64, 0, "ProducerSynonymId");
-			 */ 
 
 			f.ApplyProgress += 1;
 			//Заполнили таблицу запрещённых выражений
@@ -1979,7 +1964,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							{ 
 								//Если у нас есть созданный синоним и мы его сопоставили с каким-то ProducerId, то его надо обновить в базе
 								//и удалить из распознанных PriceProcessor'ом
-								DataRow drSynonymFirm = dtSynonymFirmCr.Rows.Find(dr[UEProducerSynonymId.ColumnName]);
+								DataRow drSynonymFirm = dtSynonymFirmCr.Select("SynonymFirmCrCode = " + dr[UEProducerSynonymId.ColumnName])[0];
 								if (drSynonymFirm != null)
 								{
 									drSynonymFirm["PriceCode"] = LockedSynonym;
@@ -2019,12 +2004,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					DataTable dtSynonymCopy = dtSynonym.Copy();
 					daSynonym.Update(dtSynonymCopy);
 
-					f.ApplyProgress += 10;
-					
-					//Применяем исключения
-					//daExcludes.SelectCommand.Transaction = tran;
-					//DataTable dtExcludesCopy = dtExcludes.Copy();
-					//daExcludes.Update(dtExcludesCopy);
+					f.ApplyProgress += 10;					
                     
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Transaction = tran;
@@ -2317,6 +2297,32 @@ where
 					DuplicateSynonymCount++;
 				}
 			}
+
+			if (
+				(((FormMask)Convert.ToByte(drUpdated[UEAlready.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm)
+				&& (((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & FormMask.FirmForm) == FormMask.FirmForm) 
+				&& Convert.IsDBNull(drUpdated[UEProducerSynonymId.ColumnName]))
+			{
+				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
+				object ProducerSynonymExists = null;
+				With.Slave((slaveConnection) =>
+				{
+					ProducerSynonymExists = GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
+						"select CodeFirmCr from farm.synonymFirmCr where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
+						new MySqlParameter("?Synonym", drUpdated[UEFirmCr.ColumnName]));
+				});
+
+				if ((ProducerSynonymExists != null))
+				{
+					//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
+					drUpdated[UEPriorProducerId.ColumnName] = DBNull.Value;
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.FirmForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.AssortmentForm));
+					drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.ExcludeForm));
+					DuplicateProducerSynonymCount++;
+				}
+			}
+
 
 			DataRow drNew = dtUnrecExpUpdate.Rows.Find( Convert.ToUInt32( drUpdated["UERowID"] ) );
 
