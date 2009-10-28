@@ -1619,7 +1619,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 						UnrecExpGridFill();
 
-						dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 5";
+						dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 1";
 						if (dtUnrecExp.DefaultView.Count == 0)
 						{
 							dtUnrecExp.DefaultView.RowFilter = null;
@@ -2944,7 +2944,7 @@ and c.Type = ?ContactType;",
 		{
 			if (String.IsNullOrEmpty(dtUnrecExp.DefaultView.RowFilter))
 			{
-				dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 5";
+				dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 1";
 				btnHideUnformFirmCr.Text = "Показать все";
 			}
 			else
