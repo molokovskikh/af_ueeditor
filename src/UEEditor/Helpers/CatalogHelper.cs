@@ -30,5 +30,68 @@ and (assortment.ProducerId = ?ProducerId)",
 			});
 			return (assortmentExists != null);
 		}
+
+		public static bool IsHiddenProduct(MySqlConnection connection, long productId)
+		{
+			return Convert.ToBoolean(
+				MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(
+					connection,
+					String.Format(@"
+select
+  (products.Hidden or catalog.Hidden) as Hidden
+from
+  catalogs.catalog,
+  catalogs.products
+where
+    products.Id = {0}
+and catalog.Id = products.CatalogId"
+					,
+					productId)
+					)
+			);
+		}
+
+//        public static bool IsHiddenProducer(MySqlConnection connection, long producerId)
+//        {
+//            return Convert.ToBoolean(
+//                MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(
+//                    connection,
+//                    String.Format(@"
+//select
+//  Hidden
+//from
+//  farm.catalogfirmcr
+//where
+//    CodeFirmCr = {0}"
+//                    ,
+//                    producerId)
+//                    )
+//            );
+//        }
+
+		public static bool IsSynonymExists(MySqlConnection connection, long lockedSynonymPriceCode, string synonymName)
+		{
+			return
+				MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(
+					connection,
+					"select ProductId from farm.synonym where synonym = ?SynonymName and PriceCode = ?LockedSynonymPriceCode",
+					new MySqlParameter("?LockedSynonymPriceCode", lockedSynonymPriceCode),
+				//todo: здесь получается фигня с добавлением пробелов в конце строки
+					new MySqlParameter("?SynonymName", String.Format("{0}  ", synonymName))
+					)
+					!= null;
+		}
+
+		public static bool IsProducerSynonymExists(MySqlConnection connection, long lockedSynonymPriceCode, string producerSynonymName)
+		{
+			return
+				MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(
+					connection,
+					"select CodeFirmCr from farm.synonymFirmCr where synonym = ?ProducerSynonymName and PriceCode = ?LockedSynonymPriceCode",
+					new MySqlParameter("?LockedSynonymPriceCode", lockedSynonymPriceCode),
+					new MySqlParameter("?ProducerSynonymName", producerSynonymName)
+					)
+					!= null;
+		}
 	}
 }
