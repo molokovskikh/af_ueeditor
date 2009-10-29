@@ -16,7 +16,7 @@ using System.Threading;
 using System.Security.Permissions;
 using Microsoft.Win32;
 using System.Diagnostics;
-using RemotePricePricessor;
+using RemotePriceProcessor;
 using UEEditor.Properties;
 using DevExpress.Data.Filtering;
 using log4net;
