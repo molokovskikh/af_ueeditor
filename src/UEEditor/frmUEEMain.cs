@@ -1817,8 +1817,10 @@ and pf.Id = fr.PriceFormatId",
 			daSynonym.InsertCommand = new MySqlCommand(
 				@"
 insert into farm.synonym (PriceCode, Synonym, Junk, ProductId) values (?PriceCode, ?Synonym, ?Junk, ?ProductId);
+set @LastSynonymID = last_insert_id();
+insert into farm.UsedSynonymLogs (SynonymCode) values (@LastSynonymID); 
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
-  values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", masterConnection);
+  values (now(), ?OperatorName, ?OperatorHost, 0, @LastSynonymID, ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", masterConnection);
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonym.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
@@ -1840,6 +1842,7 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 				@"
 insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym) values (?PriceCode, ?CodeFirmCr, ?Synonym);
 set @LastSynonymFirmCrID = last_insert_id();
+insert into farm.UsedSynonymFirmCrLogs (SynonymFirmCrCode) values (@LastSynonymFirmCrID); 
 ", 
 				masterConnection);
 			var insertSynonymProducerEtalonSQL = daSynonymFirmCr.InsertCommand.CommandText;
