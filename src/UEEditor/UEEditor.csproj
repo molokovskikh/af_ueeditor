@@ -201,6 +201,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="Statistics.cs" />
     <EmbeddedResource Include="frmProgress.resx">
       <DependentUpon>frmProgress.cs</DependentUpon>
       <SubType>Designer</SubType>
