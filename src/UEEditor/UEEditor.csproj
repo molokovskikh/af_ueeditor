@@ -139,9 +139,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="RemotePriceProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b87fa865681cc1c6, processorArchitecture=MSIL">
+    <Reference Include="RemotePriceProcessor, Version=1.0.1.1, Culture=neutral, PublicKeyToken=b87fa865681cc1c6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\RemotePriceProcessor.dll</HintPath>
+      <HintPath>..\..\..\..\PriceProcessor\trunk\src\PriceProcessor\bin\Debug\RemotePriceProcessor.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -158,6 +158,9 @@
     </Reference>
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
