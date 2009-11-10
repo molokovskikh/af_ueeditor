@@ -704,42 +704,57 @@ order by Properties
 			}
 		}
 
-		private void btnDelJob_Click(object sender, System.EventArgs e)
+		private void btnDelJob_Click(object sender, EventArgs e)
 		{
 			int[] selected = gvJobs.GetSelectedRows();
-
-			if (selected.Length > 0)
+			if ((selected != null) && (selected.Length > 0))
 			{
-				if (MessageBox.Show("Вы действительно хотите удалить выбранные задания?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+				if (MessageBox.Show("Вы действительно хотите удалить выбранные задания?", 
+					"Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, 
+					MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 				{
-					List<long> selectedPrices = new List<long>();
+					try
+					{
+						List<long> selectedPrices = new List<long>();
 
-					//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
-					foreach (int rowHandle in selected)
-						if (rowHandle != GridControl.InvalidRowHandle)
-							selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceItemId.ColumnName]);
+						//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
+						foreach (int rowHandle in selected)
+							if (rowHandle != GridControl.InvalidRowHandle)
+							{
+								var row = gvJobs.GetDataRow(rowHandle);
+								if (row != null)
+									selectedPrices.Add((long) (row[JPriceItemId.ColumnName]));
+							}
 
-					With.Transaction(
-						(connection, transaction) =>
-						{
-							MySqlCommand cmdDeleteJob = new MySqlCommand(@"
+						With.Transaction(
+							(connection, transaction) =>
+								{
+									MySqlCommand cmdDeleteJob =
+										new MySqlCommand(
+											@"
 DELETE FROM 
   farm.UnrecExp
 WHERE 
     PriceItemId = ?PriceItemId
 AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.PriceItemId)",
-								connection, transaction);
-							cmdDeleteJob.Parameters.Add("?PriceItemId", MySqlDbType.Int64);
+											connection, transaction);
+									cmdDeleteJob.Parameters.Add("?PriceItemId", MySqlDbType.Int64);
 
-							//удаляем задания
-							foreach (long selectedPrice in selectedPrices)
-							{
-								cmdDeleteJob.Parameters["?PriceItemId"].Value = selectedPrice;
-								cmdDeleteJob.ExecuteNonQuery();
-							}
-						}
-					);
-
+									//удаляем задания
+									foreach (long selectedPrice in selectedPrices)
+									{
+										cmdDeleteJob.Parameters["?PriceItemId"].Value = selectedPrice;
+										cmdDeleteJob.ExecuteNonQuery();
+									}
+								}
+							);
+					}
+					catch (Exception ex)
+					{
+						Mailer.SendLetterWithException(ex);
+						MessageBox.Show("Невозможно удалить выбранные задания. Информация об ошибке отправлена разработчику.",
+							"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);	
+					}
 					JobsGridFill();
 				}
 			}
@@ -1651,14 +1666,15 @@ and pf.Id = fr.PriceFormatId",
 
 			//Если в наборе данных будут записи, то добавляем их в список
 			if (dsInerPrices.Tables[0].Rows.Count > 0)
-			{
-				HasParentSynonym = true;
+			{				
 				foreach(DataRow drInerPrice in dsInerPrices.Tables[0].Rows)
 					if ((LockedPriceItemId != Convert.ToInt64(drInerPrice["PriceItemId"])) && !RetransedPriceList.Exists(delegate(RetransedPrice value) { return value.PriceItemId == Convert.ToInt64(drInerPrice["PriceItemId"]); }))
 						RetransedPriceList.Add(
 							new RetransedPrice(
 								Convert.ToInt64(drInerPrice["PriceItemId"]),
 								drInerPrice["FileExtention"].ToString()));
+				if (RetransedPriceList.Count > 0)
+					HasParentSynonym = true;
 			}
 
 			RetransedPriceList.Insert(0, new RetransedPrice(LockedPriceItemId, FileExt));
