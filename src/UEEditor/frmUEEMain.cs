@@ -2596,10 +2596,6 @@ and c.Type = ?ContactType;",
 						{
 							e.Appearance.BackColor = Color.Lime;
 						}
-						else if (((GetMask(i, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm))
-						{
-							e.Appearance.BackColor = Color.MediumSeaGreen;
-						}
 						else
 							if (((GetMask(i, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb))
 								e.Appearance.BackColor = SystemColors.GrayText;
