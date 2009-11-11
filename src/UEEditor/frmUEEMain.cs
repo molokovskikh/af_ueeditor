@@ -2367,7 +2367,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 				DataRow dr = gvJobs.GetDataRow(e.RowHandle);
 				if ((dr["JBlockBy"].ToString() != ""))
 				{
-					Brush brush = new System.Drawing.Drawing2D.LinearGradientBrush(e.Bounds, Color.Gray, Color.Gray, 90);
+					Brush brush = new System.Drawing.Drawing2D.LinearGradientBrush(e.Bounds, 
+						Color.Gray, Color.Gray, 90);
 					Rectangle  r = e.Bounds;
 					r.Inflate(-1, -1);
 					//e.Graphics.FillRectangle(brush, r);
@@ -2591,19 +2592,18 @@ and c.Type = ?ContactType;",
 					else
 					{
 						//if (7 == (int)UEdr[UEStatus.ColumnName])
-						if (((GetMask(i, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm) && 
-							((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
+						if (((GetMask(i, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm) &&
+						    ((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
 						{
 							e.Appearance.BackColor = Color.Lime;
 						}
-						else
-							if (((GetMask(i, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb))
-								e.Appearance.BackColor = SystemColors.GrayText;
-							else
-								if (((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
-								{
-									e.Appearance.BackColor = Color.PaleGreen;
-								}
+						//else
+						if (((GetMask(i, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb))
+							e.Appearance.BackColor = SystemColors.GrayText;
+						else if (((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
+						{
+							e.Appearance.BackColor = Color.PaleGreen;
+						}
 					}
 				}
 			}
