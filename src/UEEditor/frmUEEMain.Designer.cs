@@ -136,8 +136,6 @@ namespace UEEditor
 		private System.Windows.Forms.StatusBarPanel sbpCurrent;
 		private System.Data.DataColumn JNeedRetrans;
 		private System.Data.DataColumn JRetranced;
-		private DevExpress.XtraGrid.Columns.GridColumn colJRetranced;
-		private DevExpress.XtraGrid.Columns.GridColumn colJNeedRetrans;
 		private System.Data.DataColumn JParentName;
 		private DevExpress.XtraGrid.Columns.GridColumn colJParentName;
 		private System.Data.DataColumn JExt;
@@ -280,8 +278,6 @@ namespace UEEditor
 			this.colJParentName = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJWholeSale = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJRegion = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colJNeedRetrans = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colJRetranced = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJPos = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJNamePos = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJJobDate = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -1097,8 +1093,6 @@ namespace UEEditor
             this.colJParentName,
             this.colJWholeSale,
             this.colJRegion,
-            this.colJNeedRetrans,
-            this.colJRetranced,
             this.colJPos,
             this.colJNamePos,
             this.colJJobDate,
@@ -1171,34 +1165,6 @@ namespace UEEditor
 			this.colJRegion.Visible = true;
 			this.colJRegion.VisibleIndex = 3;
 			this.colJRegion.Width = 52;
-			// 
-			// colJNeedRetrans
-			// 
-			this.colJNeedRetrans.Caption = "Требуется формализация";
-			this.colJNeedRetrans.FieldName = "JNeedRetrans";
-			this.colJNeedRetrans.Name = "colJNeedRetrans";
-			this.colJNeedRetrans.OptionsColumn.AllowEdit = false;
-			this.colJNeedRetrans.OptionsColumn.AllowFocus = false;
-			this.colJNeedRetrans.OptionsColumn.AllowIncrementalSearch = false;
-			this.colJNeedRetrans.OptionsColumn.ReadOnly = true;
-			this.colJNeedRetrans.ToolTip = "Требуется формализация";
-			this.colJNeedRetrans.Visible = true;
-			this.colJNeedRetrans.VisibleIndex = 4;
-			this.colJNeedRetrans.Width = 52;
-			// 
-			// colJRetranced
-			// 
-			this.colJRetranced.Caption = "В очереди";
-			this.colJRetranced.FieldName = "JRetranced";
-			this.colJRetranced.Name = "colJRetranced";
-			this.colJRetranced.OptionsColumn.AllowEdit = false;
-			this.colJRetranced.OptionsColumn.AllowFocus = false;
-			this.colJRetranced.OptionsColumn.AllowIncrementalSearch = false;
-			this.colJRetranced.OptionsColumn.ReadOnly = true;
-			this.colJRetranced.ToolTip = "В очереди";
-			this.colJRetranced.Visible = true;
-			this.colJRetranced.VisibleIndex = 5;
-			this.colJRetranced.Width = 52;
 			// 
 			// colJPos
 			// 

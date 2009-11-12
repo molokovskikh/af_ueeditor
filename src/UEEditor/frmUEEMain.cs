@@ -1972,57 +1972,48 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			{
 				_logger.DebugFormat("res : {0}", res);
 
-				bool S = DelCount == dtUnrecExp.Rows.Count;
-				_logger.DebugFormat("DelCount == dtUnrecExp.Rows.Count : {0}", DelCount == dtUnrecExp.Rows.Count);
-				if (!S)
-					S = (bool)f.Invoke(new ShowRetransPriceDelegate(ShowRetransPrice));
-				_logger.DebugFormat("ShowRetransPrice : {0}", S);
+				f.Status = "Перепроведение пpайса...";
+				_logger.DebugFormat("Перепроведение пpайса...");
+				f.ApplyProgress = 80;
 
-				if (res && S)
+				DateTime now = DateTime.Now;
+
+				IRemotePriceProcessor clientProxy = _wcfChannelFactory.CreateChannel();
+				while (RetransedPriceList.Count > 0)
 				{
-					f.Status = "Перепроведение пpайса...";
-					_logger.DebugFormat("Перепроведение пpайса...");
-					f.ApplyProgress = 80;
-
-					DateTime now = DateTime.Now;
-
-					IRemotePriceProcessor clientProxy = _wcfChannelFactory.CreateChannel();
-					while (RetransedPriceList.Count > 0)
-					{
-						_logger.DebugFormat("Перепроводим : {0}", RetransedPriceList[0].PriceItemId);
-						try
-						{
-							clientProxy.RetransPrice(Convert.ToUInt32(RetransedPriceList[0].PriceItemId));
-							PricesRetrans(now, RetransedPriceList[0].PriceItemId, masterConnection);							
-						}
-						catch (FaultException faultException)
-						{
-							_logger.DebugFormat(
-								"При перепроведении priceitem {0} возникла ошибка : {1}",
-								RetransedPriceList[0].PriceItemId, faultException);
-						}
-						catch (Exception retransException)
-						{
-							if (f != null)
-								f.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
-							_logger.ErrorFormat(
-								"При перепроведении priceitem {0} возникла ошибка : {1}",
-								RetransedPriceList[0].PriceItemId,
-								retransException);
-							Thread.Sleep(500);
-						}
-						RetransedPriceList.RemoveAt(0);
-					}
-					_logger.DebugFormat("Перепроведение пpайса завершено.");
+					_logger.DebugFormat("Перепроводим : {0}", RetransedPriceList[0].PriceItemId);
 					try
 					{
-						((ICommunicationObject)clientProxy).Close();
+						clientProxy.RetransPrice(Convert.ToUInt32(RetransedPriceList[0].PriceItemId));
+						PricesRetrans(now, RetransedPriceList[0].PriceItemId, masterConnection);
 					}
-					catch (Exception)
+					catch (FaultException faultException)
 					{
-						if (((ICommunicationObject)clientProxy).State != CommunicationState.Closed)
-							((ICommunicationObject)clientProxy).Abort();
+						_logger.DebugFormat(
+							"При перепроведении priceitem {0} возникла ошибка : {1}",
+							RetransedPriceList[0].PriceItemId, faultException);
 					}
+					catch (Exception retransException)
+					{
+						if (f != null)
+							f.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
+						_logger.ErrorFormat(
+							"При перепроведении priceitem {0} возникла ошибка : {1}",
+							RetransedPriceList[0].PriceItemId,
+							retransException);
+						Thread.Sleep(500);
+					}
+					RetransedPriceList.RemoveAt(0);
+				}
+				_logger.DebugFormat("Перепроведение пpайса завершено.");
+				try
+				{
+					((ICommunicationObject) clientProxy).Close();
+				}
+				catch (Exception)
+				{
+					if (((ICommunicationObject) clientProxy).State != CommunicationState.Closed)
+						((ICommunicationObject) clientProxy).Abort();
 				}
 			}
 			finally
@@ -2342,13 +2333,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			    else
 				    e.DisplayText = "Розница";
 		    }
-            if ((e.Column == colJNeedRetrans)||(e.Column == colJRetranced))
-            {
-                if (e.Value.ToString() == "1")
-                    e.DisplayText = "Да";
-                else
-                    e.DisplayText = "Нет";
-            }
 		}
 
 		private void UnrecExpGridControl_Click(object sender, System.EventArgs e)
