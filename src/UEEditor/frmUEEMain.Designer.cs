@@ -20,6 +20,7 @@ namespace UEEditor
 		private System.Data.DataColumn JRegion;
 		private System.Data.DataColumn JPos;
 		private System.Data.DataColumn JNamePos;
+		private System.Data.DataColumn JPriceItemId;
 		private System.Data.DataColumn JJobDate;
 		private System.Data.DataColumn JBlockBy;
 		private System.Data.DataColumn UECode;
@@ -123,6 +124,7 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colJRegion;
 		private DevExpress.XtraGrid.Columns.GridColumn colJPos;
 		private DevExpress.XtraGrid.Columns.GridColumn colJNamePos;
+		private DevExpress.XtraGrid.Columns.GridColumn colJPriceItemId;
 		private DevExpress.XtraGrid.Columns.GridColumn colJJobDate;
 		private DevExpress.XtraGrid.Columns.GridColumn colJWholeSale;
 		private System.Windows.Forms.Label lbJobs50Text;
@@ -191,6 +193,7 @@ namespace UEEditor
 			this.JRegion = new System.Data.DataColumn();
 			this.JPos = new System.Data.DataColumn();
 			this.JNamePos = new System.Data.DataColumn();
+			this.JPriceItemId = new System.Data.DataColumn();
 			this.JJobDate = new System.Data.DataColumn();
 			this.JBlockBy = new System.Data.DataColumn();
 			this.JWholeSale = new System.Data.DataColumn();
@@ -201,7 +204,6 @@ namespace UEEditor
 			this.JParentName = new System.Data.DataColumn();
 			this.JExt = new System.Data.DataColumn();
 			this.JFirmCode = new System.Data.DataColumn();
-			this.JPriceItemId = new System.Data.DataColumn();
 			this.dtUnrecExp = new System.Data.DataTable();
 			this.EUColumn1 = new System.Data.DataColumn();
 			this.UEColumn2 = new System.Data.DataColumn();
@@ -280,6 +282,7 @@ namespace UEEditor
 			this.colJRegion = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJPos = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJNamePos = new DevExpress.XtraGrid.Columns.GridColumn();
+			this.colJPriceItemId = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJJobDate = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJBlockBy = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
@@ -489,6 +492,7 @@ namespace UEEditor
 			// dtJobs
 			// 
 			this.dtJobs.Columns.AddRange(new System.Data.DataColumn[] {
+			this.JPriceItemId,
             this.JPriceCode,
             this.JName,
             this.JRegion,
@@ -503,8 +507,7 @@ namespace UEEditor
             this.JRetranced,
             this.JParentName,
             this.JExt,
-            this.JFirmCode,
-            this.JPriceItemId});
+            this.JFirmCode});
 			this.dtJobs.TableName = "JobsGrid";
 			// 
 			// JPriceCode
@@ -535,6 +538,12 @@ namespace UEEditor
 			this.JNamePos.Caption = "Строго";
 			this.JNamePos.ColumnName = "JNamePos";
 			this.JNamePos.DataType = typeof(long);
+			// 
+			// JPriceItemId
+			// 
+			this.JPriceItemId.Caption = "PriceItemId";
+			this.JPriceItemId.ColumnName = "JPriceItemId";
+			this.JPriceItemId.DataType = typeof(long);
 			// 
 			// JJobDate
 			// 
@@ -1089,6 +1098,7 @@ namespace UEEditor
 			// 
 			this.gvJobs.Appearance.FocusedCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
 			this.gvJobs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+			this.colJPriceItemId,
             this.colJName,
             this.colJParentName,
             this.colJWholeSale,
@@ -1191,6 +1201,19 @@ namespace UEEditor
 			this.colJNamePos.Visible = true;
 			this.colJNamePos.VisibleIndex = 7;
 			this.colJNamePos.Width = 64;
+			// 
+			// colJPriceItemId
+			// 
+			this.colJPriceItemId.Caption = "priceItemId";
+			this.colJPriceItemId.FieldName = "JPriceItemId";
+			this.colJPriceItemId.Name = "colJPriceItemId";
+			this.colJPriceItemId.OptionsColumn.AllowEdit = false;
+			this.colJPriceItemId.OptionsColumn.AllowFocus = false;
+			this.colJPriceItemId.OptionsColumn.AllowIncrementalSearch = false;
+			this.colJPriceItemId.OptionsColumn.ReadOnly = true;
+			this.colJPriceItemId.Visible = true;
+			this.colJPriceItemId.VisibleIndex = 7;
+			this.colJPriceItemId.Width = 64;
 			// 
 			// colJJobDate
 			// 
@@ -1998,7 +2021,7 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colFirmCrName;
 		private System.Data.DataColumn colCatalogProductsCount;
 		private System.Windows.Forms.Button btnHideUnformFirmCr;
-		private System.Data.DataColumn JPriceItemId;
+		//private System.Data.DataColumn JPriceItemId;
 		private System.Data.DataColumn UEProductSynonymId;
 		private System.Data.DataColumn UEProducerSynonymId;
 		private System.Windows.Forms.Panel pFirmCr;

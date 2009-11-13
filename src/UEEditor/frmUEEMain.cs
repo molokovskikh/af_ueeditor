@@ -22,6 +22,7 @@ using System.ServiceModel;
 using GlobalMySql = MySql.Data.MySqlClient;
 using System.Net.Security;
 using DevExpress.XtraGrid.Views.Base;
+using System.IO;
 
 
 [assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
@@ -149,6 +150,26 @@ namespace UEEditor
 			_wcfChannelFactory.Close();
 		}
 
+		private string[] GetPriceItemIdsInQueue()
+		{
+			IRemotePriceProcessor priceProcessor = _wcfChannelFactory.CreateChannel();
+			try
+			{
+				var priceItemIds = priceProcessor.InboundFiles();
+				((ICommunicationObject)priceProcessor).Close();
+				return priceItemIds;
+			}
+			catch (FaultException faultEx)
+			{
+				if (((ICommunicationObject)priceProcessor).State != CommunicationState.Closed)
+					((ICommunicationObject)priceProcessor).Abort();
+				var errorMessage = String.Format("Не удалось получить список файлов в Inbound. {0}", 
+					faultEx.Message);
+				MessageBox.Show(errorMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			return new string[0];
+		}
+
 		private void JobsGridFill()
 		{
 			long CurrPriceItemId = -1;
@@ -169,9 +190,24 @@ namespace UEEditor
 						selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceItemId.ColumnName]);
 			}
 
+			var priceItemIdsInQueue = GetPriceItemIdsInQueue();
+			var listPriceItemIds = String.Empty;
+			if (priceItemIdsInQueue.Length > 0)
+			{
+				listPriceItemIds = Path.GetFileNameWithoutExtension(
+					Path.GetFileName(priceItemIdsInQueue[0]));
+				for (int i = 1; i < priceItemIdsInQueue.Length; i++)
+					listPriceItemIds += "," + Path.GetFileNameWithoutExtension(
+						Path.GetFileName(priceItemIdsInQueue[i]));
+			}
+			if (listPriceItemIds.Length > 0)
+				listPriceItemIds = String.Format(" and pim.Id not in ({0})", listPriceItemIds);
+
 			With.Slave((slaveConnection) =>
 			{
-				var commandHelper = new CommandHelper(new MySqlCommand(@"
+				var commandHelper =
+					new CommandHelper(
+						new MySqlCommand(@"
 SELECT
         PD.FirmCode as JFirmCode,
         cd.ShortName as FirmShortName,
@@ -216,7 +252,11 @@ FROM
   LEFT JOIN farm.blockedprice bp ON bp.PriceItemId = pim.Id
 WHERE
     pim.Id = statunrecexp.PriceItemId
-and pc.PriceItemId = pim.Id
+and pc.PriceItemId = pim.Id"
++
+listPriceItemIds
++
+@"
 and pc.PriceCode = pd.PriceCode
 and ((pd.CostType = 1) or (pc.BaseCost = 1))
 AND pd.agencyenabled   =1
