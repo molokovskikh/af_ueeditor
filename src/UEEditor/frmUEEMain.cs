@@ -152,9 +152,10 @@ namespace UEEditor
 
 		private string[] GetPriceItemIdsInQueue()
 		{
-			IRemotePriceProcessor priceProcessor = _wcfChannelFactory.CreateChannel();
+			IRemotePriceProcessor priceProcessor = null;
 			try
 			{
+				priceProcessor = _wcfChannelFactory.CreateChannel();
 				var priceItemIds = priceProcessor.InboundFiles();
 				((ICommunicationObject)priceProcessor).Close();
 				return priceItemIds;
@@ -163,10 +164,9 @@ namespace UEEditor
 			{
 				if (((ICommunicationObject)priceProcessor).State != CommunicationState.Closed)
 					((ICommunicationObject)priceProcessor).Abort();
-				var errorMessage = String.Format("Не удалось получить список файлов в Inbound. {0}", 
-					faultEx.Message);
-				MessageBox.Show(errorMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+			catch (Exception ex)
+			{}
 			return new string[0];
 		}
 
