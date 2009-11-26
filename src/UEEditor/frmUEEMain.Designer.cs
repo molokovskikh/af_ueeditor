@@ -124,7 +124,6 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colJRegion;
 		private DevExpress.XtraGrid.Columns.GridColumn colJPos;
 		private DevExpress.XtraGrid.Columns.GridColumn colJNamePos;
-		private DevExpress.XtraGrid.Columns.GridColumn colJPriceItemId;
 		private DevExpress.XtraGrid.Columns.GridColumn colJJobDate;
 		private DevExpress.XtraGrid.Columns.GridColumn colJWholeSale;
 		private System.Windows.Forms.Label lbJobs50Text;
@@ -282,7 +281,6 @@ namespace UEEditor
 			this.colJRegion = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJPos = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJNamePos = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colJPriceItemId = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJJobDate = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJBlockBy = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
@@ -1098,7 +1096,6 @@ namespace UEEditor
 			// 
 			this.gvJobs.Appearance.FocusedCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
 			this.gvJobs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-			this.colJPriceItemId,
             this.colJName,
             this.colJParentName,
             this.colJWholeSale,
@@ -1201,19 +1198,6 @@ namespace UEEditor
 			this.colJNamePos.Visible = true;
 			this.colJNamePos.VisibleIndex = 7;
 			this.colJNamePos.Width = 64;
-			// 
-			// colJPriceItemId
-			// 
-			this.colJPriceItemId.Caption = "priceItemId";
-			this.colJPriceItemId.FieldName = "JPriceItemId";
-			this.colJPriceItemId.Name = "colJPriceItemId";
-			this.colJPriceItemId.OptionsColumn.AllowEdit = false;
-			this.colJPriceItemId.OptionsColumn.AllowFocus = false;
-			this.colJPriceItemId.OptionsColumn.AllowIncrementalSearch = false;
-			this.colJPriceItemId.OptionsColumn.ReadOnly = true;
-			this.colJPriceItemId.Visible = true;
-			this.colJPriceItemId.VisibleIndex = 7;
-			this.colJPriceItemId.Width = 64;
 			// 
 			// colJJobDate
 			// 
