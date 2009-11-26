@@ -156,7 +156,7 @@ namespace UEEditor
 			try
 			{
 				priceProcessor = _wcfChannelFactory.CreateChannel();
-				var priceItemIds = priceProcessor.InboundFiles();
+				var priceItemIds = priceProcessor.InboundPriceItemIds();
 				((ICommunicationObject)priceProcessor).Close();
 				return priceItemIds;
 			}
@@ -194,11 +194,9 @@ namespace UEEditor
 			var listPriceItemIds = String.Empty;
 			if (priceItemIdsInQueue.Length > 0)
 			{
-				listPriceItemIds = Path.GetFileNameWithoutExtension(
-					Path.GetFileName(priceItemIdsInQueue[0]));
+				listPriceItemIds = priceItemIdsInQueue[0];
 				for (int i = 1; i < priceItemIdsInQueue.Length; i++)
-					listPriceItemIds += "," + Path.GetFileNameWithoutExtension(
-						Path.GetFileName(priceItemIdsInQueue[i]));
+					listPriceItemIds += "," + priceItemIdsInQueue[i];
 			}
 			if (listPriceItemIds.Length > 0)
 				listPriceItemIds = String.Format(" and pim.Id not in ({0})", listPriceItemIds);
