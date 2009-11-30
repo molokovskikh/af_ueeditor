@@ -64,8 +64,7 @@ namespace UEEditor
 
 		public const string unknownProducer = "производитель не известен";
 
-		// Фабрика для создания подключений к WCF сервису
-		private ChannelFactory<IRemotePriceProcessor> _wcfChannelFactory;
+		private PriceProcessorWcfHelper _priceProcessor;
 
 		public frmUEEMain()
 		{
@@ -74,16 +73,7 @@ namespace UEEditor
 			//
 			InitializeComponent();
 
-			// Получаем объект фабрики для создания соединений с WCF сервисом
-			NetTcpBinding binding = new NetTcpBinding();
-			binding.Security.Transport.ProtectionLevel = ProtectionLevel.EncryptAndSign;
-			binding.Security.Mode = SecurityMode.None;
-			binding.TransferMode = TransferMode.Streamed;
-			binding.MaxReceivedMessageSize = Int32.MaxValue;
-			// 0.5 Mb (максимальный размер сообщения в потоке данных)
-			binding.MaxBufferSize = 524288;
-			_wcfChannelFactory = new ChannelFactory<IRemotePriceProcessor>(binding,
-				Settings.Default.WCFServiceUrl);
+			_priceProcessor = new PriceProcessorWcfHelper(Settings.Default.WCFServiceUrl);
 		}
 
 		private void frmUEEMain_Load(object sender, EventArgs e)
@@ -147,25 +137,16 @@ namespace UEEditor
 			UnrecExpGridControl.MainView.SaveLayoutToRegistry(UEregKey);
 			ForbGridControl.MainView.SaveLayoutToRegistry(FregKey);
 			ZeroGridControl.MainView.SaveLayoutToRegistry(ZregKey);
-			_wcfChannelFactory.Close();
+			_priceProcessor.Dispose();
 		}
 
 		private string[] GetPriceItemIdsInQueue()
 		{
-			IRemotePriceProcessor priceProcessor = null;
 			try
 			{
-				priceProcessor = _wcfChannelFactory.CreateChannel();
-				var priceItemIds = priceProcessor.InboundPriceItemIds();
-				((ICommunicationObject)priceProcessor).Close();
-				return priceItemIds;
+				return _priceProcessor.InboundPriceItemIds();
 			}
-			catch (FaultException faultEx)
-			{
-				if (((ICommunicationObject)priceProcessor).State != CommunicationState.Closed)
-					((ICommunicationObject)priceProcessor).Abort();
-			}
-			catch (Exception ex)
+			catch (Exception)
 			{}
 			return new string[0];
 		}
@@ -2016,20 +1997,17 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 
 				DateTime now = DateTime.Now;
 
-				IRemotePriceProcessor clientProxy = _wcfChannelFactory.CreateChannel();
 				while (RetransedPriceList.Count > 0)
 				{
 					_logger.DebugFormat("Перепроводим : {0}", RetransedPriceList[0].PriceItemId);
 					try
 					{
-						clientProxy.RetransPrice(Convert.ToUInt32(RetransedPriceList[0].PriceItemId));
-						PricesRetrans(now, RetransedPriceList[0].PriceItemId, masterConnection);
-					}
-					catch (FaultException faultException)
-					{
-						_logger.DebugFormat(
-							"При перепроведении priceitem {0} возникла ошибка : {1}",
-							RetransedPriceList[0].PriceItemId, faultException);
+						if (!_priceProcessor.RetransPrice(Convert.ToUInt64(RetransedPriceList[0].PriceItemId)))
+						{
+							_logger.DebugFormat(
+								"При перепроведении priceitem {0} возникла ошибка : {1}",
+								RetransedPriceList[0].PriceItemId, _priceProcessor.LastErrorMessage);
+						}
 					}
 					catch (Exception retransException)
 					{
@@ -2044,15 +2022,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					RetransedPriceList.RemoveAt(0);
 				}
 				_logger.DebugFormat("Перепроведение пpайса завершено.");
-				try
-				{
-					((ICommunicationObject) clientProxy).Close();
-				}
-				catch (Exception)
-				{
-					if (((ICommunicationObject) clientProxy).State != CommunicationState.Closed)
-						((ICommunicationObject) clientProxy).Abort();
-				}
 			}
 			finally
 			{
