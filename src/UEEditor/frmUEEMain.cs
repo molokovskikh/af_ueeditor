@@ -1964,8 +1964,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 										new MySqlParameter("?LockUserName", Environment.UserName.ToLower()));
 					}
 
-					//DelCount = UpDateUnrecExp(tran);
-
 					tran.Commit();
 					res = true;
 
@@ -2017,7 +2015,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 							"При перепроведении priceitem {0} возникла ошибка : {1}",
 							RetransedPriceList[0].PriceItemId,
 							retransException);
-						Thread.Sleep(500);
+						Thread.Sleep(3000);
 						Mailer.SendMessageToService(retransException);
 					}
 					RetransedPriceList.RemoveAt(0);
@@ -2097,34 +2095,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 
 			if (drNew != null)
 			{
-
-				if (((int)drUpdated[UEStatus.ColumnName] == (int)FormMask.FullForm))
-				{
-					drNew.Delete();
-					DelCount++;
-				}
-				else
-				{
-					drNew["Status"] = drUpdated[UEStatus.ColumnName];
-					drNew["PriorProductId"] = drUpdated[UEPriorProductId.ColumnName];
-					drNew["PriorProducerId"] = drUpdated[UEPriorProducerId.ColumnName];
-					drNew["RowID"] = drUpdated["UERowID"];
-					if ((byte)drUpdated["UEHandMade"] == 0)
-					{
-						int r = (int)drUpdated[UEStatus.ColumnName] ^ (int)drUpdated["UEAlready"];
-						if ( (r > 0 && (r & (int)FormMask.MarkForb) == 0))
-						{
-							drNew["HandMade"] = 1;
-						}
-						else
-						{
-							drNew["HandMade"] = 0;
-						}
-					}
-					else
-						drNew["HandMade"] = 1;
-				}
-
+				dtUnrecExpUpdate.Rows.Remove(drNew);
+				DelCount++;
 			}
 
 			return DelCount;

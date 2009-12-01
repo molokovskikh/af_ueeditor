@@ -25,7 +25,16 @@ namespace UEEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Уведомление%20о%20нераспознанных%20наименованиях%20для%20{0}")]
+        [global::System.Configuration.DefaultSettingValueAttribute("tcp://localhost:889/RemotePriceProcessor")]
+        public string PriceProcessorURL {
+            get {
+                return ((string)(this["PriceProcessorURL"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Уведомление%20о%20нераспознанных%20наименованиях%20для%20{0}%20({1})")]
         public string AboutNamesSubject {
             get {
                 return ((string)(this["AboutNamesSubject"]));
@@ -38,15 +47,6 @@ namespace UEEditor.Properties {
         public string AboutFirmSubject {
             get {
                 return ((string)(this["AboutFirmSubject"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("tcp://localhost:889/RemotePriceProcessor")]
-        public string PriceProcessorURL {
-            get {
-                return ((string)(this["PriceProcessorURL"]));
             }
         }
         
@@ -100,10 +100,19 @@ http://www.analit.net")]
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("net.tcp://fms.adc.analit.net:900/RemotePriceProcessorService")]
+        [global::System.Configuration.DefaultSettingValueAttribute("net.tcp://prg4:900/RemotePriceProcessorService")]
         public string WCFServiceUrl {
             get {
                 return ((string)(this["WCFServiceUrl"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("d.dorofeev@analit.net")]
+        public string EmailService {
+            get {
+                return ((string)(this["EmailService"]));
             }
         }
     }

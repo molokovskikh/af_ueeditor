@@ -51,24 +51,6 @@ and catalog.Id = products.CatalogId"
 			);
 		}
 
-//        public static bool IsHiddenProducer(MySqlConnection connection, long producerId)
-//        {
-//            return Convert.ToBoolean(
-//                MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(
-//                    connection,
-//                    String.Format(@"
-//select
-//  Hidden
-//from
-//  farm.catalogfirmcr
-//where
-//    CodeFirmCr = {0}"
-//                    ,
-//                    producerId)
-//                    )
-//            );
-//        }
-
 		public static bool IsSynonymExists(MySqlConnection connection, long lockedSynonymPriceCode, string synonymName)
 		{
 			return

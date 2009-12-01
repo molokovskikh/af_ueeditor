@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using System.Windows.Forms;
 using log4net;
+using UEEditor.Properties;
 
 namespace UEEditor
 {
@@ -9,10 +10,11 @@ namespace UEEditor
 	{
 		private static string SmtpServerName = "mail.adc.analit.net";
 
-		private static string EmailService = "service@analit.net";
+		private static string EmailService = Settings.Default.EmailService;
 
 		public static void SendMessageToService(Exception exception)
 		{
+#if !DEBUG
 			try
 			{
 				var messageBody = String.Format("Компьютер: {0}\nОператор: {1}\nОшибка:{2}\n",
@@ -30,6 +32,7 @@ namespace UEEditor
 					@"Не удалось отправить разработчику уведомление об ошибке. Свяжитесь с разработчиком.",
 					"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+#endif
 		}
 	}
 }
