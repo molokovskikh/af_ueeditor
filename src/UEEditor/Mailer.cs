@@ -9,24 +9,25 @@ namespace UEEditor
 	{
 		private static string SmtpServerName = "mail.adc.analit.net";
 
-		public static void SendLetterWithException(Exception exception)
+		private static string EmailService = "service@analit.net";
+
+		public static void SendMessageToService(Exception exception)
 		{
 			try
 			{
-				string messageBody = String.Format("Оператор: {0}\nОшибка:{1}\n",
-					Environment.UserName, exception);
+				var messageBody = String.Format("Компьютер: {0}\nОператор: {1}\nОшибка:{2}\n",
+					Environment.MachineName, Environment.UserName, exception);
 				//Формируем сообщение
-				MailMessage m = new MailMessage(
-					"service@analit.net", "d.dorofeev@analit.net", "Ошибка в UEditor", messageBody);
-				SmtpClient sm = new SmtpClient(SmtpServerName);
+				var m = new MailMessage(EmailService, EmailService, "Ошибка в UEEditor", messageBody);
+				var sm = new SmtpClient(SmtpServerName);
 				sm.Send(m);
 			}
 			catch (Exception ex)
 			{
-				ILog _logger = LogManager.GetLogger(typeof(Mailer)); 
+				var _logger = LogManager.GetLogger(typeof(Mailer)); 
 				_logger.ErrorFormat("Ошибка при отправке уведомления об ошибке в UEEditor:\n{0}", ex);
 				MessageBox.Show(
-					@"Не удалось отправить уведомление об изменениях. Сообщение было отправлено разработчику.",
+					@"Не удалось отправить разработчику уведомление об ошибке. Свяжитесь с разработчиком.",
 					"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}

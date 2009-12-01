@@ -59,7 +59,7 @@ namespace UEEditor
 		public long LockedPriceCode = -1;
 		public long LockedPriceItemId = -1;
 		public long LockedSynonym = -1;
-		public frmProgress f = null;
+		public frmProgress formProgress = null;
 		public string producerSeachText;
 
 		public const string unknownProducer = "производитель не известен";
@@ -770,7 +770,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 					}
 					catch (Exception ex)
 					{
-						Mailer.SendLetterWithException(ex);
+						Mailer.SendMessageToService(ex);
 						MessageBox.Show("Невозможно удалить выбранные задания. Информация об ошибке отправлена разработчику.",
 							"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);	
 					}
@@ -1571,13 +1571,13 @@ WHERE PriceItemId= ?PriceItemId",
 			{
 				case DialogResult.Yes:
 				{
-					f = new frmProgress();
+					formProgress = new frmProgress();
 
 					var t = new Thread(ThreadMethod);
 					t.Start();
 
-					var dr = f.ShowDialog();
-					f = null;
+					var dr = formProgress.ShowDialog();
+					formProgress = null;
 
 					if (dr == DialogResult.Cancel)
 						t.Abort();
@@ -1624,14 +1624,14 @@ WHERE PriceItemId= ?PriceItemId",
 					mainConnection.Open();
 					ApplyChanges(mainConnection);
 				}
-				f.Stop = true;
+				formProgress.Stop = true;
 			}
 			catch(ThreadAbortException)
 			{}
 			catch(Exception e)
 			{
-				if (f != null)
-					f.Error = String.Format("Поймали исключение : {0}", e.ToString());
+				if (formProgress != null)
+					formProgress.Error = String.Format("Поймали исключение : {0}", e.ToString());
 			}
 		}
 
@@ -1653,7 +1653,7 @@ WHERE PriceItemId= ?PriceItemId",
 			bool res = false;
 			//Имеются ли родительские синонимы
 			bool HasParentSynonym = LockedSynonym != LockedPriceCode;
-			f.Status = "Подготовка таблиц...";
+			formProgress.Status = "Подготовка таблиц...";
 
 			//Список прайсов, которые нужно перепровести
 			List<RetransedPrice> RetransedPriceList = new List<RetransedPrice>();
@@ -1703,7 +1703,7 @@ and pf.Id = fr.PriceFormatId",
 			//Кол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводится
 			int DelCount = 0;
 			
-			f.ApplyProgress = 1;
+			formProgress.ApplyProgress = 1;
 			//Заполнение таблиц перед вставкой
 
 			//Заполнили таблицу нераспознанных наименований для обновления
@@ -1737,7 +1737,7 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			daSynonym.InsertCommand.Parameters.Add("?ProductId", MySqlDbType.UInt64, 0, "ProductId");
 			daSynonym.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 			
-			f.ApplyProgress += 1;
+			formProgress.ApplyProgress += 1;
 			//Заполнили таблицу синонимов производителей
 			MySqlDataAdapter daSynonymFirmCr = new MySqlDataAdapter("select sfc.* from farm.SynonymFirmCr sfc, farm.AutomaticProducerSynonyms aps where sfc.PriceCode = ?PriceCode and aps.ProducerSynonymId = sfc.SynonymFirmCrCode", masterConnection);
 			//MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
@@ -1775,9 +1775,9 @@ delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFir
 			daSynonymFirmCr.UpdateCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 			daSynonymFirmCr.UpdateCommand.Parameters.Add("?SynonymFirmCrCode", MySqlDbType.Int64, 0, "SynonymFirmCrCode");
 
-			f.ApplyProgress += 1;
+			formProgress.ApplyProgress += 1;
 
-			f.ApplyProgress += 1;
+			formProgress.ApplyProgress += 1;
 			//Заполнили таблицу запрещённых выражений
 			MySqlDataAdapter daForbidden = new MySqlDataAdapter("select * from farm.Forbidden limit 0", masterConnection);
 			//MySqlCommandBuilder cbForbidden = new MySqlCommandBuilder(daForbidden);
@@ -1796,7 +1796,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 			daForbidden.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daForbidden.InsertCommand.Parameters.Add("?Forbidden", MySqlDbType.VarString, 0, "Forbidden");
 
-			f.ApplyProgress = 10;
+			formProgress.ApplyProgress = 10;
 
 			for(int i = 0; i < gvUnrecExp.RowCount; i++)
 			{
@@ -1891,10 +1891,10 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 			if (changes != null)
 				_statistics.SynonymFirmCrCount += changes.Rows.Count;
 
-			f.Status = "Применение изменений в базу данных...";
+			formProgress.Status = "Применение изменений в базу данных...";
 			do
 			{
-				f.ApplyProgress = 30;
+				formProgress.ApplyProgress = 30;
 				MySqlTransaction tran = null;
 				try
 				{
@@ -1912,7 +1912,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					DataTable dtSynonymCopy = dtSynonym.Copy();
 					daSynonym.Update(dtSynonymCopy);
 
-					f.ApplyProgress += 10;
+					formProgress.ApplyProgress += 10;
 
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Transaction = tran;
@@ -1936,14 +1936,14 @@ where
     pricescosts.PriceCode = ?PriceCode
 and priceitems.Id = pricescosts.PriceItemId",
 								new MySqlParameter("?PriceCode", LockedSynonym)); 
-					f.ApplyProgress += 10;
+					formProgress.ApplyProgress += 10;
 					
 					//Заполнили таблицу логов для запрещённых выражений
 					daForbidden.SelectCommand.Transaction = tran;
 					DataTable dtForbiddenCopy = dtForbidden.Copy();
 					daForbidden.Update(dtForbiddenCopy);
 
-					f.ApplyProgress += 10;
+					formProgress.ApplyProgress += 10;
 
 					//Обновление таблицы нераспознанных выражений
 					daUnrecUpdate.SelectCommand.Transaction = tran;
@@ -1969,31 +1969,31 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					tran.Commit();
 					res = true;
 
-					f.ApplyProgress +=10;
+					formProgress.ApplyProgress +=10;
 				}
 				catch(MySqlException ex)
 				{
 					tran.Rollback();
-					f.Error = String.Format("При обновлении синонимов произошла ошибка : {0}\r\n", ex);
-					f.ApplyProgress = 50;
+					formProgress.Error = String.Format("При обновлении синонимов произошла ошибка : {0}\r\n", ex);
+					formProgress.ApplyProgress = 50;
 					Thread.Sleep(500);
 				}
 			}
 			while(!res);
 			
-			f.ApplyProgress = 80;
+			formProgress.ApplyProgress = 80;
 
-			f.Status = String.Empty;
-			f.Error = String.Empty;
+			formProgress.Status = String.Empty;
+			formProgress.Error = String.Empty;
 
 			log4net.NDC.Push("ApplyChanges." + LockedPriceCode);
 			try
 			{
 				_logger.DebugFormat("res : {0}", res);
 
-				f.Status = "Перепроведение пpайса...";
+				formProgress.Status = "Перепроведение пpайса...";
 				_logger.DebugFormat("Перепроведение пpайса...");
-				f.ApplyProgress = 80;
+				formProgress.ApplyProgress = 80;
 
 				DateTime now = DateTime.Now;
 
@@ -2011,13 +2011,14 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					}
 					catch (Exception retransException)
 					{
-						if (f != null)
-							f.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
+						if (formProgress != null)
+							formProgress.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
 						_logger.ErrorFormat(
 							"При перепроведении priceitem {0} возникла ошибка : {1}",
 							RetransedPriceList[0].PriceItemId,
 							retransException);
 						Thread.Sleep(500);
+						Mailer.SendMessageToService(retransException);
 					}
 					RetransedPriceList.RemoveAt(0);
 				}
@@ -2027,7 +2028,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			{
 				log4net.NDC.Pop();
 			}
-			f.ApplyProgress = 100;
+			formProgress.ApplyProgress = 100;
 		}
 
 		private void PricesRetrans(DateTime now, long retransPriceItemId, MySqlConnection masterConnection)
