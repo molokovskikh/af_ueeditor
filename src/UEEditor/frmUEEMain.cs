@@ -1973,6 +1973,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 				catch(MySqlException ex)
 				{
 					tran.Rollback();
+					Mailer.SendMessageToService(ex);
 					formProgress.Error = String.Format("При обновлении синонимов произошла ошибка : {0}\r\n", ex);
 					formProgress.ApplyProgress = 50;
 					Thread.Sleep(500);

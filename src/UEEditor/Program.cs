@@ -38,8 +38,8 @@ namespace UEEditor
 				_logger = LogManager.GetLogger(typeof(Program));
 			else
 				_logger = LogManager.GetLogger(sender.GetType());
-
 			_logger.Error(exception);
+			Mailer.SendMessageToService(exception);
 		}
 
 		// Handles the exception event.
