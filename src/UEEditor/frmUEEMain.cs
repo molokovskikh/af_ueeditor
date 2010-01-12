@@ -1632,6 +1632,7 @@ WHERE PriceItemId= ?PriceItemId",
 			{
 				if (formProgress != null)
 					formProgress.Error = String.Format("Поймали исключение : {0}", e.ToString());
+				Mailer.SendMessageToService(e);
 			}
 		}
 
