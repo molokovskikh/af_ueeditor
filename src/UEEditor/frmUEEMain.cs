@@ -1688,7 +1688,8 @@ and pf.Id = fr.PriceFormatId",
 			if (dsInerPrices.Tables[0].Rows.Count > 0)
 			{				
 				foreach(DataRow drInerPrice in dsInerPrices.Tables[0].Rows)
-					if ((LockedPriceItemId != Convert.ToInt64(drInerPrice["PriceItemId"])) && !RetransedPriceList.Exists(delegate(RetransedPrice value) { return value.PriceItemId == Convert.ToInt64(drInerPrice["PriceItemId"]); }))
+					if ((LockedPriceItemId != Convert.ToInt64(drInerPrice["PriceItemId"])) && 
+						!RetransedPriceList.Exists(delegate(RetransedPrice value) { return value.PriceItemId == Convert.ToInt64(drInerPrice["PriceItemId"]); }))
 						RetransedPriceList.Add(
 							new RetransedPrice(
 								Convert.ToInt64(drInerPrice["PriceItemId"]),
@@ -1873,13 +1874,13 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 							{ 
 								//Если у нас есть созданный синоним и мы его сопоставили с каким-то ProducerId, то его надо обновить в базе
 								//и удалить из распознанных PriceProcessor'ом
-								DataRow drSynonymFirm = dtSynonymFirmCr.Select("SynonymFirmCrCode = " + dr[UEProducerSynonymId.ColumnName])[0];
-								if (drSynonymFirm != null)
+								var rowsSynonymFirm = dtSynonymFirmCr.Select("SynonymFirmCrCode = " + dr[UEProducerSynonymId.ColumnName]);
+								if (rowsSynonymFirm.Length > 0)
 								{
-									drSynonymFirm["PriceCode"] = LockedSynonym;
-									drSynonymFirm["CodeFirmCr"] = dr[UEPriorProducerId];
+									rowsSynonymFirm[0]["PriceCode"] = LockedSynonym;
+									rowsSynonymFirm[0]["CodeFirmCr"] = dr[UEPriorProducerId];
 									if (LockedSynonym != LockedPriceCode)
-										drSynonymFirm["ChildPriceCode"] = LockedPriceCode;
+										rowsSynonymFirm[0]["ChildPriceCode"] = LockedPriceCode;
 								}
 							}
 						}
