@@ -14,13 +14,18 @@ namespace UEEditor
 
 		public static void SendMessageToService(Exception exception)
 		{
-#if !DEBUG
+
 			try
 			{
-				var messageBody = String.Format("Компьютер: {0}\nОператор: {1}\nОшибка:{2}\n",
-					Environment.MachineName, Environment.UserName, exception);
+				var messageBody = String.Format("Версия: {0}\nКомпьютер: {1}\nОператор: {2}\nОшибка:{3}\n",
+					Application.ProductVersion, Environment.MachineName, Environment.UserName, exception.StackTrace);
 				//Формируем сообщение
-				var m = new MailMessage(EmailService, EmailService, "Ошибка в UEEditor", messageBody);
+				var from = EmailService;
+				var to = EmailService;
+#if DEBUG
+				to = "KvasovTest@analit.net";
+#endif
+				var m = new MailMessage(from, to, "Ошибка в UEEditor", messageBody);
 				var sm = new SmtpClient(SmtpServerName);
 				sm.Send(m);
 			}
@@ -32,7 +37,6 @@ namespace UEEditor
 					@"Не удалось отправить разработчику уведомление об ошибке. Свяжитесь с разработчиком.",
 					"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-#endif
 		}
 	}
 }

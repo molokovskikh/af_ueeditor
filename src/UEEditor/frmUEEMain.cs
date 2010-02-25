@@ -1965,7 +1965,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 										new MySqlParameter("?DeletePriceItem", rp.PriceItemId),
 										new MySqlParameter("?LockUserName", Environment.UserName.ToLower()));
 					}
-
 					tran.Commit();
 					res = true;
 
@@ -2797,7 +2796,7 @@ and c.Type = ?ContactType;",
 			if (gvUnrecExp.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow dr = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
-				string producerSynonym = (string)dr[UEFirmCr.ColumnName];
+				string producerSynonym = Convert.IsDBNull(dr[UEFirmCr.ColumnName]) ? String.Empty : dr[UEFirmCr.ColumnName].ToString();
 				ProducerSearchTimer.Enabled = false;
 				if (!String.IsNullOrEmpty(tbProducerSearch.Text))
 				{
