@@ -18,7 +18,7 @@ namespace UEEditor
 			try
 			{
 				var messageBody = String.Format("Версия: {0}\nКомпьютер: {1}\nОператор: {2}\nОшибка:{3}\n",
-					Application.ProductVersion, Environment.MachineName, Environment.UserName, exception.StackTrace);
+					Application.ProductVersion, Environment.MachineName, Environment.UserName, exception.ToString());
 				//Формируем сообщение
 				var from = EmailService;
 				var to = EmailService;

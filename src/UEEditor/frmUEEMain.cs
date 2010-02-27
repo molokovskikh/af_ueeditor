@@ -1946,7 +1946,6 @@ and priceitems.Id = pricescosts.PriceItemId",
 					daForbidden.Update(dtForbiddenCopy);
 
 					formProgress.ApplyProgress += 10;
-
 					//ќбновление таблицы нераспознанных выражений
 					daUnrecUpdate.SelectCommand.Transaction = tran;
 					DataTable dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
