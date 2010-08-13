@@ -18,11 +18,8 @@ using DevExpress.Utils.Paint;
 using System.Configuration;
 using UEEditor.Helpers;
 using Common.MySql;
-using System.ServiceModel;
 using GlobalMySql = MySql.Data.MySqlClient;
-using System.Net.Security;
 using DevExpress.XtraGrid.Views.Base;
-using System.IO;
 
 
 [assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
@@ -1443,7 +1440,6 @@ WHERE PriceItemId= ?PriceItemId",
 					}
 				}
 			}
-			//			MessageBox.Show("Проведено сопоставление по производителю");
 			GoToNextUnrecExp(CurrentFocusHandle);
 		}
 
@@ -1636,17 +1632,6 @@ WHERE PriceItemId= ?PriceItemId",
 			}
 		}
 
-		delegate bool ShowRetransPriceDelegate();
-
-		private bool ShowRetransPrice()
-		{
-			return (MessageBox.Show(_statistics.Print(),
-				"Вопрос",
-				MessageBoxButtons.YesNo,
-				MessageBoxIcon.Question, 
-				MessageBoxDefaultButton.Button2) == DialogResult.Yes);
-		}
-
 		private void ApplyChanges(MySqlConnection masterConnection)
 		{
 			ILog _logger = LogManager.GetLogger(this.GetType());
@@ -1718,7 +1703,6 @@ and pf.Id = fr.PriceFormatId",
 
 			//Заполнили таблицу синонимов наименований
 			MySqlDataAdapter daSynonym = new MySqlDataAdapter("select * from farm.Synonym where PriceCode = ?PriceCode limit 0", masterConnection);
-			//MySqlCommandBuilder cbSynonym = new MySqlCommandBuilder(daSynonym);
 			daSynonym.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 			DataTable dtSynonym = new DataTable();
 			daSynonym.Fill(dtSynonym);
@@ -1742,7 +1726,6 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			formProgress.ApplyProgress += 1;
 			//Заполнили таблицу синонимов производителей
 			MySqlDataAdapter daSynonymFirmCr = new MySqlDataAdapter("select sfc.* from farm.SynonymFirmCr sfc, farm.AutomaticProducerSynonyms aps where sfc.PriceCode = ?PriceCode and aps.ProducerSynonymId = sfc.SynonymFirmCrCode", masterConnection);
-			//MySqlCommandBuilder cbSynonymFirmCr = new MySqlCommandBuilder(daSynonymFirmCr);
 			daSynonymFirmCr.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 			DataTable dtSynonymFirmCr = new DataTable();
 			daSynonymFirmCr.Fill(dtSynonymFirmCr);
@@ -2028,31 +2011,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 				log4net.NDC.Pop();
 			}
 			formProgress.ApplyProgress = 100;
-		}
-
-		private void PricesRetrans(DateTime now, long retransPriceItemId, MySqlConnection masterConnection)
-		{
-			MySqlCommand mcInsert = new MySqlCommand();
-			mcInsert.Connection = masterConnection;
-			mcInsert.Parameters.Clear();
-			mcInsert.Parameters.AddWithValue("?RetransPriceItemId", retransPriceItemId);
-			mcInsert.Parameters.AddWithValue("?UserName", Environment.UserName.ToLower());
-			mcInsert.Parameters.AddWithValue("?UserHost", Environment.MachineName);
-			mcInsert.Parameters.AddWithValue("?Now", now);
-
-			mcInsert.CommandText =
-					@"insert into logs.pricesretrans 
-						(LogTime, 
-						OperatorName,
-						OperatorHost,
-						PriceItemId) 
-					values 
-						(?Now,
-						?UserName,
-						?UserHost,
-						?RetransPriceItemId)";
-
-			mcInsert.ExecuteNonQuery();
 		}
 
 		private int UpDateUnrecExp(DataTable dtUnrecExpUpdate, DataRow drUpdated, MySqlConnection masterConnection)
@@ -2345,25 +2303,6 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					e.Handled = true;
 				}
 			}		
-		}
-
-		private string ConvertName(string tmp)
-		{
-			string res = String.Empty;
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			for (int i=0; i<tmp.Length; i++)
-			{
-				if (Char.IsLetterOrDigit(tmp[i]) )
-				{
-					sb.Append(tmp[i]);
-				}
-				else
-				{
-					sb.Append("%");
-					sb.Append( Convert.ToInt32(tmp[i]).ToString("X2") );
-				}
-			}
-			return sb.ToString();
 		}
 
 		private void miSendAboutNames_Click(object sender, System.EventArgs e)

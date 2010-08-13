@@ -1,18 +1,18 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UEEditor", "UEEditor.csproj", "{EECE9ED1-E92A-40D0-8D1F-15B902DB6D63}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UEEditor.Tests", "..\UEEditor.Tests\UEEditor.Tests.csproj", "{F040F40D-2302-4DDC-8F0E-1EC1CCB2826F}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{A3F0A06B-C70D-4B70-8AC4-1EB9D2A75393}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tools", "..\Common.Tools\Common.Tools\Common.Tools.csproj", "{72AFCFE8-C9E9-45FA-9698-BEE896A517A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UEEditor", "UEEditor\UEEditor.csproj", "{EECE9ED1-E92A-40D0-8D1F-15B902DB6D63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tools.Tests", "..\Common.Tools\Common.Tools.Test\Common.Tools.Tests.csproj", "{A2C4864F-8976-4C5B-A2BF-60AE31749BB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UEEditor.Tests", "UEEditor.Tests\UEEditor.Tests.csproj", "{F040F40D-2302-4DDC-8F0E-1EC1CCB2826F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.MySql", "..\Common.MySql\Common.MySql\Common.MySql.csproj", "{8A680813-C83B-497A-85E6-E8F07B7D7650}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tools", "Common.Tools\Common.Tools\Common.Tools.csproj", "{72AFCFE8-C9E9-45FA-9698-BEE896A517A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.MySql.Tests", "..\Common.MySql\Common.MySql.Tests\Common.MySql.Tests.csproj", "{98EFE255-60D6-4C1B-95A6-49779D21E94E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tools.Tests", "Common.Tools\Common.Tools.Test\Common.Tools.Tests.csproj", "{A2C4864F-8976-4C5B-A2BF-60AE31749BB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.MySql", "Common.MySql\Common.MySql\Common.MySql.csproj", "{8A680813-C83B-497A-85E6-E8F07B7D7650}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.MySql.Tests", "Common.MySql\Common.MySql.Tests\Common.MySql.Tests.csproj", "{98EFE255-60D6-4C1B-95A6-49779D21E94E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
