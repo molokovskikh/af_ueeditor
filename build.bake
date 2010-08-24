@@ -2,10 +2,10 @@
 import file from Migration.bake
 
 Global(
-	project : "UEEditor",
-	humanReadableName : "Редактор нераспознанных выражений"
+	Project : "UEEditor",
+	HumanReadableName : "Редактор нераспознанных выражений"
 )
 
 Task @default, [@build]
 
-Task @deploy, [@Migrate, @publish]
+Task @deploy, [@build, @Production, @Migrate, @publish]
