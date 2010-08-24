@@ -27,14 +27,14 @@ namespace UEEditor
 				if (synonymRow.Any(s => Equals(synonym.ProducerId, s["CodeFirmCr"])))
 					return;
 				if (synonymRow.Length == 0)
-					CreateSynonym(dtSynonymFirmCr, synonym.Name, synonym.ProducerId, stat, priceId, childPriceId);
+					CreateSynonym(dtSynonymFirmCr, synonym, stat, priceId, childPriceId);
 				else
 					UpdateSynonym(synonymRow[0], synonym.ProducerId, priceId, childPriceId);
 
 				if (synonymGroup.Count() > 1)
 				{
 					foreach (var s in synonymGroup.Skip(1))
-						CreateSynonym(dtSynonymFirmCr, s.Name, s.ProducerId, stat, priceId, childPriceId);
+						CreateSynonym(dtSynonymFirmCr, s, stat, priceId, childPriceId);
 				}
 			}
 
@@ -43,7 +43,7 @@ namespace UEEditor
 				var exclude = excludeGroups.First();
 				var synonymRow = dtSynonymFirmCr.Select(String.Format("Synonym = '{0}' and CodeFirmCr is null", exclude.Name.Replace("'", "''")));
 				if (synonymRow.Length == 0)
-					CreateSynonym(dtSynonymFirmCr, exclude.Name, 0, stat, priceId, childPriceId);
+					CreateSynonym(dtSynonymFirmCr, exclude, stat, priceId, childPriceId);
 				else
 					UpdateSynonym(synonymRow[0], 0, priceId, childPriceId);
 				CreateExclude(exclude, excludes);
@@ -73,14 +73,16 @@ namespace UEEditor
 				synonym["ChildPriceCode"] = childPriceId;
 		}
 
-		public static void CreateSynonym(DataTable synonyms, string name, uint producerId, Statistics stat, uint priceId, uint childPriceId)
+		public static void CreateSynonym(DataTable synonyms, ProducerSynonym synonym, Statistics stat, uint priceId, uint childPriceId)
 		{
-			var synonym = synonyms.NewRow();
-			UpdateSynonym(synonym, producerId, priceId, childPriceId);
-			synonym["Synonym"] = name;
+			if (synonym.Loaded)
+				return;
+			var synonymRow = synonyms.NewRow();
+			UpdateSynonym(synonymRow, synonym.ProducerId, priceId, childPriceId);
+			synonymRow["Synonym"] = synonym.Name;
 			try
 			{
-				synonyms.Rows.Add(synonym);
+				synonyms.Rows.Add(synonymRow);
 				stat.SynonymFirmCrCount++;
 			}
 			catch (ConstraintException)

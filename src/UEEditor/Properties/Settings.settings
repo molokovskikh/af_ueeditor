@@ -51,7 +51,7 @@ http://www.analit.net</Value>
       <Value Profile="(Default)">net.tcp://prg4:900/RemotePriceProcessorService</Value>
     </Setting>
     <Setting Name="EmailService" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">d.dorofeev@analit.net</Value>
+      <Value Profile="(Default)">KvasovTest@analit.net</Value>
     </Setting>
   </Settings>
 </SettingsFile>

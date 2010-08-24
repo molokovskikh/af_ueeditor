@@ -19,6 +19,7 @@ namespace UEEditor
 
 		public Exclude(IDataRecord record) : this()
 		{
+			Loaded = true;
 			Id = Convert.ToUInt32(record["SynonymFirmCrCode"]);
 			Name = record["Synonym"].ToString();
 			CatalogId = Convert.ToUInt32(record["CatalogId"]);
@@ -30,6 +31,7 @@ namespace UEEditor
 		public uint Id;
 		public uint ProducerId;
 		public string Name;
+		public bool Loaded;
 
 		public ProducerSynonymState State;
 
@@ -90,6 +92,7 @@ namespace UEEditor
 			if (record["CatalogId"] is DBNull && !(record["ProducerId"] is DBNull))
 			{
 				return new ProducerSynonym {
+					Loaded = true,
 					Id = Convert.ToUInt32(record["SynonymFirmCrCode"]),
 					ProducerId = Convert.ToUInt32(record["ProducerId"]),
 					Name = record["Synonym"].ToString()
@@ -212,7 +215,7 @@ group by e.CatalogId, sfc.Synonym", c);
 				command.Parameters.AddWithValue("?Synonym", synonym);
 
 				using(var reader = command.ExecuteReader())
-					synonyms = synonyms.Concat(reader.Cast<DbDataRecord>().Select(r => (ProducerSynonym)new Exclude(r))).ToList();
+					synonyms = synonyms.Concat(reader.Cast<DbDataRecord>().Select(ProducerSynonym.CreateSynonym)).ToList();
 
 				return synonyms;
 			});

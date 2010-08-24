@@ -460,45 +460,7 @@ order by CName", slaveConnection));
 				drUnknown[CIsAssortment.ColumnName] = true;
 				dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
 
-
-				var BlockedCommandHelper = new CommandHelper(new MySqlCommand(@"
-SELECT
-  bps.Id,
-  p.Id as ProducerId,
-  p.Name
-FROM
-  catalogs.Producers P,
-  farm.BlockedProducerSynonyms bps
-where (bps.ProducerId = p.Id)
-and (bps.PriceCode = ?LockedSynonym)
-and (bps.Synonym = ?Name) 
-union
-SELECT
-  bps.Id,
-  p.Id As ProducerId,
-  pe.Name
-FROM
-  catalogs.Producers P,
-  catalogs.ProducerEquivalents PE,
-  farm.BlockedProducerSynonyms bps
-where
-    (pe.ProducerId = p.Id)
-and (bps.ProducerId = p.Id)
-and (bps.PriceCode = ?LockedSynonym) 
-and (bps.Synonym = ?Name)
-order by Name"
-					,
-					slaveConnection));
-				BlockedCommandHelper.AddParameter("?LockedSynonym", LockedSynonym);
-				BlockedCommandHelper.AddParameter("?Name", name);
-
-				dtBlockedProducers.Clear();
-				BlockedCommandHelper.Fill(dsMain, dtBlockedProducers.TableName);
 			});
-
-			gcBlockedProducers.Visible = dtBlockedProducers.Rows.Count > 0;
-			if (gcBlockedProducers.Visible)
-				gcBlockedProducers.Width = pFirmCr.Width / 3;
 		}
 
 		private void ProducersGridFillByFilter(string name, string filter, long? productId)
@@ -1447,7 +1409,6 @@ WHERE PriceItemId= ?PriceItemId",
 					LockedPriceItemId = Convert.ToInt64(dr[JPriceItemId.ColumnName]);
 					if (LockedInBlockedPrice(LockedPriceItemId, Environment.UserName))
 					{
-						ProducerSynonymResolver.Init((uint) Convert.ToInt64(dr[JPriceCode.ColumnName]));
 						LockedPriceCode = Convert.ToInt64(dr[JPriceCode.ColumnName]);
 						PriceFMT = dr[JPriceFMT].ToString();
 						FileExt = dr[JExt].ToString();
@@ -1455,6 +1416,7 @@ WHERE PriceItemId= ?PriceItemId",
 							LockedSynonym = LockedPriceCode;
 						else
 							LockedSynonym = Convert.ToInt64(dr[JParentSynonym]);
+						ProducerSynonymResolver.Init((uint) LockedSynonym);
 						grpBoxCatalog2.Text = " аталог";
 
 						tcMain.TabPages.Add(tpUnrecExp);
@@ -1772,106 +1734,87 @@ where pricecode = ?PriceCode", masterConnection);
 				_statistics.SynonymFirmCrCount += changes.Rows.Count;
 
 			formProgress.Status = "ѕрименение изменений в базу данных...";
-			do
-			{
-				formProgress.ApplyProgress = 30;
-				MySqlTransaction tran = null;
-				try
-				{
-					tran = masterConnection.BeginTransaction(IsolationLevel.RepeatableRead);
+			With.DeadlockWraper(c => {
+				var helper = new Common.MySql.MySqlHelper(masterConnection, null);
+				var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
+				commandHelper.AddParameter("?Host", Environment.MachineName);
+				commandHelper.AddParameter("?UserName", Environment.UserName.ToLower());
+				commandHelper.Execute();
 
-					//«аполнили переменные дл€ логировани€ триггеров
-					var helper = new Common.MySql.MySqlHelper(masterConnection, tran);
-					var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
-					commandHelper.AddParameter("?Host", Environment.MachineName);
-					commandHelper.AddParameter("?UserName", Environment.UserName.ToLower());
-					commandHelper.Execute();
+				//«аполнили таблицу логов дл€ синонимов наименований
+				daSynonym.SelectCommand.Connection = c;
+				var dtSynonymCopy = dtSynonym.Copy();
+				daSynonym.Update(dtSynonymCopy);
 
-					//«аполнили таблицу логов дл€ синонимов наименований
-					daSynonym.SelectCommand.Transaction = tran;
-					DataTable dtSynonymCopy = dtSynonym.Copy();
-					daSynonym.Update(dtSynonymCopy);
+				formProgress.ApplyProgress += 10;
 
-					formProgress.ApplyProgress += 10;
-
-					var insertExclude = new MySqlCommand(@"
+				var insertExclude = new MySqlCommand(@"
 insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow) 
 value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow);", masterConnection);
-					insertExclude.Parameters.AddWithValue("?PriceCode", LockedSynonym);
-					insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
-					insertExclude.Parameters.Add("?DoNotShow", MySqlDbType.Byte);
-					insertExclude.Parameters.Add("?CatalogId", MySqlDbType.UInt32);
+				insertExclude.Parameters.AddWithValue("?PriceCode", LockedSynonym);
+				insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
+				insertExclude.Parameters.Add("?DoNotShow", MySqlDbType.Byte);
+				insertExclude.Parameters.Add("?CatalogId", MySqlDbType.UInt32);
 
-					foreach (var exclude in excludes.Where(e => e.Id == 0))
-					{
-						insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
-						insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
-						insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
-					}
+				foreach (var exclude in excludes.Where(e => e.Id == 0))
+				{
+					insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
+					insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
+					insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
+				}
 
-					//«аполнили таблицу логов дл€ синонимов производителей
-					daSynonymFirmCr.SelectCommand.Transaction = tran;
-					var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
-					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
-					{
-						daSynonymFirmCr.InsertCommand.CommandText = insertSynonymProducerEtalonSQL;
-						daSynonymFirmCr.UpdateCommand.CommandText = updateSynonymProducerEtalonSQL;
+				//«аполнили таблицу логов дл€ синонимов производителей
+				daSynonymFirmCr.SelectCommand.Connection = c;
+				var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
+				foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
+				{
+					daSynonymFirmCr.InsertCommand.CommandText = insertSynonymProducerEtalonSQL;
+					daSynonymFirmCr.UpdateCommand.CommandText = updateSynonymProducerEtalonSQL;
 
-						//обновл€ем по одному синониму производител€, т.к. может быть добавление в исключение
-						daSynonymFirmCr.Update(new[] { drInsertProducerSynonym });
-					}
+					//обновл€ем по одному синониму производител€, т.к. может быть добавление в исключение
+					daSynonymFirmCr.Update(new[] { drInsertProducerSynonym });
+				}
 
-					GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection, @"
+				GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection, @"
 update 
-  usersettings.pricescosts,
-  usersettings.priceitems
+usersettings.pricescosts,
+usersettings.priceitems
 set
-  priceitems.LastSynonymsCreation = now()
+priceitems.LastSynonymsCreation = now()
 where
-    pricescosts.PriceCode = ?PriceCode
+pricescosts.PriceCode = ?PriceCode
 and priceitems.Id = pricescosts.PriceItemId",
-								new MySqlParameter("?PriceCode", LockedSynonym)); 
-					formProgress.ApplyProgress += 10;
+							new MySqlParameter("?PriceCode", LockedSynonym)); 
+				formProgress.ApplyProgress += 10;
 					
-					//«аполнили таблицу логов дл€ запрещЄнных выражений
-					daForbidden.SelectCommand.Transaction = tran;
-					DataTable dtForbiddenCopy = dtForbidden.Copy();
-					daForbidden.Update(dtForbiddenCopy);
+				//«аполнили таблицу логов дл€ запрещЄнных выражений
+				daForbidden.SelectCommand.Connection = c;
+				var dtForbiddenCopy = dtForbidden.Copy();
+				daForbidden.Update(dtForbiddenCopy);
 
-					formProgress.ApplyProgress += 10;
-					//ќбновление таблицы нераспознанных выражений
-					daUnrecUpdate.SelectCommand.Transaction = tran;
-					DataTable dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
-					daUnrecUpdate.Update(dtUnrecUpdateCopy);
+				formProgress.ApplyProgress += 10;
+				//ќбновление таблицы нераспознанных выражений
+				daUnrecUpdate.SelectCommand.Connection = c;
+				var dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
+				daUnrecUpdate.Update(dtUnrecUpdateCopy);
 
-					if (HasParentSynonym)
-					{
-						foreach (RetransedPrice rp in RetransedPriceList)
-							GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection, @"
+				if (HasParentSynonym)
+				{
+					foreach (var rp in RetransedPriceList)
+						GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection, @"
 delete
 from
-  farm.UnrecExp
+farm.UnrecExp
 where
-  PriceItemId = ?DeletePriceItem
+PriceItemId = ?DeletePriceItem
 and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?DeletePriceItem and bp.BlockBy <> ?LockUserName)",
-										new MySqlParameter("?DeletePriceItem", rp.PriceItemId),
-										new MySqlParameter("?LockUserName", Environment.UserName.ToLower()));
-					}
-					tran.Commit();
-					res = true;
+									new MySqlParameter("?DeletePriceItem", rp.PriceItemId),
+									new MySqlParameter("?LockUserName", Environment.UserName.ToLower()));
+				}
+				res = true;
 
-					formProgress.ApplyProgress +=10;
-				}
-				catch(MySqlException ex)
-				{
-					tran.Rollback();
-					Mailer.SendMessageToService(ex);
-					formProgress.Error = String.Format("ѕри обновлении синонимов произошла ошибка : {0}\r\n", ex);
-					formProgress.ApplyProgress = 50;
-					Thread.Sleep(500);
-				}
-			}
-			while(!res);
+				formProgress.ApplyProgress +=10;
+			});
 			
 			formProgress.ApplyProgress = 80;
 
@@ -1892,12 +1835,14 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					_logger.DebugFormat("ѕерепроводим : {0}", RetransedPriceList[0].PriceItemId);
 					try
 					{
+#if !DEBUG
 						if (!_priceProcessor.RetransPrice(Convert.ToUInt64(RetransedPriceList[0].PriceItemId)))
 						{
 							_logger.DebugFormat(
 								"ѕри перепроведении priceitem {0} возникла ошибка : {1}",
 								RetransedPriceList[0].PriceItemId, _priceProcessor.LastErrorMessage);
 						}
+#endif
 					}
 					catch (Exception retransException)
 					{
@@ -2665,13 +2610,6 @@ and c.Type = ?ContactType;",
 			if (!Char.IsControl(e.KeyChar))
 				tbProducerSearch.Text += e.KeyChar;
 		}
-
-		private void pFirmCr_SizeChanged(object sender, EventArgs e)
-		{
-			if (gcBlockedProducers.Visible)
-				gcBlockedProducers.Width = pFirmCr.Width / 3;
-		}
-
 	}
 
 	public class RetransedPrice
