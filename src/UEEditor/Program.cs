@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 using log4net;
 using System.Windows.Forms;
-using System.Threading;
 using Subway.Helpers;
 using log4net.Config;
 
@@ -19,7 +17,11 @@ namespace UEEditor
 		{
 			XmlConfigurator.Configure();
 
-			Application.ThreadException += new ThreadExceptionEventHandler(OnThreadException);
+			if (!Debugger.IsAttached)
+				AppDomain.CurrentDomain.UnhandledException += (sender, args) => {
+					SendMessageOnException(sender, (Exception)args.ExceptionObject);
+					MessageBox.Show("В приложении возникла необработанная ошибка.\r\nИнформация об ошибке была отправлена разработчику.");
+				};
 
 			//Эти две строчки есть в StatViewer'е, возможно, из-за одной из них не работает "корректное" отображение 
 			//значений столбца "Сегмент" в фильтрах компонентов DevExpress
@@ -27,27 +29,18 @@ namespace UEEditor
 			//Application.SetCompatibleTextRenderingDefault(false);
 
 			InputLanguageHelper.SetToRussian();
-
 			Application.Run(new frmUEEMain());
 		}
 
 		public static void SendMessageOnException(object sender, Exception exception)
 		{
-			ILog _logger;
+			ILog logger;
 			if (sender == null)
-				_logger = LogManager.GetLogger(typeof(Program));
+				logger = LogManager.GetLogger(typeof(Program));
 			else
-				_logger = LogManager.GetLogger(sender.GetType());
-			_logger.Error(exception);
+				logger = LogManager.GetLogger(sender.GetType());
+			logger.Error(exception);
 			Mailer.SendMessageToService(exception);
 		}
-
-		// Handles the exception event.
-		public static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs t)
-		{
-			SendMessageOnException(sender, t.Exception);
-			MessageBox.Show("В приложении возникла необработанная ошибка.\r\nИнформация об ошибке была отправлена разработчику.");
-		}
-
 	}
 }

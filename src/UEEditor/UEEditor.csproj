@@ -36,9 +36,9 @@
     <ManifestCertificateThumbprint>7A62A5AE17C1C79F529466067F45F6A10223630D</ManifestCertificateThumbprint>
     <ManifestKeyFile>InforoomCodeSign.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <PublishUrl>http://publish.analit.net/UEEditor/</PublishUrl>
@@ -171,6 +171,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Updater.cs" />
     <None Include="..\..\lib\InforoomCodeSign.pfx">
       <Link>InforoomCodeSign.pfx</Link>
     </None>
@@ -181,6 +182,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="App.ico" />
+    <Compile Include="ProducerSynonymResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -229,7 +231,7 @@
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
-      <ProductName>.NET Framework Client Profile</ProductName>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
