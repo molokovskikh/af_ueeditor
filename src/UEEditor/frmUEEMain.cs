@@ -327,7 +327,7 @@ and synonymcd.FirmCode = synonympd.FirmCode"
 					UnrecExpGridControl.EndUpdate();
 				}
 
-			});			
+			});
 		}
 
 		private void CatalogNameGridFill()
@@ -369,33 +369,27 @@ FROM
   catalogs.products, 
   catalogs.assortment a,
   catalogs.Producers P
-  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
     (products.Id = ?ProductId)
 and (a.CatalogId = products.CatalogId)
 and (p.Id = a.ProducerId)
-and (bps.id is null)
 and (" + GetFilterString(name, "p.Name", "  ") + ") " +
-		@"
+@"
 union
 SELECT
   p.Id As CCode,
   pe.Name As CName,
   1 as CIsAssortment
 FROM
-  (
   catalogs.products, 
   catalogs.assortment a,
   catalogs.Producers P,
   catalogs.ProducerEquivalents PE
-  )
-  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
     (products.Id = ?ProductId)
 and (a.CatalogId = products.CatalogId)
 and (p.Id = a.ProducerId)
 and (pe.ProducerId = p.Id)
-and (bps.id is null)
 and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
 		"order by CName",slaveConnection));
 
@@ -419,12 +413,10 @@ FROM
   catalogs.products, 
   catalogs.assortment a,
   catalogs.Producers P
-  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
     products.Id = ?ProductId
 and a.CatalogId = products.CatalogId
 and p.Id = a.ProducerId
-and bps.id is null
 
 union
 
@@ -433,19 +425,15 @@ SELECT
   pe.Name As CName,
   1 as CIsAssortment
 FROM
-  (
   catalogs.products, 
   catalogs.assortment a,
   catalogs.Producers P,
   catalogs.ProducerEquivalents PE
-  )
-  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where
     (products.Id = ?ProductId)
 and (a.CatalogId = products.CatalogId)
 and (p.Id = a.ProducerId)
 and (pe.ProducerId = p.Id)
-and (bps.id is null)
 order by CName", slaveConnection));
 					commandHelper.AddParameter("?LockedSynonym", LockedSynonym);
 					commandHelper.AddParameter("?Name", name);
@@ -478,9 +466,7 @@ SELECT
   1 as CIsAssortment
 FROM catalogs.Producers P
   join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id
-  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where p.Name like ?filter
-and bps.id is null
 
 union
 
@@ -491,9 +477,7 @@ SELECT
 FROM catalogs.Producers P
   join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id
   join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id
-  left join farm.BlockedProducerSynonyms bps on (bps.ProducerId = p.Id) and (bps.PriceCode = ?LockedSynonym) and (bps.Synonym = ?Name)
 where  pe.Name like ?filter
-and (bps.id is null)
 order by CName", slaveConnection));
 
 				commandHelper.AddParameter("?LockedSynonym", LockedSynonym);

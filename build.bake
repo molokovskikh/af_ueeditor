@@ -1,5 +1,6 @@
 ﻿import file from ClickOnce.bake
 import file from Migration.bake
+import file from Tools.bake
 
 Global(
 	Project : "UEEditor",
