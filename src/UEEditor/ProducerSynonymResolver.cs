@@ -73,7 +73,7 @@ namespace UEEditor
 			if (destination["UEPriorProductId"] is DBNull)
 				return false;
 
-			if (Name != destination["UEFirmCr"].ToString())
+			if (!Name.Equals(destination["UEFirmCr"].ToString(), StringComparison.CurrentCultureIgnoreCase))
 				return false;
 
 			var catalogId = Convert.ToUInt32(destination["UEPriorCatalogId"]);
