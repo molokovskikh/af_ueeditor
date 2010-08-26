@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Drawing;
@@ -31,13 +31,13 @@ namespace UEEditor
 	[FlagsAttribute]
 	public enum FormMask : byte
 	{
-		//Сопоставлено по наименованию
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ
 		NameForm = 1,
-		//Сопоставлено по производителю
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ
 		FirmForm = 2,
-		// Полностью формализован по наименованию, производителю
+		// РџРѕР»РЅРѕСЃС‚СЊСЋ С„РѕСЂРјР°Р»РёР·РѕРІР°РЅ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ, РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ
 		FullForm = FirmForm | NameForm,
-		//Помечено как запрещенное
+		//РџРѕРјРµС‡РµРЅРѕ РєР°Рє Р·Р°РїСЂРµС‰РµРЅРЅРѕРµ
 		MarkForb = 8,
 	}
 
@@ -51,7 +51,7 @@ namespace UEEditor
 		private string FregKey;
 		private string ZregKey;
 
-		//Время последнего обновления каталога
+		//Р’СЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ РєР°С‚Р°Р»РѕРіР°
 		private DateTime catalogUpdate;
         
 		public string PriceFMT = String.Empty;
@@ -62,7 +62,7 @@ namespace UEEditor
 		public frmProgress formProgress = null;
 		public string producerSeachText;
 
-		public const string unknownProducer = "производитель не известен";
+		public const string unknownProducer = "РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ РЅРµ РёР·РІРµСЃС‚РµРЅ";
 
 		private PriceProcessorWcfHelper _priceProcessor;
 
@@ -73,7 +73,7 @@ namespace UEEditor
 			_priceProcessor = new PriceProcessorWcfHelper(Settings.Default.WCFServiceUrl);
 
 			var createExclude = new Button {
-				Text = "Нет нужного производителя (F3)",
+				Text = "РќРµС‚ РЅСѓР¶РЅРѕРіРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ (F3)",
 				Dock = DockStyle.Bottom,
 				Visible = false
 			};
@@ -114,10 +114,10 @@ namespace UEEditor
 			tcMain.TabPages.Remove(tpZero);
 			tcMain.TabPages.Remove(tpForb);
 
-			// Заполняем таблицу заданий
+			// Р—Р°РїРѕР»РЅСЏРµРј С‚Р°Р±Р»РёС†Сѓ Р·Р°РґР°РЅРёР№
 			JobsGridFill();
 
-			// Запоняем каталожные таблицы
+			// Р—Р°РїРѕРЅСЏРµРј РєР°С‚Р°Р»РѕР¶РЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 			CatalogNameGridFill();
 
 			FormGridFill();
@@ -131,7 +131,7 @@ namespace UEEditor
 		{
 			if (tcMain.SelectedTab == tpUnrecExp)
 			{
-				var DRes = MessageBox.Show("Вы находитесь в режиме редактирования прайс-листа. Сохранить изменения?", "Вопрос", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+				var DRes = MessageBox.Show("Р’С‹ РЅР°С…РѕРґРёС‚РµСЃСЊ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїСЂР°Р№СЃ-Р»РёСЃС‚Р°. РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ?", "Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 				UnlockJob(DRes);
 				if (DRes == DialogResult.Cancel)
 				{
@@ -180,7 +180,7 @@ namespace UEEditor
 			int[] selected = gvJobs.GetSelectedRows();
 			if (selected.Length > 0)
 			{
-				//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
+				//РІС‹Р±СЂР°Р»Рё РїСЂР°Р№СЃ-Р»РёСЃС‚С‹ РёР· Р±Р°Р·С‹, С‚.Рє. РјРѕР¶РµС‚ РїСЂРѕРёР·РѕР№С‚Рё РѕР±РЅРѕРІР»РµРЅРёРµ С‚Р°Р±Р»РёС†С‹
 				foreach (int rowHandle in selected)
 					if (rowHandle != GridControl.InvalidRowHandle)
 						selectedPrices.Add((long)gvJobs.GetDataRow(rowHandle)[JPriceItemId.ColumnName]);
@@ -207,7 +207,7 @@ SELECT
         cd.ShortName as FirmShortName,
         pim.Id as JPriceItemId,
         PD.PriceCode As JPriceCode,
-        concat(CD.ShortName, ' (', if(pd.CostType = 1, concat(pd.PriceName, ' [Колонка] ', pc.CostName), pd.PriceName), ')') as JName,
+        concat(CD.ShortName, ' (', if(pd.CostType = 1, concat(pd.PriceName, ' [РљРѕР»РѕРЅРєР°] ', pc.CostName), pd.PriceName), ')') as JName,
         regions.region                                                                                                       As JRegion,
         pim.PriceDate as JPriceDate,
         statunrecexp.Pos                                                                        AS JPos,
@@ -280,7 +280,7 @@ and synonymcd.FirmCode = synonympd.FirmCode"
 			});			
 
 			LocateJobs(CurrPriceItemId, (selectedPrices.Count <= 1) ? null : selectedPrices);
-			statusBar1.Panels[0].Text = "Заданий в очереди: " + dtJobs.Rows.Count;
+			statusBar1.Panels[0].Text = "Р—Р°РґР°РЅРёР№ РІ РѕС‡РµСЂРµРґРё: " + dtJobs.Rows.Count;
 		}
 
 		private void UnrecExpGridFill()
@@ -441,7 +441,7 @@ order by CName", slaveConnection));
 					commandHelper.Fill(dsMain, dtCatalogFirmCr.TableName);
 				}
 
-				//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
+				//Р”РѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ С‚Р°Р±Р»РёС†С‹ РѕРїСЂРµРґРµР»РµРЅРЅСѓСЋ Р·Р°РїРёСЃСЊ, РѕР±РѕР·РЅР°С‡Р°СЋС‰СѓСЋ РїРѕРЅСЏС‚РёРµ "РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ РЅРµ РёР·РІРµСЃС‚РµРЅ"
 				DataRow drUnknown = dtCatalogFirmCr.NewRow();
 				drUnknown["CCode"] = 0;
 				drUnknown["CName"] = unknownProducer;
@@ -490,7 +490,7 @@ order by CName", slaveConnection));
 
 				commandHelper.Fill(dsMain, dtCatalogFirmCr.TableName);
 
-				//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
+				//Р”РѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ С‚Р°Р±Р»РёС†С‹ РѕРїСЂРµРґРµР»РµРЅРЅСѓСЋ Р·Р°РїРёСЃСЊ, РѕР±РѕР·РЅР°С‡Р°СЋС‰СѓСЋ РїРѕРЅСЏС‚РёРµ "РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ РЅРµ РёР·РІРµСЃС‚РµРЅ"
 				DataRow drUnknown = dtCatalogFirmCr.NewRow();
 				drUnknown["CCode"] = 0;
 				drUnknown["CName"] = unknownProducer;
@@ -611,7 +611,7 @@ order by Properties
 			});
 
 			if ((catalogUpdate < CatalogUpdateTime) || (catalogUpdate < ProductsUpdateTime))
-				if (MessageBox.Show("Каталог был изменен. Произвести обновление каталога?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				if (MessageBox.Show("РљР°С‚Р°Р»РѕРі Р±С‹Р» РёР·РјРµРЅРµРЅ. РџСЂРѕРёР·РІРµСЃС‚Рё РѕР±РЅРѕРІР»РµРЅРёРµ РєР°С‚Р°Р»РѕРіР°?", "Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 					UpdateCatalog(); 
 		}
 
@@ -640,15 +640,15 @@ order by Properties
 			int[] selected = gvJobs.GetSelectedRows();
 			if ((selected != null) && (selected.Length > 0))
 			{
-				if (MessageBox.Show("Вы действительно хотите удалить выбранные задания?", 
-					"Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, 
+				if (MessageBox.Show("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹Рµ Р·Р°РґР°РЅРёСЏ?", 
+					"Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, 
 					MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 				{
 					try
 					{
 						List<long> selectedPrices = new List<long>();
 
-						//выбрали прайс-листы из базы, т.к. может произойти обновление таблицы
+						//РІС‹Р±СЂР°Р»Рё РїСЂР°Р№СЃ-Р»РёСЃС‚С‹ РёР· Р±Р°Р·С‹, С‚.Рє. РјРѕР¶РµС‚ РїСЂРѕРёР·РѕР№С‚Рё РѕР±РЅРѕРІР»РµРЅРёРµ С‚Р°Р±Р»РёС†С‹
 						foreach (int rowHandle in selected)
 							if (rowHandle != GridControl.InvalidRowHandle)
 							{
@@ -671,7 +671,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 											connection, transaction);
 									cmdDeleteJob.Parameters.Add("?PriceItemId", MySqlDbType.Int64);
 
-									//удаляем задания
+									//СѓРґР°Р»СЏРµРј Р·Р°РґР°РЅРёСЏ
 									foreach (long selectedPrice in selectedPrices)
 									{
 										cmdDeleteJob.Parameters["?PriceItemId"].Value = selectedPrice;
@@ -683,8 +683,8 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 					catch (Exception ex)
 					{
 						Mailer.SendMessageToService(ex);
-						MessageBox.Show("Невозможно удалить выбранные задания. Информация об ошибке отправлена разработчику.",
-							"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);	
+						MessageBox.Show("РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹Рµ Р·Р°РґР°РЅРёСЏ. РРЅС„РѕСЂРјР°С†РёСЏ РѕР± РѕС€РёР±РєРµ РѕС‚РїСЂР°РІР»РµРЅР° СЂР°Р·СЂР°Р±РѕС‚С‡РёРєСѓ.",
+							"РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Error);	
 					}
 					JobsGridFill();
 				}
@@ -814,27 +814,27 @@ WHERE PriceItemId= ?PriceItemId",
 		{
 			int WordLen = 3;
 
-			//Разбиваем входящие значение из прайса на слова
-			//разделителями слов являются: ' ', '+', '-'
+			//Р Р°Р·Р±РёРІР°РµРј РІС…РѕРґСЏС‰РёРµ Р·РЅР°С‡РµРЅРёРµ РёР· РїСЂР°Р№СЃР° РЅР° СЃР»РѕРІР°
+			//СЂР°Р·РґРµР»РёС‚РµР»СЏРјРё СЃР»РѕРІ СЏРІР»СЏСЋС‚СЃСЏ: ' ', '+', '-'
 			string[] flt = Value.Split(new char[] { ' ', '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
-			//массив первых символов из каждого слова
+			//РјР°СЃСЃРёРІ РїРµСЂРІС‹С… СЃРёРјРІРѕР»РѕРІ РёР· РєР°Р¶РґРѕРіРѕ СЃР»РѕРІР°
 			List<string> firstChars = new List<string>();
 
 			for (int i = 0; i < flt.Length; i++)
 			{
-				//Если длинна слова больше и равна WordLen, то добавляем первые символы слова в массив
+				//Р•СЃР»Рё РґР»РёРЅРЅР° СЃР»РѕРІР° Р±РѕР»СЊС€Рµ Рё СЂР°РІРЅР° WordLen, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РїРµСЂРІС‹Рµ СЃРёРјРІРѕР»С‹ СЃР»РѕРІР° РІ РјР°СЃСЃРёРІ
 				if (flt[i].Length >= WordLen)
 				{
-					//удаляем возможные символы квотирование из начала и конца строки
+					//СѓРґР°Р»СЏРµРј РІРѕР·РјРѕР¶РЅС‹Рµ СЃРёРјРІРѕР»С‹ РєРІРѕС‚РёСЂРѕРІР°РЅРёРµ РёР· РЅР°С‡Р°Р»Р° Рё РєРѕРЅС†Р° СЃС‚СЂРѕРєРё
 					if ((flt[i][0] == '"') || (flt[i][0] == '\''))
 						flt[i] = flt[i].Substring(1, flt[i].Length - 1);
 
 					if ((flt[i][flt[i].Length - 1] == '"') || (flt[i][flt[i].Length - 1] == '\''))
 						flt[i] = flt[i].Substring(0, flt[i].Length - 1);
 
-					//Если длина слова позволяет вычесть WordLen-символов с конца и останется >= WordLen, то обрезаем с конца
-					//Если нет, то берем только первые WordLen-символы с начала
+					//Р•СЃР»Рё РґР»РёРЅР° СЃР»РѕРІР° РїРѕР·РІРѕР»СЏРµС‚ РІС‹С‡РµСЃС‚СЊ WordLen-СЃРёРјРІРѕР»РѕРІ СЃ РєРѕРЅС†Р° Рё РѕСЃС‚Р°РЅРµС‚СЃСЏ >= WordLen, С‚Рѕ РѕР±СЂРµР·Р°РµРј СЃ РєРѕРЅС†Р°
+					//Р•СЃР»Рё РЅРµС‚, С‚Рѕ Р±РµСЂРµРј С‚РѕР»СЊРєРѕ РїРµСЂРІС‹Рµ WordLen-СЃРёРјРІРѕР»С‹ СЃ РЅР°С‡Р°Р»Р°
 					if (flt[i].Length - WordLen >= WordLen)
 						firstChars.Add(flt[i].Substring(0, flt[i].Length - WordLen));
 					else
@@ -844,27 +844,27 @@ WHERE PriceItemId= ?PriceItemId",
 
 			int positionId = 0, maxCompareCount = 0;
 
-			//Произодим поиск
+			//РџСЂРѕРёР·РѕРґРёРј РїРѕРёСЃРє
 			for (int i = 0; i < selected.DataRowCount; i++)
 			{
-				//Значение строки из каталога
+				//Р—РЅР°С‡РµРЅРёРµ СЃС‚СЂРѕРєРё РёР· РєР°С‚Р°Р»РѕРіР°
 				string PropertiesValue = selected.GetDataRow(i)[FieldName].ToString();
 
-				//Пробрасываем заблокированные
+				//РџСЂРѕР±СЂР°СЃС‹РІР°РµРј Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРЅС‹Рµ
 				if (skipBlocked && (bool)selected.GetDataRow(i)[blockedFieldName])
 					continue;
 
-				//Это значение может быть пустой строкой, если сравниваем со свойствами
+				//Р­С‚Рѕ Р·РЅР°С‡РµРЅРёРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚РѕР№ СЃС‚СЂРѕРєРѕР№, РµСЃР»Рё СЃСЂР°РІРЅРёРІР°РµРј СЃРѕ СЃРІРѕР№СЃС‚РІР°РјРё
 				if (!String.IsNullOrEmpty(PropertiesValue))
 				{
 					int compareCount = 0;
 					int currentIndex = -1;
-					//Первые символы из каждого слова из прайс-листа ищем в каталоге,
-					//если находим это слово в каталоге, то увеличиваем счетчик совпадений
+					//РџРµСЂРІС‹Рµ СЃРёРјРІРѕР»С‹ РёР· РєР°Р¶РґРѕРіРѕ СЃР»РѕРІР° РёР· РїСЂР°Р№СЃ-Р»РёСЃС‚Р° РёС‰РµРј РІ РєР°С‚Р°Р»РѕРіРµ,
+					//РµСЃР»Рё РЅР°С…РѕРґРёРј СЌС‚Рѕ СЃР»РѕРІРѕ РІ РєР°С‚Р°Р»РѕРіРµ, С‚Рѕ СѓРІРµР»РёС‡РёРІР°РµРј СЃС‡РµС‚С‡РёРє СЃРѕРІРїР°РґРµРЅРёР№
 					foreach (string s in firstChars)
 					{
 						currentIndex = PropertiesValue.IndexOf(s, StringComparison.OrdinalIgnoreCase);
-						//Совпало в том случае, если нашли в начале строки, или в начале любого слова, перед которым стоит знак пунктуации или разделитель
+						//РЎРѕРІРїР°Р»Рѕ РІ С‚РѕРј СЃР»СѓС‡Р°Рµ, РµСЃР»Рё РЅР°С€Р»Рё РІ РЅР°С‡Р°Р»Рµ СЃС‚СЂРѕРєРё, РёР»Рё РІ РЅР°С‡Р°Р»Рµ Р»СЋР±РѕРіРѕ СЃР»РѕРІР°, РїРµСЂРµРґ РєРѕС‚РѕСЂС‹Рј СЃС‚РѕРёС‚ Р·РЅР°Рє РїСѓРЅРєС‚СѓР°С†РёРё РёР»Рё СЂР°Р·РґРµР»РёС‚РµР»СЊ
 						if ((currentIndex == 0) || ((currentIndex > 0) && (Char.IsSeparator(PropertiesValue[currentIndex-1]) || Char.IsPunctuation(PropertiesValue[currentIndex-1]))))
 							compareCount++;
 					}
@@ -883,7 +883,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 		private void ShowCatalog(int FocusedRowHandle)
 		{
-			grpBoxCatalog2.Text = "Каталог товаров";
+			grpBoxCatalog2.Text = "РљР°С‚Р°Р»РѕРі С‚РѕРІР°СЂРѕРІ";
 			CatalogGridControl.Visible = true;
 			pFirmCr.Visible = false;
 
@@ -902,7 +902,7 @@ WHERE PriceItemId= ?PriceItemId",
 		private void ShowCatalogFirmCr(int FocusedRowHandle)
 		{
 			DataRow dr = gvUnrecExp.GetDataRow(FocusedRowHandle);
-			grpBoxCatalog2.Text = "Каталог фирм производителей";
+			grpBoxCatalog2.Text = "РљР°С‚Р°Р»РѕРі С„РёСЂРј РїСЂРѕРёР·РІРѕРґРёС‚РµР»РµР№";
 			producerSeachText = String.Empty;
 			pFirmCr.Visible = true;
 			CatalogGridControl.Visible = false;
@@ -969,7 +969,7 @@ WHERE PriceItemId= ?PriceItemId",
 				{
 					if (((GetMask(gvUnrecExp.FocusedRowHandle, "UEStatus") & FormMask.MarkForb) == FormMask.MarkForb) 
 						&& ((GetMask(gvUnrecExp.FocusedRowHandle, "UEAlready") & FormMask.MarkForb) != FormMask.MarkForb))
-						if(MessageBox.Show("Отменить запрещение?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+						if(MessageBox.Show("РћС‚РјРµРЅРёС‚СЊ Р·Р°РїСЂРµС‰РµРЅРёРµ?", "Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 						{
 							UnmarkUnrecExpAsForbidden(gvUnrecExp.FocusedRowHandle);
 							return;
@@ -992,8 +992,8 @@ WHERE PriceItemId= ?PriceItemId",
 							{
 								DataRow drCatalog = drProducts[0].GetParentRow("Products");
 								DataRow drCatalogName = drCatalog.GetParentRow("CatalogNames");
-								string Mess = String.Format("Наименование: {0}\r\nФорма: {1}\r\nОтменить сопоставление по наименованию?", drCatalogName[colCatalogNameName], drCatalog[colCatalogForm]);
-								if (MessageBox.Show(Mess, "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+								string Mess = String.Format("РќР°РёРјРµРЅРѕРІР°РЅРёРµ: {0}\r\nР¤РѕСЂРјР°: {1}\r\nРћС‚РјРµРЅРёС‚СЊ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ?", drCatalogName[colCatalogNameName], drCatalog[colCatalogForm]);
+								if (MessageBox.Show(Mess, "Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 								{
 									UnmarkUnrecExpAsNameForm(gvUnrecExp.FocusedRowHandle);
 									SetReserved(false, gvUnrecExp.FocusedRowHandle);
@@ -1007,7 +1007,7 @@ WHERE PriceItemId= ?PriceItemId",
 						&& ((GetMask(gvUnrecExp.FocusedRowHandle, "UEAlready") & FormMask.FirmForm) != FormMask.FirmForm))
 					{
 						DataRow drUN = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
-						//Если нашли такую запись и поле "FirmCr" непустое, то сбрасываем сопоставление по производителю
+						//Р•СЃР»Рё РЅР°С€Р»Рё С‚Р°РєСѓСЋ Р·Р°РїРёСЃСЊ Рё РїРѕР»Рµ "FirmCr" РЅРµРїСѓСЃС‚РѕРµ, С‚Рѕ СЃР±СЂР°СЃС‹РІР°РµРј СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ
 						if ((drUN != null) && !String.IsNullOrEmpty(drUN[UEFirmCr].ToString()))
 						{
 							//string FirmName = null;
@@ -1016,7 +1016,7 @@ WHERE PriceItemId= ?PriceItemId",
 								FirmName = unknownProducer;
 							else
 							{
-								//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UEPriorProducerId
+								//Р•СЃР»Рё СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ Рё (UEPriorProducerId is DBNull), С‚Рѕ Р·РЅР°С‡РµРЅРёРµ РєРѕРґР° = 0, РёРЅР°С‡Рµ Р±РµСЂРµРј Р·РЅР°С‡РµРЅРёРµ РєРѕРґР° РёР· РїРѕР»СЏ UEPriorProducerId
 								With.Slave((slaveConnection) =>
 								{
 									FirmName = GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
@@ -1026,7 +1026,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 							if ((FirmName != null) && (FirmName is string) && 
 								!String.IsNullOrEmpty((string)FirmName) && 
-								(MessageBox.Show("Производитель: " + FirmName+ "\r\nОтменить сопоставление по производителю?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes))
+								(MessageBox.Show("РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ: " + FirmName+ "\r\nРћС‚РјРµРЅРёС‚СЊ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ?", "Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes))
 							{
 								UnmarkUnrecExpAsFirmForm(gvUnrecExp.FocusedRowHandle);
 								flag = true;
@@ -1102,18 +1102,18 @@ WHERE PriceItemId= ?PriceItemId",
 		{
 			if (!Convert.IsDBNull(drUnrecExp[UEProductSynonymId.ColumnName]))
 			{
-				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
+				//РџСЂРѕРёР·РІРѕРґРёРј РїСЂРѕРІРµСЂРєСѓ С‚РѕРіРѕ, С‡С‚Рѕ СЃРёРЅРѕРЅРёРј РјРѕР¶РµС‚ Р±С‹С‚СЊ СѓР¶Рµ РІСЃС‚Р°РІР»РµРЅ РІ С‚Р°Р±Р»РёС†Сѓ СЃРёРЅРѕРЅРёРјРѕРІ
 				object SynonymExists = null;
 				With.Slave((slaveConnection) =>
 				{
 					SynonymExists = GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
 										"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
-						//todo: здесь получается фигня с добавлением пробелов в конце строки
+						//todo: Р·РґРµСЃСЊ РїРѕР»СѓС‡Р°РµС‚СЃСЏ С„РёРіРЅСЏ СЃ РґРѕР±Р°РІР»РµРЅРёРµРј РїСЂРѕР±РµР»РѕРІ РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
 										new MySqlParameter("?Synonym", String.Format("{0}  ", drUnrecExp["UEName1"])));
 				});
 				if (SynonymExists != null)
 				{
-					MessageBox.Show("Сопоставление как запрещенное выражение невозможно, т.к. для данного наименования существует синоним.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					MessageBox.Show("РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ РєР°Рє Р·Р°РїСЂРµС‰РµРЅРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ РЅРµРІРѕР·РјРѕР¶РЅРѕ, С‚.Рє. РґР»СЏ РґР°РЅРЅРѕРіРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ СЃСѓС‰РµСЃС‚РІСѓРµС‚ СЃРёРЅРѕРЅРёРј.", "РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 					return false;
 				}
 			}
@@ -1139,7 +1139,7 @@ WHERE PriceItemId= ?PriceItemId",
 		private void CatalogGridControl_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			GridView FocusedView = (GridView)CatalogGridControl.FocusedView;
-			//Снимаем фильтр при поиске
+			//РЎРЅРёРјР°РµРј С„РёР»СЊС‚СЂ РїСЂРё РїРѕРёСЃРєРµ
 			if (((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
 				e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
 				e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
@@ -1149,7 +1149,7 @@ WHERE PriceItemId= ?PriceItemId",
 				FocusedView.ActiveFilter.Clear();
 			}
 
-			//Сбросили фильтр
+			//РЎР±СЂРѕСЃРёР»Рё С„РёР»СЊС‚СЂ
 			if (e.KeyCode == Keys.A && e.Control)
 				FocusedView.ActiveFilter.Clear();
 
@@ -1157,14 +1157,14 @@ WHERE PriceItemId= ?PriceItemId",
 			{
 				if (FocusedView.ParentView == null)
 				{
-					//Нажали Escape в корне (наименование), то идем к следующей нераспознанной позиции
+					//РќР°Р¶Р°Р»Рё Escape РІ РєРѕСЂРЅРµ (РЅР°РёРјРµРЅРѕРІР°РЅРёРµ), С‚Рѕ РёРґРµРј Рє СЃР»РµРґСѓСЋС‰РµР№ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅРѕР№ РїРѕР·РёС†РёРё
 					ClearCatalogGrid();
 					GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle + 1);
 				}
 				else
 				{
 					GridView Parent = (GridView)FocusedView.ParentView;
-					//поднимаемся на уровень вверх
+					//РїРѕРґРЅРёРјР°РµРјСЃСЏ РЅР° СѓСЂРѕРІРµРЅСЊ РІРІРµСЂС…
 					Parent.CollapseMasterRow(Parent.FocusedRowHandle);
 					Parent.ZoomView();
 				}
@@ -1172,8 +1172,8 @@ WHERE PriceItemId= ?PriceItemId",
 
 			if (String.IsNullOrEmpty(FocusedView.LevelName))
 			{
-				//Обработка первого уровня : Имени
-				//Нажали Enter, значит идем на уровень вниз
+				//РћР±СЂР°Р±РѕС‚РєР° РїРµСЂРІРѕРіРѕ СѓСЂРѕРІРЅСЏ : РРјРµРЅРё
+				//РќР°Р¶Р°Р»Рё Enter, Р·РЅР°С‡РёС‚ РёРґРµРј РЅР° СѓСЂРѕРІРµРЅСЊ РІРЅРёР·
 				if (e.KeyCode == Keys.Enter)
 					if (gvCatalog.FocusedRowHandle != GridControl.InvalidRowHandle)
 					{
@@ -1197,7 +1197,7 @@ WHERE PriceItemId= ?PriceItemId",
 					}
 
 
-				//Пометили позицию как запрещенную (нераспознанную)
+				//РџРѕРјРµС‚РёР»Рё РїРѕР·РёС†РёСЋ РєР°Рє Р·Р°РїСЂРµС‰РµРЅРЅСѓСЋ (РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅСѓСЋ)
 				if (e.KeyCode == Keys.F2 && (gvUnrecExp.FocusedRowHandle != GridControl.InvalidRowHandle))
 				{
 					DataRow UEdr = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
@@ -1227,16 +1227,16 @@ WHERE PriceItemId= ?PriceItemId",
 								bv.ZoomView();
 								bv.MoveFirst();
 								CatalogGridControl.FocusedView = bv;
-								//Если нет других свойств, то просто сопоставляем с первым продуктом								
+								//Р•СЃР»Рё РЅРµС‚ РґСЂСѓРіРёС… СЃРІРѕР№СЃС‚РІ, С‚Рѕ РїСЂРѕСЃС‚Рѕ СЃРѕРїРѕСЃС‚Р°РІР»СЏРµРј СЃ РїРµСЂРІС‹Рј РїСЂРѕРґСѓРєС‚РѕРј								
 								if ((bv.DataRowCount == 1) && (bv.GetDataRow(0)["Properties"] is DBNull))
 								{
-									//Производим сопоставление
+									//РџСЂРѕРёР·РІРѕРґРёРј СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ
 									DoSynonym(e.Shift);
 									ChangeBigName(gvUnrecExp.FocusedRowHandle);
 								}
 								else
 								{
-									//Устанавливаем позицию на более подходящем продукте.
+									//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР·РёС†РёСЋ РЅР° Р±РѕР»РµРµ РїРѕРґС…РѕРґСЏС‰РµРј РїСЂРѕРґСѓРєС‚Рµ.
 									GotoCatalogPosition(bv, GetFullUnrecName(gvUnrecExp.FocusedRowHandle), "Properties");
 								}
 								colProperties.Caption = colFForm.Caption + " - " + drCatalog[colFForm.FieldName].ToString();
@@ -1247,12 +1247,12 @@ WHERE PriceItemId= ?PriceItemId",
 				else
 					if (FocusedView.LevelName == gvProducts.LevelName)
 					{
-						//Обработка третьего уровня : Продуктов со свойствами
+						//РћР±СЂР°Р±РѕС‚РєР° С‚СЂРµС‚СЊРµРіРѕ СѓСЂРѕРІРЅСЏ : РџСЂРѕРґСѓРєС‚РѕРІ СЃРѕ СЃРІРѕР№СЃС‚РІР°РјРё
 
 						if (e.KeyCode == Keys.Enter)
 							if (FocusedView.FocusedRowHandle != GridControl.InvalidRowHandle)
 							{
-								//Производим сопоставление
+								//РџСЂРѕРёР·РІРѕРґРёРј СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ
 								DoSynonym(e.Shift);
 								ChangeBigName(gvUnrecExp.FocusedRowHandle);
 							}
@@ -1262,7 +1262,7 @@ WHERE PriceItemId= ?PriceItemId",
 		private void ClearCatalogGrid()
 		{
 			UnrecExpGridControl.Focus();
-			grpBoxCatalog2.Text = "Каталог";
+			grpBoxCatalog2.Text = "РљР°С‚Р°Р»РѕРі";
 			CatalogGridControl.FocusedView = gvCatalog;
 			gvCatalog.FocusedRowHandle = 0;
 			CatalogGridControl.Enabled = false;
@@ -1336,13 +1336,13 @@ WHERE PriceItemId= ?PriceItemId",
 		{
 			switch(e.KeyCode)
 			{
-					//Начинае разбор нераспознанных выражений
+					//РќР°С‡РёРЅР°Рµ СЂР°Р·Р±РѕСЂ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
 				case Keys.Enter:
 					if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
 						LockJob();
 					break;
 
-					//Обновляем таблицу заданий вручную
+					//РћР±РЅРѕРІР»СЏРµРј С‚Р°Р±Р»РёС†Сѓ Р·Р°РґР°РЅРёР№ РІСЂСѓС‡РЅСѓСЋ
 				case Keys.F5:
 					JobsGridFill();
 					break;
@@ -1377,15 +1377,15 @@ WHERE PriceItemId= ?PriceItemId",
 			}
 		}
 
-		// Блокирует задачу
+		// Р‘Р»РѕРєРёСЂСѓРµС‚ Р·Р°РґР°С‡Сѓ
 		private void LockJob()
 		{
 			if (gvJobs.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
 				DataRow dr = gvJobs.GetDataRow(gvJobs.FocusedRowHandle);
 
-				// Если задача не заблокирована или заблокирована текущим пользователем
-				// (проверяется поле в гриде на наличие там логина)
+				// Р•СЃР»Рё Р·Р°РґР°С‡Р° РЅРµ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅР° РёР»Рё Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅР° С‚РµРєСѓС‰РёРј РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј
+				// (РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РїРѕР»Рµ РІ РіСЂРёРґРµ РЅР° РЅР°Р»РёС‡РёРµ С‚Р°Рј Р»РѕРіРёРЅР°)
 				if ((dr[colJBlockBy.FieldName].ToString() == String.Empty) || 
 					dr[colJBlockBy.FieldName].ToString().Equals(Environment.UserName.ToLower(), 
 					StringComparison.OrdinalIgnoreCase) )
@@ -1401,7 +1401,7 @@ WHERE PriceItemId= ?PriceItemId",
 						else
 							LockedSynonym = Convert.ToInt64(dr[JParentSynonym]);
 						ProducerSynonymResolver.Init((uint) LockedSynonym);
-						grpBoxCatalog2.Text = "Каталог";
+						grpBoxCatalog2.Text = "РљР°С‚Р°Р»РѕРі";
 
 						tcMain.TabPages.Add(tpUnrecExp);
 						tcMain.TabPages.Add(tpZero);
@@ -1419,16 +1419,16 @@ WHERE PriceItemId= ?PriceItemId",
 						if (dtUnrecExp.DefaultView.Count == 0)
 						{
 							dtUnrecExp.DefaultView.RowFilter = null;
-							btnHideUnformFirmCr.Text = "Скрыть нераспознанные только по производителю";
+							btnHideUnformFirmCr.Text = "РЎРєСЂС‹С‚СЊ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹Рµ С‚РѕР»СЊРєРѕ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ";
 						}
 						else
-							btnHideUnformFirmCr.Text = "Показать все";
+							btnHideUnformFirmCr.Text = "РџРѕРєР°Р·Р°С‚СЊ РІСЃРµ";
 
 						UnrecExpGridControl.Focus();
 						gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
 						gvUnrecExp.FocusedRowHandle = 0;
 						GoToNextUnrecExp(0);
-						sbpAll.Text = String.Format("Общее количество: {0}", dtUnrecExp.Rows.Count);
+						sbpAll.Text = String.Format("РћР±С‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ: {0}", dtUnrecExp.Rows.Count);
 					}
 					else
 						JobsGridFill();
@@ -1436,7 +1436,7 @@ WHERE PriceItemId= ?PriceItemId",
 			}
 		}
 
-		// Разблокируем задачу
+		// Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј Р·Р°РґР°С‡Сѓ
 		private void UnlockJob(DialogResult DRes)
 		{
 			switch (DRes)
@@ -1473,11 +1473,11 @@ WHERE PriceItemId= ?PriceItemId",
                     LockedSynonym = -1;
 					gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
 					dtUnrecExp.Clear();
-					// Обновляем таблицу заданий
+					// РћР±РЅРѕРІР»СЏРµРј С‚Р°Р±Р»РёС†Сѓ Р·Р°РґР°РЅРёР№
 					JobsGridFill();
 					sbpAll.Text = String.Empty;
 					sbpCurrent.Text = String.Empty;
-					this.Text = "Редактор нераспознанных выражений";
+					this.Text = "Р РµРґР°РєС‚РѕСЂ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№";
 					return;
 				}
 				case DialogResult.Cancel:
@@ -1502,14 +1502,14 @@ WHERE PriceItemId= ?PriceItemId",
 			ILog _logger = LogManager.GetLogger(this.GetType());
 
 			bool res = false;
-			//Имеются ли родительские синонимы
+			//РРјРµСЋС‚СЃСЏ Р»Рё СЂРѕРґРёС‚РµР»СЊСЃРєРёРµ СЃРёРЅРѕРЅРёРјС‹
 			bool HasParentSynonym = LockedSynonym != LockedPriceCode;
-			formProgress.Status = "Подготовка таблиц...";
+			formProgress.Status = "РџРѕРґРіРѕС‚РѕРІРєР° С‚Р°Р±Р»РёС†...";
 
-			//Список прайсов, которые нужно перепровести
+			//РЎРїРёСЃРѕРє РїСЂР°Р№СЃРѕРІ, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РїРµСЂРµРїСЂРѕРІРµСЃС‚Рё
 			List<RetransedPrice> RetransedPriceList = new List<RetransedPrice>();
 
-			//Попытка найти всех потомков, которые используют родительские синонимы
+			//РџРѕРїС‹С‚РєР° РЅР°Р№С‚Рё РІСЃРµС… РїРѕС‚РѕРјРєРѕРІ, РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓСЋС‚ СЂРѕРґРёС‚РµР»СЊСЃРєРёРµ СЃРёРЅРѕРЅРёРјС‹
 			DataSet dsInerPrices = GlobalMySql.MySqlHelper.ExecuteDataset(masterConnection, @"
 select
   pc.PriceItemId,
@@ -1534,7 +1534,7 @@ and fr.Id = pim.FormRuleId
 and pf.Id = fr.PriceFormatId",
 					new MySqlParameter("?LockedSynonym", LockedSynonym));;
 
-			//Если в наборе данных будут записи, то добавляем их в список
+			//Р•СЃР»Рё РІ РЅР°Р±РѕСЂРµ РґР°РЅРЅС‹С… Р±СѓРґСѓС‚ Р·Р°РїРёСЃРё, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РёС… РІ СЃРїРёСЃРѕРє
 			if (dsInerPrices.Tables[0].Rows.Count > 0)
 			{				
 				foreach(DataRow drInerPrice in dsInerPrices.Tables[0].Rows)
@@ -1552,13 +1552,13 @@ and pf.Id = fr.PriceFormatId",
 
 			_statistics.Reset();
 
-			//Кол-во удаленных позиций - если оно равно кол-во нераспознанных позиций, то прайс автоматически проводится
+			//РљРѕР»-РІРѕ СѓРґР°Р»РµРЅРЅС‹С… РїРѕР·РёС†РёР№ - РµСЃР»Рё РѕРЅРѕ СЂР°РІРЅРѕ РєРѕР»-РІРѕ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РїРѕР·РёС†РёР№, С‚Рѕ РїСЂР°Р№СЃ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РїСЂРѕРІРѕРґРёС‚СЃСЏ
 			int DelCount = 0;
 			
 			formProgress.ApplyProgress = 1;
-			//Заполнение таблиц перед вставкой
+			//Р—Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС† РїРµСЂРµРґ РІСЃС‚Р°РІРєРѕР№
 
-			//Заполнили таблицу нераспознанных наименований для обновления
+			//Р—Р°РїРѕР»РЅРёР»Рё С‚Р°Р±Р»РёС†Сѓ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РЅР°РёРјРµРЅРѕРІР°РЅРёР№ РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ
 			MySqlDataAdapter daUnrecUpdate = new MySqlDataAdapter("select * from farm.UnrecExp where PriceItemId = ?PriceItemId", masterConnection);
 			MySqlCommandBuilder cbUnrecUpdate = new MySqlCommandBuilder(daUnrecUpdate);
 			daUnrecUpdate.SelectCommand.Parameters.AddWithValue("?PriceItemId", LockedPriceItemId);
@@ -1566,7 +1566,7 @@ and pf.Id = fr.PriceFormatId",
 			daUnrecUpdate.Fill(dtUnrecUpdate);
 			dtUnrecUpdate.Constraints.Add("UnicNameCode", dtUnrecUpdate.Columns["RowID"], true);
 
-			//Заполнили таблицу синонимов наименований
+			//Р—Р°РїРѕР»РЅРёР»Рё С‚Р°Р±Р»РёС†Сѓ СЃРёРЅРѕРЅРёРјРѕРІ РЅР°РёРјРµРЅРѕРІР°РЅРёР№
 			MySqlDataAdapter daSynonym = new MySqlDataAdapter("select * from farm.Synonym where PriceCode = ?PriceCode limit 0", masterConnection);
 			daSynonym.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 			DataTable dtSynonym = new DataTable();
@@ -1589,7 +1589,7 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			daSynonym.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 			
 			formProgress.ApplyProgress += 1;
-			//Заполнили таблицу синонимов производителей
+			//Р—Р°РїРѕР»РЅРёР»Рё С‚Р°Р±Р»РёС†Сѓ СЃРёРЅРѕРЅРёРјРѕРІ РїСЂРѕРёР·РІРѕРґРёС‚РµР»РµР№
 			MySqlDataAdapter daSynonymFirmCr = new MySqlDataAdapter("select sfc.* from farm.SynonymFirmCr sfc, farm.AutomaticProducerSynonyms aps where sfc.PriceCode = ?PriceCode and aps.ProducerSynonymId = sfc.SynonymFirmCrCode", masterConnection);
 			daSynonymFirmCr.SelectCommand.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 			DataTable dtSynonymFirmCr = new DataTable();
@@ -1628,7 +1628,7 @@ delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFir
 			formProgress.ApplyProgress += 1;
 
 			formProgress.ApplyProgress += 1;
-			//Заполнили таблицу запрещённых выражений
+			//Р—Р°РїРѕР»РЅРёР»Рё С‚Р°Р±Р»РёС†Сѓ Р·Р°РїСЂРµС‰С‘РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
 			MySqlDataAdapter daForbidden = new MySqlDataAdapter("select * from farm.Forbidden limit 0", masterConnection);
 			//MySqlCommandBuilder cbForbidden = new MySqlCommandBuilder(daForbidden);
 			DataTable dtForbidden = new DataTable();
@@ -1657,7 +1657,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 				var dr = gvUnrecExp.GetDataRow(i);
 				DelCount += UpDateUnrecExp(dtUnrecUpdate, dr, masterConnection);
 					
-				//Вставили новую запись в таблицу запрещённых выражений
+				//Р’СЃС‚Р°РІРёР»Рё РЅРѕРІСѓСЋ Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Сѓ Р·Р°РїСЂРµС‰С‘РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
 				if (!MarkForbidden(i, "UEAlready") && MarkForbidden(i, "UEStatus"))
 				{
 					DataRow newDR = dtForbidden.NewRow();
@@ -1672,7 +1672,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					catch(ConstraintException)
 					{}
 				}
-				//Вставили новую запись в таблицу синонимов наименований
+				//Р’СЃС‚Р°РІРёР»Рё РЅРѕРІСѓСЋ Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Сѓ СЃРёРЅРѕРЅРёРјРѕРІ РЅР°РёРјРµРЅРѕРІР°РЅРёР№
 				else if (NotNameForm(i, "UEAlready") && !NotNameForm(i, "UEStatus"))
 				{
 					DataRow newDR = dtSynonym.NewRow();
@@ -1691,7 +1691,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					catch (ConstraintException)
 					{}
 				}
-				//если сопоставили по производителю
+				//РµСЃР»Рё СЃРѕРїРѕСЃС‚Р°РІРёР»Рё РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ
 				if (NotFirmForm(i, "UEAlready") && !NotFirmForm(i, "UEStatus"))
 					forProducerSynonyms.Add(dr);
 			}
@@ -1717,49 +1717,58 @@ where pricecode = ?PriceCode", masterConnection);
 			if (changes != null)
 				_statistics.SynonymFirmCrCount += changes.Rows.Count;
 
-			formProgress.Status = "Применение изменений в базу данных...";
-			With.DeadlockWraper(c => {
-				var helper = new Common.MySql.MySqlHelper(masterConnection, null);
-				var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
-				commandHelper.AddParameter("?Host", Environment.MachineName);
-				commandHelper.AddParameter("?UserName", Environment.UserName.ToLower());
-				commandHelper.Execute();
+			formProgress.Status = "РџСЂРёРјРµРЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…...";
+			DataRow lastUpdateSynonym = null;
+			try
+			{
+				With.DeadlockWraper(c =>
+				{
+					var helper = new Common.MySql.MySqlHelper(masterConnection, null);
+					var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
+					commandHelper.AddParameter("?Host", Environment.MachineName);
+					commandHelper.AddParameter("?UserName", Environment.UserName.ToLower());
+					commandHelper.Execute();
 
-				//Заполнили таблицу логов для синонимов наименований
-				daSynonym.SelectCommand.Connection = c;
-				var dtSynonymCopy = dtSynonym.Copy();
-				daSynonym.Update(dtSynonymCopy);
+					//Р—Р°РїРѕР»РЅРёР»Рё С‚Р°Р±Р»РёС†Сѓ Р»РѕРіРѕРІ РґР»СЏ СЃРёРЅРѕРЅРёРјРѕРІ РЅР°РёРјРµРЅРѕРІР°РЅРёР№
+					daSynonym.SelectCommand.Connection = c;
+					var dtSynonymCopy = dtSynonym.Copy();
+					daSynonym.Update(dtSynonymCopy);
 
-				formProgress.ApplyProgress += 10;
+					formProgress.ApplyProgress += 10;
 
-				var insertExclude = new MySqlCommand(@"
+					var insertExclude =
+						new MySqlCommand(
+							@"
 insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow) 
-value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow);", masterConnection);
-				insertExclude.Parameters.AddWithValue("?PriceCode", LockedSynonym);
-				insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
-				insertExclude.Parameters.Add("?DoNotShow", MySqlDbType.Byte);
-				insertExclude.Parameters.Add("?CatalogId", MySqlDbType.UInt32);
+value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow);",
+							masterConnection);
+					insertExclude.Parameters.AddWithValue("?PriceCode", LockedSynonym);
+					insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
+					insertExclude.Parameters.Add("?DoNotShow", MySqlDbType.Byte);
+					insertExclude.Parameters.Add("?CatalogId", MySqlDbType.UInt32);
 
-				foreach (var exclude in excludes.Where(e => e.Id == 0))
-				{
-					insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
-					insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
-					insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
-				}
+					foreach (var exclude in excludes.Where(e => e.Id == 0))
+					{
+						insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
+						insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
+						insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
+					}
 
-				//Заполнили таблицу логов для синонимов производителей
-				daSynonymFirmCr.SelectCommand.Connection = c;
-				var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
-				foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
-				{
-					daSynonymFirmCr.InsertCommand.CommandText = insertSynonymProducerEtalonSQL;
-					daSynonymFirmCr.UpdateCommand.CommandText = updateSynonymProducerEtalonSQL;
+					//Р—Р°РїРѕР»РЅРёР»Рё С‚Р°Р±Р»РёС†Сѓ Р»РѕРіРѕРІ РґР»СЏ СЃРёРЅРѕРЅРёРјРѕРІ РїСЂРѕРёР·РІРѕРґРёС‚РµР»РµР№
+					daSynonymFirmCr.SelectCommand.Connection = c;
+					var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
+					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
+					{
+						lastUpdateSynonym = drInsertProducerSynonym;
+						daSynonymFirmCr.InsertCommand.CommandText = insertSynonymProducerEtalonSQL;
+						daSynonymFirmCr.UpdateCommand.CommandText = updateSynonymProducerEtalonSQL;
 
-					//обновляем по одному синониму производителя, т.к. может быть добавление в исключение
-					daSynonymFirmCr.Update(new[] { drInsertProducerSynonym });
-				}
+						//РѕР±РЅРѕРІР»СЏРµРј РїРѕ РѕРґРЅРѕРјСѓ СЃРёРЅРѕРЅРёРјСѓ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ, С‚.Рє. РјРѕР¶РµС‚ Р±С‹С‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ РІ РёСЃРєР»СЋС‡РµРЅРёРµ
+						daSynonymFirmCr.Update(new[] { drInsertProducerSynonym });
+					}
 
-				GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection, @"
+					GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection,
+						@"
 update 
 usersettings.pricescosts,
 usersettings.priceitems
@@ -1768,38 +1777,46 @@ priceitems.LastSynonymsCreation = now()
 where
 pricescosts.PriceCode = ?PriceCode
 and priceitems.Id = pricescosts.PriceItemId",
-							new MySqlParameter("?PriceCode", LockedSynonym)); 
-				formProgress.ApplyProgress += 10;
-					
-				//Заполнили таблицу логов для запрещённых выражений
-				daForbidden.SelectCommand.Connection = c;
-				var dtForbiddenCopy = dtForbidden.Copy();
-				daForbidden.Update(dtForbiddenCopy);
+						new MySqlParameter("?PriceCode", LockedSynonym));
+					formProgress.ApplyProgress += 10;
 
-				formProgress.ApplyProgress += 10;
-				//Обновление таблицы нераспознанных выражений
-				daUnrecUpdate.SelectCommand.Connection = c;
-				var dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
-				daUnrecUpdate.Update(dtUnrecUpdateCopy);
+					//Р—Р°РїРѕР»РЅРёР»Рё С‚Р°Р±Р»РёС†Сѓ Р»РѕРіРѕРІ РґР»СЏ Р·Р°РїСЂРµС‰С‘РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
+					daForbidden.SelectCommand.Connection = c;
+					var dtForbiddenCopy = dtForbidden.Copy();
+					daForbidden.Update(dtForbiddenCopy);
 
-				if (HasParentSynonym)
-				{
-					foreach (var rp in RetransedPriceList)
-						GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection, @"
+					formProgress.ApplyProgress += 10;
+					//РћР±РЅРѕРІР»РµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
+					daUnrecUpdate.SelectCommand.Connection = c;
+					var dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
+					daUnrecUpdate.Update(dtUnrecUpdateCopy);
+
+					if (HasParentSynonym)
+					{
+						foreach (var rp in RetransedPriceList)
+							GlobalMySql.MySqlHelper.ExecuteNonQuery(masterConnection,
+								@"
 delete
 from
 farm.UnrecExp
 where
 PriceItemId = ?DeletePriceItem
 and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?DeletePriceItem and bp.BlockBy <> ?LockUserName)",
-									new MySqlParameter("?DeletePriceItem", rp.PriceItemId),
-									new MySqlParameter("?LockUserName", Environment.UserName.ToLower()));
-				}
-				res = true;
+								new MySqlParameter("?DeletePriceItem", rp.PriceItemId),
+								new MySqlParameter("?LockUserName", Environment.UserName.ToLower()));
+					}
+					res = true;
 
-				formProgress.ApplyProgress +=10;
-			});
-			
+					formProgress.ApplyProgress += 10;
+				});
+			}
+			catch (Exception e)
+			{
+				if (e.Message.Contains("Duplicate entry"))
+					Mailer.SendDebugLog(dtSynonymFirmCr, e, lastUpdateSynonym);
+				throw;
+			}
+
 			formProgress.ApplyProgress = 80;
 
 			formProgress.Status = String.Empty;
@@ -1810,20 +1827,20 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			{
 				_logger.DebugFormat("res : {0}", res);
 
-				formProgress.Status = "Перепроведение пpайса...";
-				_logger.DebugFormat("Перепроведение пpайса...");
+				formProgress.Status = "РџРµСЂРµРїСЂРѕРІРµРґРµРЅРёРµ РїpР°Р№СЃР°...";
+				_logger.DebugFormat("РџРµСЂРµРїСЂРѕРІРµРґРµРЅРёРµ РїpР°Р№СЃР°...");
 				formProgress.ApplyProgress = 80;
 
 				while (RetransedPriceList.Count > 0)
 				{
-					_logger.DebugFormat("Перепроводим : {0}", RetransedPriceList[0].PriceItemId);
+					_logger.DebugFormat("РџРµСЂРµРїСЂРѕРІРѕРґРёРј : {0}", RetransedPriceList[0].PriceItemId);
 					try
 					{
 #if !DEBUG
 						if (!_priceProcessor.RetransPrice(Convert.ToUInt64(RetransedPriceList[0].PriceItemId)))
 						{
 							_logger.DebugFormat(
-								"При перепроведении priceitem {0} возникла ошибка : {1}",
+								"РџСЂРё РїРµСЂРµРїСЂРѕРІРµРґРµРЅРёРё priceitem {0} РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР° : {1}",
 								RetransedPriceList[0].PriceItemId, _priceProcessor.LastErrorMessage);
 						}
 #endif
@@ -1831,9 +1848,9 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					catch (Exception retransException)
 					{
 						if (formProgress != null)
-							formProgress.Error = "При перепроведении файлов возникла ошибка, которая отправлена разработчику.";
+							formProgress.Error = "РџСЂРё РїРµСЂРµРїСЂРѕРІРµРґРµРЅРёРё С„Р°Р№Р»РѕРІ РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР°, РєРѕС‚РѕСЂР°СЏ РѕС‚РїСЂР°РІР»РµРЅР° СЂР°Р·СЂР°Р±РѕС‚С‡РёРєСѓ.";
 						_logger.ErrorFormat(
-							"При перепроведении priceitem {0} возникла ошибка : {1}",
+							"РџСЂРё РїРµСЂРµРїСЂРѕРІРµРґРµРЅРёРё priceitem {0} РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР° : {1}",
 							RetransedPriceList[0].PriceItemId,
 							retransException);
 						Thread.Sleep(3000);
@@ -1841,7 +1858,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 					}
 					RetransedPriceList.RemoveAt(0);
 				}
-				_logger.DebugFormat("Перепроведение пpайса завершено.");
+				_logger.DebugFormat("РџРµСЂРµРїСЂРѕРІРµРґРµРЅРёРµ РїpР°Р№СЃР° Р·Р°РІРµСЂС€РµРЅРѕ.");
 			}
 			finally
 			{
@@ -1857,8 +1874,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			if (!Convert.IsDBNull(drUpdated[UEPriorProductId]) &&
 				CatalogHelper.IsHiddenProduct(masterConnection, Convert.ToInt64(drUpdated[UEPriorProductId])))
 			{
-				//Производим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
-				//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
+				//РџСЂРѕРёР·РІРѕРґРёРј РїСЂРѕРІРµСЂРєСѓ С‚РѕРіРѕ, С‡С‚Рѕ СЃРёРЅРѕРЅРёРј РјРѕР¶РµС‚ Р±С‹С‚СЊ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅ СЃРѕ СЃРєСЂС‹С‚С‹Рј РєР°С‚Р°Р»РѕР¶РЅС‹Рј РЅР°РёРјРµРЅРѕРІР°РЅРёРµРј
+				//Р•СЃР»Рё РІ РїСЂРѕС†РµСЃСЃРµ СЂР°СЃРїРѕР·РЅРѕРІР°РЅРёСЏ РєР°С‚Р°Р»РѕР¶РЅРѕРµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРєСЂС‹Р»Рё, С‚Рѕ СЃР±СЂР°СЃС‹РІР°РµРј СЂР°СЃРїРѕР·РЅР°РІР°РЅРёРµ
 				drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
 				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
 				_statistics.HideSynonymCount++;
@@ -1867,8 +1884,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			if (Convert.IsDBNull(drUpdated[UEProductSynonymId.ColumnName]) &&
 				CatalogHelper.IsSynonymExists(masterConnection, LockedSynonym, drUpdated["UEName1"].ToString()))
 			{
-				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
+				//РџСЂРѕРёР·РІРѕРґРёРј РїСЂРѕРІРµСЂРєСѓ С‚РѕРіРѕ, С‡С‚Рѕ СЃРёРЅРѕРЅРёРј РјРѕР¶РµС‚ Р±С‹С‚СЊ СѓР¶Рµ РІСЃС‚Р°РІР»РµРЅ РІ С‚Р°Р±Р»РёС†Сѓ СЃРёРЅРѕРЅРёРјРѕРІ
+				//Р•СЃР»Рё РІ РїСЂРѕС†РµСЃСЃРµ СЂР°СЃРїРѕР·РЅРѕРІР°РЅРёСЏ СЃРёРЅРѕРЅРёРј СѓР¶Рµ РєС‚Рѕ-С‚Рѕ РґРѕР±Р°РІРёР», С‚Рѕ СЃР±СЂР°СЃС‹РІР°РµРј СЂР°СЃРїРѕР·РЅР°РІР°РЅРёРµ
 				drUpdated[UEPriorProductId.ColumnName] = DBNull.Value;
 				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.NameForm));
 				_statistics.DuplicateSynonymCount++;
@@ -1879,8 +1896,8 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 				&& Convert.IsDBNull(drUpdated[UEProducerSynonymId.ColumnName])
 				&& CatalogHelper.IsProducerSynonymExists(masterConnection, LockedSynonym, drUpdated[UEFirmCr.ColumnName].ToString()))
 			{
-				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
+				//РџСЂРѕРёР·РІРѕРґРёРј РїСЂРѕРІРµСЂРєСѓ С‚РѕРіРѕ, С‡С‚Рѕ СЃРёРЅРѕРЅРёРј РјРѕР¶РµС‚ Р±С‹С‚СЊ СѓР¶Рµ РІСЃС‚Р°РІР»РµРЅ РІ С‚Р°Р±Р»РёС†Сѓ СЃРёРЅРѕРЅРёРјРѕРІ
+				//Р•СЃР»Рё РІ РїСЂРѕС†РµСЃСЃРµ СЂР°СЃРїРѕР·РЅРѕРІР°РЅРёСЏ СЃРёРЅРѕРЅРёРј СѓР¶Рµ РєС‚Рѕ-С‚Рѕ РґРѕР±Р°РІРёР», С‚Рѕ СЃР±СЂР°СЃС‹РІР°РµРј СЂР°СЃРїРѕР·РЅР°РІР°РЅРёРµ
 				drUpdated[UEPriorProducerId.ColumnName] = DBNull.Value;
 				drUpdated[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUpdated[UEStatus.ColumnName]) & (~FormMask.FirmForm));
 				_statistics.DuplicateProducerSynonymCount++;
@@ -1902,14 +1919,14 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 		{
 			switch(e.KeyCode)
 			{
-					//Если нажали F12 на вкладке нераспознанные выражения, то завершаем распознование
+					//Р•СЃР»Рё РЅР°Р¶Р°Р»Рё F12 РЅР° РІРєР»Р°РґРєРµ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹Рµ РІС‹СЂР°Р¶РµРЅРёСЏ, С‚Рѕ Р·Р°РІРµСЂС€Р°РµРј СЂР°СЃРїРѕР·РЅРѕРІР°РЅРёРµ
 				case Keys.F12:
 					if (tcMain.SelectedTab == tpUnrecExp)
 					{
 						DialogResult DRes;
-						DRes = MessageBox.Show("Сохранить результаты?" , "Вопрос", MessageBoxButtons.YesNoCancel);
+						DRes = MessageBox.Show("РЎРѕС…СЂР°РЅРёС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚С‹?" , "Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNoCancel);
 						UnlockJob(DRes);
-						//Проверяем каталог после выхода из распознавания прайс-листа
+						//РџСЂРѕРІРµСЂСЏРµРј РєР°С‚Р°Р»РѕРі РїРѕСЃР»Рµ РІС‹С…РѕРґР° РёР· СЂР°СЃРїРѕР·РЅР°РІР°РЅРёСЏ РїСЂР°Р№СЃ-Р»РёСЃС‚Р°
 						CheckCatalog();
 					}
 					break;
@@ -1972,7 +1989,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			catch (Exception exception)
 			{
 				ILog _logger = LogManager.GetLogger(this.GetType());
-				_logger.Error("Ошибка при блокировании задания", exception);
+				_logger.Error("РћС€РёР±РєР° РїСЂРё Р±Р»РѕРєРёСЂРѕРІР°РЅРёРё Р·Р°РґР°РЅРёСЏ", exception);
 				return false;
 			}
 		}
@@ -2001,7 +2018,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 				else
 					BigNameLabel2.Text = GetFullUnrecName(FocusedRowHandle);
 
-				sbpCurrent.Text = String.Format("Текущая позиция: {0}", FocusedRowHandle+1);
+				sbpCurrent.Text = String.Format("РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ: {0}", FocusedRowHandle+1);
 			}
 			else
 				sbpCurrent.Text = String.Empty;
@@ -2018,7 +2035,7 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 			{
 				DataRow dr = gvUnrecExp.GetDataRow(FocusedRowHandle);
 				if (dr != null)
-					//todo: здесь получается фигня с добавлением пробелов в конце строки
+					//todo: Р·РґРµСЃСЊ РїРѕР»СѓС‡Р°РµС‚СЃСЏ С„РёРіРЅСЏ СЃ РґРѕР±Р°РІР»РµРЅРёРµРј РїСЂРѕР±РµР»РѕРІ РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
 					return String.Format("{0}  ", dr["UEName1"]);
 				return String.Empty;
 			}
@@ -2032,48 +2049,48 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 				int v1 = (int)e.Value1;
 				int v2 = (int)e.Value2;
 				e.Handled = true;
-				//todo: здесь происходит сортировка по статусу Already
+				//todo: Р·РґРµСЃСЊ РїСЂРѕРёСЃС…РѕРґРёС‚ СЃРѕСЂС‚РёСЂРѕРІРєР° РїРѕ СЃС‚Р°С‚СѓСЃСѓ Already
 				/*
-				 * Предыдущие значения статуса
+				 * РџСЂРµРґС‹РґСѓС‰РёРµ Р·РЅР°С‡РµРЅРёСЏ СЃС‚Р°С‚СѓСЃР°
 	[FlagsAttribute]
 	public enum FormMask : byte
 	{
-		//Сопоставлено по наименованию
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ
 		NameForm = 1,
-		//Сопоставлено по производителю
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ
 		FirmForm = 2,
-		//Сопоставлено по валюте
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РІР°Р»СЋС‚Рµ
 		CurrForm = 4,
-		//Помечено как запрещенное
+		//РџРѕРјРµС‡РµРЅРѕ РєР°Рє Р·Р°РїСЂРµС‰РµРЅРЅРѕРµ
 		MarkForb = 8,
-		//Отсутствует в ассортименте
+		//РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РІ Р°СЃСЃРѕСЂС‚РёРјРµРЅС‚Рµ
 		AssortmentAbsent = 16,
-		//Помечено как исключение
+		//РџРѕРјРµС‡РµРЅРѕ РєР°Рє РёСЃРєР»СЋС‡РµРЅРёРµ
 		MarkExclude = 32
 	}
 				 * 
 	[FlagsAttribute]
 	public enum FormMask : byte
 	{
-		//Сопоставлено по наименованию
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ
 		NameForm = 1,
-		//Сопоставлено по производителю
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ
 		FirmForm = 2,
-		//Сопоставлено по валюте
+		//РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РІР°Р»СЋС‚Рµ
 		AssortmentForm = 4,
-		// Полностью формализован по наименованию, производителю и ассортименту
+		// РџРѕР»РЅРѕСЃС‚СЊСЋ С„РѕСЂРјР°Р»РёР·РѕРІР°РЅ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ, РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ Рё Р°СЃСЃРѕСЂС‚РёРјРµРЅС‚Сѓ
 		FullForm = 7, 
-		//Помечено как запрещенное
+		//РџРѕРјРµС‡РµРЅРѕ РєР°Рє Р·Р°РїСЂРµС‰РµРЅРЅРѕРµ
 		MarkForb = 8,
-		// Помеченый как исключение
+		// РџРѕРјРµС‡РµРЅС‹Р№ РєР°Рє РёСЃРєР»СЋС‡РµРЅРёРµ
 		MarkExclude	   = 16,
-		// Формализован по наименованию, производителю и как исключение
+		// Р¤РѕСЂРјР°Р»РёР·РѕРІР°РЅ РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ, РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ Рё РєР°Рє РёСЃРєР»СЋС‡РµРЅРёРµ
 		ExcludeForm    = 19 
 	}
 				 * 
 				 * 
 				 * 
-				 * Нужно будет переписать сортировку с новыми значениями статуса
+				 * РќСѓР¶РЅРѕ Р±СѓРґРµС‚ РїРµСЂРµРїРёСЃР°С‚СЊ СЃРѕСЂС‚РёСЂРѕРІРєСѓ СЃ РЅРѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё СЃС‚Р°С‚СѓСЃР°
 				 */
 				if (v1 == v2)
 					e.Result = 0;
@@ -2103,9 +2120,9 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 		    if (e.Column == colJWholeSale)
 		    {
 			    if (e.Value.ToString() == "0")
-				    e.DisplayText = "Опт";
+				    e.DisplayText = "РћРїС‚";
 			    else
-				    e.DisplayText = "Розница";
+				    e.DisplayText = "Р РѕР·РЅРёС†Р°";
 		    }
 		}
 
@@ -2218,12 +2235,12 @@ and not Exists(select * from farm.blockedprice bp where bp.PriceItemId = ?Delete
 		}
 
 		/// <summary>
-		/// Получить текст контактов из базы
+		/// РџРѕР»СѓС‡РёС‚СЊ С‚РµРєСЃС‚ РєРѕРЅС‚Р°РєС‚РѕРІ РёР· Р±Р°Р·С‹
 		/// </summary>
-		/// <param name="FirmCode">Код поставщика</param>
-		/// <param name="ContactGroupType">Тип контактной группы: 0 - General, 1 - ClientManager, 2 - OrderManager, 3 - Accountant</param>
-		/// <param name="ContactType">Тип контакта: 0 - Email, 1 - Phone</param>
-		/// <returns>Текст контактов, разделенный ";"</returns>
+		/// <param name="FirmCode">РљРѕРґ РїРѕСЃС‚Р°РІС‰РёРєР°</param>
+		/// <param name="ContactGroupType">РўРёРї РєРѕРЅС‚Р°РєС‚РЅРѕР№ РіСЂСѓРїРїС‹: 0 - General, 1 - ClientManager, 2 - OrderManager, 3 - Accountant</param>
+		/// <param name="ContactType">РўРёРї РєРѕРЅС‚Р°РєС‚Р°: 0 - Email, 1 - Phone</param>
+		/// <returns>РўРµРєСЃС‚ РєРѕРЅС‚Р°РєС‚РѕРІ, СЂР°Р·РґРµР»РµРЅРЅС‹Р№ ";"</returns>
 		private string GetContactText(long FirmCode, byte ContactGroupType, byte ContactType)
 		{
 			DataSet dsContacts = null;
@@ -2376,19 +2393,19 @@ and c.Type = ?ContactType;",
 		private void gvUnrecExp_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)
 		{
 			if (e.Column == colUEJunk)
-				e.DisplayText = ((byte)e.Value == 1) ? "Да" : "Нет";
+				e.DisplayText = ((byte)e.Value == 1) ? "Р”Р°" : "РќРµС‚";
 		}
 
 		private void gvProducts_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)
 		{
 			if ((e.Column.Name == colProperties.Name) && (e.Value is DBNull))
-				e.DisplayText = "[не установленны]";
+				e.DisplayText = "[РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹]";
 		}
 
 		private void gcFirmCr_KeyDown(object sender, KeyEventArgs e)
 		{
-			//Здесь будет обработка производителя
-			//Снимаем фильтр при поиске
+			//Р—РґРµСЃСЊ Р±СѓРґРµС‚ РѕР±СЂР°Р±РѕС‚РєР° РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ
+			//РЎРЅРёРјР°РµРј С„РёР»СЊС‚СЂ РїСЂРё РїРѕРёСЃРєРµ
 			//if (((e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z) || e.KeyCode == Keys.OemCloseBrackets ||
 			//    e.KeyCode == Keys.OemOpenBrackets || e.KeyCode == Keys.OemSemicolon || e.KeyCode == Keys.OemQuotes ||
 			//    e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.OemPeriod || e.KeyCode == Keys.OemQuestion ||
@@ -2420,7 +2437,7 @@ and c.Type = ?ContactType;",
 
 			if (e.KeyCode == Keys.Enter)
 			{
-				// Если не сопоставлено по производителю
+				// Р•СЃР»Рё РЅРµ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРѕ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ
 				if ((((FormMask) Convert.ToByte(current[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm))
 				{
 					DoSynonymFirmCr();
@@ -2478,12 +2495,12 @@ and c.Type = ?ContactType;",
 			if (String.IsNullOrEmpty(dtUnrecExp.DefaultView.RowFilter))
 			{
 				dtUnrecExp.DefaultView.RowFilter = "UEAlready <> 1";
-				btnHideUnformFirmCr.Text = "Показать все";
+				btnHideUnformFirmCr.Text = "РџРѕРєР°Р·Р°С‚СЊ РІСЃРµ";
 			}
 			else
 			{
 				dtUnrecExp.DefaultView.RowFilter = null;
-				btnHideUnformFirmCr.Text = "Скрыть нераспознанные только по производителю";
+				btnHideUnformFirmCr.Text = "РЎРєСЂС‹С‚СЊ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹Рµ С‚РѕР»СЊРєРѕ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ";
 			}
 
 			UnrecExpGridControl.Focus();
@@ -2510,15 +2527,15 @@ and c.Type = ?ContactType;",
 				var index = displayText.IndexOf(producerSeachText, 
 					StringComparison.OrdinalIgnoreCase);
 				if (index == 0)
-					//если найденный текст в начале строки
+					//РµСЃР»Рё РЅР°Р№РґРµРЅРЅС‹Р№ С‚РµРєСЃС‚ РІ РЅР°С‡Р°Р»Рµ СЃС‚СЂРѕРєРё
 					e.Cache.Paint.DrawMultiColorString(e.Cache, e.Bounds, displayText, 
 						displayText.Substring(index, producerSeachText.Length), 
 						e.Appearance, Color.Black, Color.Yellow, false);
 				else
 					if (index + producerSeachText.Length == displayText.Length)
 					{
-						//если найденный текст в конце строки
-						//должен работать вызов этого метода, но он почему-то не работает, поэтому переписано ниже
+						//РµСЃР»Рё РЅР°Р№РґРµРЅРЅС‹Р№ С‚РµРєСЃС‚ РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
+						//РґРѕР»Р¶РµРЅ СЂР°Р±РѕС‚Р°С‚СЊ РІС‹Р·РѕРІ СЌС‚РѕРіРѕ РјРµС‚РѕРґР°, РЅРѕ РѕРЅ РїРѕС‡РµРјСѓ-С‚Рѕ РЅРµ СЂР°Р±РѕС‚Р°РµС‚, РїРѕСЌС‚РѕРјСѓ РїРµСЂРµРїРёСЃР°РЅРѕ РЅРёР¶Рµ
 						//e.Cache.Paint.DrawMultiColorString(e.Cache, e.Bounds, displayText, displayText.Substring(0, index), e.Appearance, Color.Black, Color.Yellow, true);
 						MultiColorDrawStringParams param = new MultiColorDrawStringParams(e.Appearance);
 						param.Text = displayText;
@@ -2532,7 +2549,7 @@ and c.Type = ?ContactType;",
 					}
 					else
 					{
-						//если найденный текст в середине строки
+						//РµСЃР»Рё РЅР°Р№РґРµРЅРЅС‹Р№ С‚РµРєСЃС‚ РІ СЃРµСЂРµРґРёРЅРµ СЃС‚СЂРѕРєРё
 						MultiColorDrawStringParams param = new MultiColorDrawStringParams(e.Appearance);
 						param.Text = displayText;
 						param.Bounds = e.Bounds;

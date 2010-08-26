@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -89,6 +89,8 @@ namespace UEEditor
 
 		public static ProducerSynonym CreateSynonym(DbDataRecord record)
 		{
+			if (record == null)
+				return null;
 			if (record["CatalogId"] is DBNull && !(record["ProducerId"] is DBNull))
 			{
 				return new ProducerSynonym {
@@ -107,7 +109,9 @@ namespace UEEditor
 		public static ProducerSynonym CreateSynonym(DataRow row, uint producerId)
 		{
 			if (producerId != 0)
+			{
 				return new ProducerSynonym(row, producerId);
+			}
 			else
 				return new Exclude {
 					Name = row["UEFirmCr"].ToString(),
@@ -136,6 +140,15 @@ namespace UEEditor
 			synonyms = new List<ProducerSynonym>();
 		}
 
+		
+		public static Query LoadSynonym()
+		{
+			return new Query()
+				.Select("sfc.SynonymFirmCrCode, sfc.CodeFirmCr as ProducerId, sfc.Synonym, null as CatalogId")
+				.From("Farm.SynonymFirmCr sfc")
+				.Where("sfc.PriceCode = ?PriceId", new {priceId});
+		}
+
 		public static void UpdateStatusByProduct(DataRow item, uint productId, uint catalogId, bool markAsJunk)
 		{
 			var table = item.Table;
@@ -152,7 +165,7 @@ namespace UEEditor
 				{
 					if (((FormMask)Convert.ToByte(row["UEStatus"]) & FormMask.NameForm) != FormMask.NameForm)
 					{
-						//TODO: Здесь потребуется завести дополнительный столбец в таблицу нераспознанных выражений
+						//TODO: Р—РґРµСЃСЊ РїРѕС‚СЂРµР±СѓРµС‚СЃСЏ Р·Р°РІРµСЃС‚Рё РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ СЃС‚РѕР»Р±РµС† РІ С‚Р°Р±Р»РёС†Сѓ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
 						row["UEStatus"] = (int)((FormMask)Convert.ToByte(row["UEStatus"]) | FormMask.NameForm);
 						row["UEJunk"] = Convert.ToByte(markAsJunk);
 						row["UEPriorProductId"] = productId;
@@ -180,7 +193,15 @@ namespace UEEditor
 			var assortment = LoadAssortmentByProducer(producerId);
 
 			var synonym = ProducerSynonym.CreateSynonym(item, producerId);
-			synonyms.Add(synonym);
+			
+			var loadedSynonym = LoadSynonym()
+				.Where("sfc.Synonym = ?Name && sfc.CodeFirmCr = ?ProducerId", new {synonym.Name, synonym.ProducerId})
+				.SingleOrDefault(ProducerSynonym.CreateSynonym);
+
+			if (loadedSynonym != null)
+				synonym = loadedSynonym;
+			else
+				synonyms.Add(synonym);
 
 			for(var i = 0; i < table.Rows.Count; i++)
 			{
@@ -209,7 +230,7 @@ where sfc.Synonym = ?Synonym and sfc.PriceCode = ?PriceCode and sfc.CodeFirmCr i
 select sfc.SynonymFirmCrCode, sfc.CodeFirmCr as ProducerId, sfc.Synonym, e.CatalogId
 from Farm.Excludes e
 join Farm.SynonymFirmCr sfc on sfc.Synonym = e.ProducerSynonym and e.PriceCode = sfc.PriceCode
-where sfc.Synonym = ?Synonym and sfc.PriceCode = ?PriceCode and sfc.CodeFirmCr is not null
+where sfc.Synonym = ?Synonym and sfc.PriceCode = ?PriceCode and sfc.CodeFirmCr is null
 group by e.CatalogId, sfc.Synonym", c);
 				command.Parameters.AddWithValue("?PriceCode", priceId);
 				command.Parameters.AddWithValue("?Synonym", synonym);

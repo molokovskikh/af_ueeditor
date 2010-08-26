@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace UEEditor
 	{
 		public static void UpdateProducerSynonym(List<DataRow> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr, uint priceId, uint childPriceId, Statistics stat)
 		{
-			//priceprocessor создает на одно наименование один синоним, но в результате сопоставления мы можем получить два разных синонима
+			//priceprocessor СЃРѕР·РґР°РµС‚ РЅР° РѕРґРЅРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РѕРґРёРЅ СЃРёРЅРѕРЅРёРј, РЅРѕ РІ СЂРµР·СѓР»СЊС‚Р°С‚Рµ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёСЏ РјС‹ РјРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ РґРІР° СЂР°Р·РЅС‹С… СЃРёРЅРѕРЅРёРјР°
 			var synonyms = rows.Select(r => (ProducerSynonym) r["SynonymObject"]);
 			var groups = synonyms.Where(s => !(s is Exclude)).GroupBy(s => new {s.ProducerId, s.Name});
 			foreach (var synonymGroup in groups)
