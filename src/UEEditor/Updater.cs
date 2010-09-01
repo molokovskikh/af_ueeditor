@@ -6,6 +6,7 @@ using System.Linq;
 using Common.MySql;
 using log4net;
 using MySql.Data.MySqlClient;
+using RemotePriceProcessor;
 using UEEditor.Helpers;
 using MySqlHelper = MySql.Data.MySqlClient.MySqlHelper;
 
@@ -34,12 +35,14 @@ namespace UEEditor
 		private Statistics stat = new Statistics();
 
 		private ILog _logger = LogManager.GetLogger(typeof(Updater));
+		private PriceProcessorWcfHelper _remotePriceProcessor;
 
-		public Updater(uint priceId, uint childPriceId, uint priceItemId)
+		public Updater(uint priceId, uint childPriceId, uint priceItemId, PriceProcessorWcfHelper remotePriceProcessor)
 		{
 			this.priceId = priceId;
 			this.childPriceId = childPriceId;
 			this.priceItemId = priceItemId;
+			_remotePriceProcessor = remotePriceProcessor;
 		}
 
 		public void UpdateProducerSynonym(List<DataRow> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr)
@@ -435,7 +438,7 @@ and priceitems.Id = pricescosts.PriceItemId",
 			try
 			{
 #if !DEBUG
-				_priceProcessor.RetransPriceSmart(priceId);
+				_remotePriceProcessor.RetransPriceSmart(priceId);
 #endif
 			}
 			catch (Exception e)

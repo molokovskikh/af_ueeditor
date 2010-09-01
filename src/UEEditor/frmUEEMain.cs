@@ -1482,7 +1482,7 @@ WHERE PriceItemId= ?PriceItemId",
 			using (var connection = new MySqlConnection(ConfigurationManager.ConnectionStrings["Main"].ConnectionString))
 			{
 				connection.Open();
-				var updater = new Updater((uint) LockedSynonym, (uint) LockedPriceCode, (uint) LockedPriceItemId);
+				var updater = new Updater((uint) LockedSynonym, (uint) LockedPriceCode, (uint) LockedPriceItemId, _priceProcessor);
 				var list = new List<DataRow>();
 				for (var i = 0; i < gvUnrecExp.RowCount; i++)
 				{

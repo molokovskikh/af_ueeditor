@@ -60,6 +60,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="RemotePriceProcessor">
+      <HintPath>..\..\lib\RemotePriceProcessor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">

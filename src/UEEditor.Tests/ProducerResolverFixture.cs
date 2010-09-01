@@ -118,7 +118,7 @@ namespace UEEditor.Tests
 
 		private void Save()
 		{
-			var updater = new Updater(price.Id, price.Id, price.Costs.First().PriceItem.Id);
+			var updater = new Updater(price.Id, price.Id, price.Costs.First().PriceItem.Id, null);
 			using (var connection = new MySqlConnection(ConfigurationManager.ConnectionStrings["Main"].ConnectionString))
 			{
 				connection.Open();
