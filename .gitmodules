@@ -4,3 +4,6 @@
 [submodule "src/Common.MySql"]
 	path = src/Common.MySql
 	url = ssh://kvasov:qwerty@git.analit.net/var/www/git/Common.MySql
+[submodule "src/Test.Support"]
+	path = src/Test.Support
+	url = ssh://kvasov@git.analit.net/var/www/git/Test.Support

@@ -9,7 +9,7 @@ namespace UEEditor
 	/// <summary>
 	/// Summary description for Form1.
 	/// </summary>
-	public class frmProgress : System.Windows.Forms.Form
+	public class frmProgress : System.Windows.Forms.Form, IProgressNotifier
 	{
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Label lblWait;
@@ -21,9 +21,6 @@ namespace UEEditor
 		private System.Windows.Forms.ImageList imgList;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textBox1;
-		public byte ApplyProgress = 0;
-		public string Status = String.Empty;
-		public string Error = String.Empty;
 
 		public frmProgress()
 		{
@@ -163,5 +160,10 @@ namespace UEEditor
 				this.DialogResult = DialogResult.OK;
 		}
 
+		public string Status { get; set; }
+
+		public string Error { get; set; }
+
+		public int ApplyProgress{ get; set; }
 	}
 }
