@@ -94,7 +94,7 @@ namespace UEEditor
 
 		private void UpdateSynonym(DataRow synonym, ProducerSynonym producerSynonym)
 		{
-			if (synonym.RowState == DataRowState.Modified)
+			if (!(synonym["Processed"] is DBNull) && Convert.ToBoolean(synonym["Processed"]))
 			{
 				CreateSynonym(synonym.Table, producerSynonym);
 				return;
@@ -105,6 +105,7 @@ namespace UEEditor
 			else
 				synonym["CodeFirmCr"] = DBNull.Value;
 			synonym["PriceCode"] = priceId;
+			synonym["Processed"] = true;
 			if (priceId != childPriceId)
 				synonym["ChildPriceCode"] = childPriceId;
 		}
@@ -227,6 +228,7 @@ insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, Sy
 			daSynonymFirmCr.Fill(dtSynonymFirmCr);
 			dtSynonymFirmCr.Constraints.Add("UnicNameCode", new[] {dtSynonymFirmCr.Columns["Synonym"], dtSynonymFirmCr.Columns["CodeFirmCr"]}, false);
 			dtSynonymFirmCr.Columns.Add("ChildPriceCode", typeof(long));
+			dtSynonymFirmCr.Columns.Add("Processed", typeof(bool));
 			daSynonymFirmCr.InsertCommand = new MySqlCommand(
 				@"
 insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym) values (?PriceCode, ?CodeFirmCr, ?Synonym);
