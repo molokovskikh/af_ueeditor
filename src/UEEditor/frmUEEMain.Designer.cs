@@ -240,7 +240,6 @@ namespace UEEditor
 			this.dtCatalogFirmCr = new System.Data.DataTable();
 			this.CCodeFirmCr = new System.Data.DataColumn();
 			this.CFirmCr = new System.Data.DataColumn();
-			this.CIsAssortment = new System.Data.DataColumn();
 			this.dtSections = new System.Data.DataTable();
 			this.SSection = new System.Data.DataColumn();
 			this.dtCatalogNames = new System.Data.DataTable();
@@ -782,8 +781,7 @@ namespace UEEditor
 			// 
 			this.dtCatalogFirmCr.Columns.AddRange(new System.Data.DataColumn[] {
             this.CCodeFirmCr,
-            this.CFirmCr,
-            this.CIsAssortment});
+            this.CFirmCr});
 			this.dtCatalogFirmCr.TableName = "CatalogFirmCrGrid";
 			// 
 			// CCodeFirmCr
@@ -795,11 +793,6 @@ namespace UEEditor
 			// CFirmCr
 			// 
 			this.CFirmCr.ColumnName = "CName";
-			// 
-			// CIsAssortment
-			// 
-			this.CIsAssortment.ColumnName = "CIsAssortment";
-			this.CIsAssortment.DataType = typeof(bool);
 			// 
 			// dtSections
 			// 
@@ -1602,7 +1595,6 @@ namespace UEEditor
 			this.gvFirmCr.OptionsView.ShowGroupPanel = false;
 			this.gvFirmCr.CustomDrawCell += new DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventHandler(this.gvFirmCr_CustomDrawCell);
 			this.gvFirmCr.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
-			this.gvFirmCr.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvFirmCr_RowStyle);
 			// 
 			// colFirmCrName
 			// 
@@ -1928,6 +1920,5 @@ namespace UEEditor
 		private System.Windows.Forms.Panel pFirmCr;
 		private System.Windows.Forms.TextBox tbProducerSearch;
 		private System.Windows.Forms.Timer ProducerSearchTimer;
-		private System.Data.DataColumn CIsAssortment;
 	}
 }

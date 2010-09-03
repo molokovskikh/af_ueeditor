@@ -352,147 +352,44 @@ order by Name"
 			});
 		}
 
-		private void ProducersGridFillByName(string name, uint productId)
+		private void ProducersGridFillByName(string name, uint catalogId)
 		{
-			With.Slave((slaveConnection) => {
+			ProducerQuery
+				.Query(q => {
+					q.Producers
+						.Where("a.CatalogId = ?CatalogId", new {catalogId})
+						.Where("(" + GetFilterString(name, "p.Name", "  ") + ") ");
+					q.Equivalents
+						.Where("a.CatalogId = ?CatalogId", new {catalogId})
+						.Where("(" + GetFilterString(name, "pe.Name", "  ") + ") ");
+				})
+				.Load(dtCatalogFirmCr);
 
-				var commandHelper = new CommandHelper(new MySqlCommand(@"
-SELECT
-  p.Id As CCode,
-  p.Name As CName,
-  1 as CIsAssortment
-FROM
-  catalogs.products, 
-  catalogs.assortment a,
-  catalogs.Producers P
-where
-    (products.Id = ?ProductId)
-and (a.CatalogId = products.CatalogId)
-and (p.Id = a.ProducerId)
-and (" + GetFilterString(name, "p.Name", "  ") + ") " +
-@"
-union
-SELECT
-  p.Id As CCode,
-  pe.Name As CName,
-  1 as CIsAssortment
-FROM
-  catalogs.products, 
-  catalogs.assortment a,
-  catalogs.Producers P,
-  catalogs.ProducerEquivalents PE
-where
-    (products.Id = ?ProductId)
-and (a.CatalogId = products.CatalogId)
-and (p.Id = a.ProducerId)
-and (pe.ProducerId = p.Id)
-and (" + GetFilterString(name, "PE.Name", "  ") + ") " +
-		"order by CName",slaveConnection));
-
-				commandHelper.AddParameter("?LockedSynonym", LockedSynonym);
-				commandHelper.AddParameter("?Name", name);
-				commandHelper.AddParameter("?ProductId", productId);
-
-				dtCatalogFirmCr.Clear();
-
-				commandHelper.Fill(dsMain, dtCatalogFirmCr.TableName);
-				if (dtCatalogFirmCr.Rows.Count == 0)
-				{
-					dtCatalogFirmCr.Clear();
-
-					commandHelper = new CommandHelper(new MySqlCommand(@"
-SELECT
-  p.Id As CCode,
-  p.Name As CName,
-  1 as CIsAssortment
-FROM
-  catalogs.products, 
-  catalogs.assortment a,
-  catalogs.Producers P
-where
-    products.Id = ?ProductId
-and a.CatalogId = products.CatalogId
-and p.Id = a.ProducerId
-
-union
-
-SELECT
-  p.Id As CCode,
-  pe.Name As CName,
-  1 as CIsAssortment
-FROM
-  catalogs.products, 
-  catalogs.assortment a,
-  catalogs.Producers P,
-  catalogs.ProducerEquivalents PE
-where
-    (products.Id = ?ProductId)
-and (a.CatalogId = products.CatalogId)
-and (p.Id = a.ProducerId)
-and (pe.ProducerId = p.Id)
-order by CName", slaveConnection));
-					commandHelper.AddParameter("?LockedSynonym", LockedSynonym);
-					commandHelper.AddParameter("?Name", name);
-					commandHelper.AddParameter("?ProductId", productId);
-					commandHelper.Fill(dsMain, dtCatalogFirmCr.TableName);
-				}
-
-				//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
-				DataRow drUnknown = dtCatalogFirmCr.NewRow();
-				drUnknown["CCode"] = 0;
-				drUnknown["CName"] = unknownProducer;
-				drUnknown[CIsAssortment.ColumnName] = true;
-				dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
-
-			});
+			if (dtCatalogFirmCr.Rows.Count == 1)
+			{
+				ProducerQuery
+					.Query(q => {
+						q.Producers
+							.Where("a.CatalogId = ?CatalogId", new {catalogId});
+						q.Equivalents
+							.Where("a.CatalogId = ?CatalogId", new {catalogId});
+					})
+					.Load(dtCatalogFirmCr);
+			}
 		}
 
-		private void ProducersGridFillByFilter(string name, string filter, long? productId)
+		private void ProducersGridFillByFilter(string filter, uint catalogId)
 		{
-			dtCatalogFirmCr.Clear();
-			With.Slave((slaveConnection) => {
-				long catalogId = Convert.ToInt64(GlobalMySql.MySqlHelper.ExecuteScalar(
-					slaveConnection, 
-					"select CatalogId from catalogs.products where Id = ?ProductId",
-					new MySqlParameter("?ProductId", productId)));
-				var commandHelper = new CommandHelper(new MySqlCommand(@"
-SELECT
-  p.Id As CCode,
-  p.Name As CName,
-  1 as CIsAssortment
-FROM catalogs.Producers P
-  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id
-where p.Name like ?filter
-
-union
-
-SELECT
-  p.Id As CCode,
-  pe.Name As CName,
-  1 as CIsAssortment
-FROM catalogs.Producers P
-  join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id
-  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id
-where  pe.Name like ?filter
-order by CName", slaveConnection));
-
-				commandHelper.AddParameter("?LockedSynonym", LockedSynonym);
-				commandHelper.AddParameter("?Name", name);
-				commandHelper.AddParameter("?filter", "%" + filter + "%");
-				commandHelper.AddParameter("?CatalogId", catalogId);
-
-
-				dtCatalogFirmCr.Clear();
-
-				commandHelper.Fill(dsMain, dtCatalogFirmCr.TableName);
-
-				//Добавляем в начало таблицы определенную запись, обозначающую понятие "производитель не известен"
-				DataRow drUnknown = dtCatalogFirmCr.NewRow();
-				drUnknown["CCode"] = 0;
-				drUnknown["CName"] = unknownProducer;
-				drUnknown[CIsAssortment.ColumnName] = true;
-				dtCatalogFirmCr.Rows.InsertAt(drUnknown, 0);
-			});
+			ProducerQuery
+				.Query(q => {
+					q.Producers
+						.Where("a.CatalogId = ?CatalogId", new {catalogId})
+						.Where("p.Name like ?filter", new {filter});
+					q.Equivalents
+						.Where("a.CatalogId = ?CatalogId", new {catalogId})
+						.Where("pe.Name like ?filter", new {filter});
+				})
+				.Load(dtCatalogFirmCr);
 		}
 
 		private void FormGridFill()
@@ -901,7 +798,7 @@ WHERE PriceItemId= ?PriceItemId",
 			{
 				ProducersGridFillByName(
 					dr[UEFirmCr.ColumnName].ToString(),
-					Convert.ToUInt32(dr[UEPriorProductId.ColumnName]));
+					Convert.ToUInt32(dr["UEPriorCatalogId"]));
 				if (gvFirmCr.DataRowCount > 3)
 					GotoCatalogPosition(gvFirmCr, dr[UEFirmCr.ColumnName].ToString(), "CName");
 			}
@@ -2086,17 +1983,6 @@ and c.Type = ?ContactType;",
 			UnrecExpGridControl.Focus();
 		}
 
-		private void gvFirmCr_RowStyle(object sender, RowStyleEventArgs e)
-		{
-			if (e.RowHandle != GridControl.InvalidRowHandle)
-			{
-				DataRow drProducer = gvFirmCr.GetDataRow(e.RowHandle);
-				if (drProducer != null)
-					if (!(bool)drProducer[CIsAssortment.ColumnName])
-						e.Appearance.BackColor = Color.LightGray;
-			}
-		}
-
 		private void gvFirmCr_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
 		{
 			if (!String.IsNullOrEmpty(producerSeachText) && 
@@ -2165,17 +2051,15 @@ and c.Type = ?ContactType;",
 		{
 			if (gvUnrecExp.FocusedRowHandle != GridControl.InvalidRowHandle)
 			{
-				DataRow dr = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
-				string producerSynonym = Convert.IsDBNull(dr[UEFirmCr.ColumnName]) ? String.Empty : dr[UEFirmCr.ColumnName].ToString();
+				var dr = gvUnrecExp.GetDataRow(gvUnrecExp.FocusedRowHandle);
 				ProducerSearchTimer.Enabled = false;
 				if (!String.IsNullOrEmpty(tbProducerSearch.Text))
 				{
 					producerSeachText = tbProducerSearch.Text;
 					tbProducerSearch.Text = "";
 					ProducersGridFillByFilter(
-						producerSynonym,
 						producerSeachText,
-						Convert.ToUInt32(dr[UEPriorProductId.ColumnName]));
+						Convert.ToUInt32(dr["UEPriorCatalogId"]));
 				}
 			}
 		}
