@@ -170,6 +170,7 @@ namespace UEEditor
 						row["UEJunk"] = Convert.ToByte(markAsJunk);
 						row["UEPriorProductId"] = productId;
 						row["UEPriorCatalogId"] = catalogId;
+
 						TryToPickProducerSynonym(row, synonyms);
 					}
 				}
@@ -178,6 +179,12 @@ namespace UEEditor
 
 		private static void TryToPickProducerSynonym(DataRow destination, IEnumerable<ProducerSynonym> synonyms)
 		{
+			var producer = destination["UEFirmCr"].ToString();
+			if (String.IsNullOrEmpty(producer))
+			{
+				destination["UEStatus"] = (int) (GetStatus(destination) | FormMask.FirmForm);
+				return;
+			}
 			synonyms = synonyms.OrderByDescending(s => s.ProducerId);
 			var assortment = LoadAssortmentByCatalog(Convert.ToUInt32(destination["UEPriorCatalogId"]));
 			foreach (var synonym in synonyms)

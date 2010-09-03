@@ -48,7 +48,7 @@ namespace UEEditor
 		public void UpdateProducerSynonym(List<DataRow> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr)
 		{
 			//priceprocessor создает на одно наименование один синоним, но в результате сопоставления мы можем получить два разных синонима
-			var synonyms = rows.Select(r => (ProducerSynonym) r["SynonymObject"]);
+			var synonyms = rows.Where(r => !(r["SynonymObject"] is DBNull)).Select(r => (ProducerSynonym) r["SynonymObject"]);
 			var groups = synonyms.Where(s => !(s is Exclude)).GroupBy(s => new {s.ProducerId, s.Name});
 			foreach (var synonymGroup in groups)
 			{
@@ -140,7 +140,7 @@ namespace UEEditor
 				stat.HideSynonymCount++;
 			}
 
-			if (Convert.IsDBNull(drUpdated["UEProducerSynonymId"]) &&
+			if (Convert.IsDBNull(drUpdated["UEProductSynonymId"]) &&
 				CatalogHelper.IsSynonymExists(masterConnection, priceId, drUpdated["UEName1"].ToString()))
 			{
 				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов

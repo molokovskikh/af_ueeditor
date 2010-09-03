@@ -29,7 +29,8 @@ namespace UEEditor.Tests
 		public void SetUp()
 		{
 			Setup.Initialize();
-			price = TestOldClient.CreateTestSupplierWithPrice();
+			using(new TransactionScope())
+				price = TestOldClient.CreateTestSupplierWithPrice();
 		}
 
 		[Test]
@@ -79,6 +80,32 @@ namespace UEEditor.Tests
 			}
 		}
 
+		[Test]
+		public void Do_not_create_empty_producer_synonyms()
+		{
+			TestUnrecExp expression;
+			TestProduct product;
+			using (new SessionScope())
+			{
+				expression = new TestUnrecExp("test", "", price);
+				expression.Save();
+				product = TestProduct.Queryable.First();
+			}
+			Load();
+			Resolve(expression, product);
+			Save();
+
+			var status = ProducerSynonymResolver.GetStatus(GetRow(expression));
+			Assert.That(status & FormMask.FirmForm, Is.EqualTo(FormMask.FirmForm));
+		}
+
+
+		[Test]
+		public void Before_create_synonym_check_that_not_exist()
+		{
+			//Resolve(exp1, producer1);
+		}
+
 		private void Load()
 		{
 			With.Slave(c => { 
@@ -124,6 +151,12 @@ namespace UEEditor.Tests
 				connection.Open();
 				updater.ApplyChanges(connection, new FakeNotifier(), data.Rows.Cast<DataRow>().ToList());
 			}
+		}
+
+		private void Resolve(TestUnrecExp expression, TestProduct product)
+		{
+			var row = GetRow(expression);
+			ProducerSynonymResolver.UpdateStatusByProduct(row, product.Id, product.CatalogProduct.Id, false);
 		}
 
 		private void Resolve(TestUnrecExp expression, TestProducer producer)
