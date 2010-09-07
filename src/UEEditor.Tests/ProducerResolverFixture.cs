@@ -28,7 +28,6 @@ namespace UEEditor.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			Setup.Initialize();
 			using(new TransactionScope())
 				price = TestOldClient.CreateTestSupplierWithPrice();
 		}

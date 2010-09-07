@@ -19,16 +19,18 @@ p.Id As CCode,
 p.Name As CName")
 				.From(@"
 catalogs.Producers P
-  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id");
+  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id")
+				.Where("a.Checked = 1");
 
 			query.Equivalents = new Query()
 				.Select(@"
 p.Id As CCode,
-concat(pe.Name, ' (', p.Name, ')') As CName")
+concat(pe.Name, ' [', p.Name, ']') As CName")
 				.From(@"
 catalogs.Producers P
   join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id
-  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id");
+  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id")
+				.Where("a.Checked = 1");
 			action(query);
 			return query;
 		}
@@ -44,7 +46,6 @@ catalogs.Producers P
 				Producers.BindParameters(adapter.SelectCommand);
 				adapter.Fill(table);
 			});
-			
 
 			var drUnknown = table.NewRow();
 			drUnknown["CCode"] = 0;

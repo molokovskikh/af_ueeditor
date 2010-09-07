@@ -78,8 +78,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProducerQueryFixture.cs" />
     <Compile Include="ProducerResolverFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IntegrationSetup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\UEEditor\app.config">
