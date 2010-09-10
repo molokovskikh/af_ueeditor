@@ -352,34 +352,21 @@ order by Name"
 			});
 		}
 
-		private void ProducersGridFillByName(string name, uint catalogId)
+		private void ProducersGridFillByName(uint catalogId)
 		{
 			ProducerQuery
 				.Query(q => {
 					q.Producers
-						.Where("a.CatalogId = ?CatalogId", new {catalogId})
-						.Where("(" + GetFilterString(name, "p.Name", "  ") + ") ");
+						.Where("a.CatalogId = ?CatalogId", new {catalogId});
 					q.Equivalents
-						.Where("a.CatalogId = ?CatalogId", new {catalogId})
-						.Where("(" + GetFilterString(name, "pe.Name", "  ") + ") ");
+						.Where("a.CatalogId = ?CatalogId", new {catalogId});
 				})
 				.Load(dtCatalogFirmCr);
-
-			if (dtCatalogFirmCr.Rows.Count == 1)
-			{
-				ProducerQuery
-					.Query(q => {
-						q.Producers
-							.Where("a.CatalogId = ?CatalogId", new {catalogId});
-						q.Equivalents
-							.Where("a.CatalogId = ?CatalogId", new {catalogId});
-					})
-					.Load(dtCatalogFirmCr);
-			}
 		}
 
 		private void ProducersGridFillByFilter(string filter, uint catalogId)
 		{
+			filter = "%" + filter + "%";
 			ProducerQuery
 				.Query(q => {
 					q.Producers
@@ -797,7 +784,6 @@ WHERE PriceItemId= ?PriceItemId",
 			if (dr[UEFirmCr.ColumnName].ToString() != String.Empty)
 			{
 				ProducersGridFillByName(
-					dr[UEFirmCr.ColumnName].ToString(),
 					Convert.ToUInt32(dr["UEPriorCatalogId"]));
 				if (gvFirmCr.DataRowCount > 3)
 					GotoCatalogPosition(gvFirmCr, dr[UEFirmCr.ColumnName].ToString(), "CName");
