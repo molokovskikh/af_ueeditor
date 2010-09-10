@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -70,7 +70,7 @@ namespace UEEditor.Tests
 			using (new SessionScope(FlushAction.Never))
 			{
 				var synonyms = TestProducerSynonym.Queryable.Where(s => s.Price == price).ToList();
-				Assert.That(synonyms.Count, Is.EqualTo(2), "‰ÓÎÊÌ˚ ·˚ÎË ÒÓÁ‰‡Ú¸ ‰‚‡ ‡ÁÌ˚ı ÒËÌÓÌËÏ‡, ÒÓÁ‰‡ÎË ÚÓÎ¸ÍÓ ({0})",
+				Assert.That(synonyms.Count, Is.EqualTo(2), "–¥–æ–ª–∂–Ω—ã –±—ã–ª–∏ —Å–æ–∑–¥–∞—Ç—å –¥–≤–∞ —Ä–∞–∑–Ω—ã—Ö —Å–∏–Ω–æ–Ω–∏–º–∞, —Å–æ–∑–¥–∞–ª–∏ —Ç–æ–ª—å–∫–æ ({0})",
 					synonyms.Implode(s => s.Name));
 				Assert.That(synonyms[0].Name, Is.EqualTo(producerSynonym.Name));
 				Assert.That(synonyms[0].Producer.Id, Is.EqualTo(producer2.Id));
@@ -98,6 +98,37 @@ namespace UEEditor.Tests
 			Assert.That(status & FormMask.FirmForm, Is.EqualTo(FormMask.FirmForm));
 		}
 
+
+		[Test]
+		public void Create_excludes()
+		{
+			TestUnrecExp expression;
+			TestCatalogProduct catalogProduct;
+			using(new SessionScope())
+			{
+				var product = TestProduct.Queryable.First();
+				catalogProduct = product.CatalogProduct;
+				var synonym = new TestProductSynonym("test", product, price);
+				synonym.Save();
+				var producerSynonym = new TestProducerSynonym("test", null, price);
+				producerSynonym.Save();
+				expression = new TestUnrecExp(synonym, producerSynonym);
+				expression.Save();
+			}
+
+			Load();
+			ProducerSynonymResolver.CreateExclude(GetRow(expression));
+			Save();
+
+			using (new SessionScope(FlushAction.Never))
+			{
+				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
+				Assert.That(exlcudes.Count, Is.EqualTo(1), "–Ω–µ —Å–æ–∑–¥–∞–ª–∏ –∏—Å–∫–ª—é—á–µ–Ω–∏–µ");
+				var exclude = exlcudes.Single();
+				Assert.That(exclude.ProducerSynonym, Is.EqualTo(expression.FirmCr));
+				Assert.That(exclude.CatalogProduct.Id, Is.EqualTo(catalogProduct.Id));
+			}
+		}
 
 		[Test]
 		public void Before_create_synonym_check_that_not_exist()

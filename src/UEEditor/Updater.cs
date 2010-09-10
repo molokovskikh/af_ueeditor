@@ -380,6 +380,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow);",
 						insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
 						insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
 						insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
+						insertExclude.ExecuteScalar();
 					}
 
 					//Заполнили таблицу логов для синонимов производителей
