@@ -176,6 +176,8 @@ namespace UEEditor
 
 		public void ApplyChanges(MySqlConnection masterConnection, IProgressNotifier formProgress, List<DataRow> rows)
 		{
+			var operatorName = Environment.UserName.ToLower();
+
 			var LockedSynonym = priceId;
 			var LockedPriceCode = childPriceId;
 			var LockedPriceItemId = priceItemId;
@@ -212,7 +214,7 @@ set @LastSynonymID = last_insert_id();
 insert into farm.UsedSynonymLogs (SynonymCode) values (@LastSynonymID); 
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
   values (now(), ?OperatorName, ?OperatorHost, 0, @LastSynonymID, ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", masterConnection);
-			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
+			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", operatorName);
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonym.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonym.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
@@ -237,7 +239,7 @@ insert into farm.UsedSynonymFirmCrLogs (SynonymFirmCrCode) values (@LastSynonymF
 ", 
 				masterConnection);
 			var insertSynonymProducerEtalonSQL = daSynonymFirmCr.InsertCommand.CommandText;
-			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
+			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", operatorName);
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
@@ -250,7 +252,7 @@ delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFir
 ",
 				masterConnection);
 			var updateSynonymProducerEtalonSQL = daSynonymFirmCr.UpdateCommand.CommandText;
-			daSynonymFirmCr.UpdateCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
+			daSynonymFirmCr.UpdateCommand.Parameters.AddWithValue("?OperatorName", operatorName);
 			daSynonymFirmCr.UpdateCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonymFirmCr.UpdateCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonymFirmCr.UpdateCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
@@ -273,7 +275,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
   values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Forbidden);", 
 				masterConnection);
 
-			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorName", Environment.UserName.ToLower());
+			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorName", operatorName);
 			daForbidden.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daForbidden.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daForbidden.InsertCommand.Parameters.Add("?Forbidden", MySqlDbType.VarString, 0, "Forbidden");
@@ -349,12 +351,22 @@ where pricecode = ?PriceCode", masterConnection);
 			DataRow lastUpdateSynonym = null;
 			try
 			{
-				With.DeadlockWraper(c =>
-				{
+				With.DeadlockWraper(c => {
+
+					var humanName = "";
+					var command = new MySqlCommand(@"select ManagerName from accessright.regionaladmins where username = ?name", c);
+					command.Parameters.AddWithValue("name", operatorName);
+					using (var reader = command.ExecuteReader())
+					{
+						var name = reader.Cast<DbDataRecord>().SingleOrDefault()["ManagerName"].ToString();
+						if (!String.IsNullOrEmpty(name))
+							humanName = name;
+					}
+
 					var helper = new Common.MySql.MySqlHelper(masterConnection, null);
 					var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
 					commandHelper.AddParameter("?Host", Environment.MachineName);
-					commandHelper.AddParameter("?UserName", Environment.UserName.ToLower());
+					commandHelper.AddParameter("?UserName", operatorName);
 					commandHelper.Execute();
 
 					//Заполнили таблицу логов для синонимов наименований
@@ -364,13 +376,11 @@ where pricecode = ?PriceCode", masterConnection);
 
 					formProgress.ApplyProgress += 10;
 
-					var insertExclude =
-						new MySqlCommand(
-							@"
-insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow) 
-value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow);",
-							masterConnection);
+					var insertExclude = new MySqlCommand(@"
+insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator) 
+value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator);", masterConnection);
 					insertExclude.Parameters.AddWithValue("?PriceCode", LockedSynonym);
+					insertExclude.Parameters.AddWithValue("?Operator", humanName);
 					insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
 					insertExclude.Parameters.Add("?DoNotShow", MySqlDbType.Byte);
 					insertExclude.Parameters.Add("?CatalogId", MySqlDbType.UInt32);
