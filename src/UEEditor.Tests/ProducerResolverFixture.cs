@@ -127,13 +127,34 @@ namespace UEEditor.Tests
 				var exclude = exlcudes.Single();
 				Assert.That(exclude.ProducerSynonym, Is.EqualTo(expression.FirmCr));
 				Assert.That(exclude.CatalogProduct.Id, Is.EqualTo(catalogProduct.Id));
+				Assert.That(exclude.OriginalSynonym.Id, Is.EqualTo(expression.ProductSynonymId));
 			}
 		}
 
 		[Test]
-		public void Before_create_synonym_check_that_not_exist()
+		public void Fill_original_synonym_for_created_exclude()
 		{
-			//Resolve(exp1, producer1);
+			TestUnrecExp expression;
+			TestProduct product;
+			using (new SessionScope())
+			{
+				expression = new TestUnrecExp("test", "test", price);
+				expression.Save();
+				product = TestProduct.Queryable.First();
+			}
+
+			Load();
+			Resolve(expression, product);
+			ProducerSynonymResolver.CreateExclude(GetRow(expression));
+			Save();
+
+			using (new SessionScope(FlushAction.Never))
+			{
+				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
+				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
+				var exclude = exlcudes.Single();
+				Assert.That(exclude.OriginalSynonym, Is.Not.Null);
+			}
 		}
 
 		private void Load()

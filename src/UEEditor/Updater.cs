@@ -25,6 +25,31 @@ namespace UEEditor
 		public uint CatalogId;
 		public string ProducerSynonym;
 		public bool DoNotShow;
+
+		public DataRow OriginalSynonym;
+		public uint OriginalSynonymId;
+
+		public uint GetOriginalSynonymId()
+		{
+			if (OriginalSynonymId == 0)
+				return Convert.ToUInt32(OriginalSynonym["SynonymCode"]);
+			return OriginalSynonymId;
+		}
+	}
+
+	public class Unrecexp
+	{
+		public uint ProductSynonymId;
+		public DataRow CreatedProductSynonym;
+		public ProducerSynonym ProducerSynonym;
+		public DataRow Row;
+
+		public Unrecexp(DataRow dr)
+		{
+			Row = dr;
+			if (!(dr["UEProductSynonymId"] is DBNull))
+				ProductSynonymId = Convert.ToUInt32(dr["UEProductSynonymId"]);
+		}
 	}
 
 	public class Updater
@@ -45,10 +70,10 @@ namespace UEEditor
 			_remotePriceProcessor = remotePriceProcessor;
 		}
 
-		public void UpdateProducerSynonym(List<DataRow> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr)
+		public void UpdateProducerSynonym(List<Unrecexp> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr)
 		{
 			//priceprocessor создает на одно наименование один синоним, но в результате сопоставления мы можем получить два разных синонима
-			var synonyms = rows.Where(r => !(r["SynonymObject"] is DBNull)).Select(r => (ProducerSynonym) r["SynonymObject"]);
+			var synonyms = rows.Select(e => e.Row).Where(r => !(r["SynonymObject"] is DBNull)).Select(r => (ProducerSynonym) r["SynonymObject"]);
 			var groups = synonyms.Where(s => !(s is Exclude)).GroupBy(s => new {s.ProducerId, s.Name});
 			foreach (var synonymGroup in groups)
 			{
@@ -76,11 +101,11 @@ namespace UEEditor
 					CreateSynonym(dtSynonymFirmCr, exclude);
 				else
 					UpdateSynonym(synonymRow[0], exclude);
-				CreateExclude(exclude, excludes);
+				CreateExclude(exclude, excludes, rows.First(r => r.Row["SynonymObject"] == exclude));
 			}
 		}
 
-		private void CreateExclude(Exclude exclude, List<DbExclude> excludes)
+		private void CreateExclude(Exclude exclude, List<DbExclude> excludes, Unrecexp expression)
 		{
 			if (excludes.Any(e => e.CatalogId == exclude.CatalogId && e.ProducerSynonym.Equals(exclude.Name, StringComparison.CurrentCultureIgnoreCase)))
 				return;
@@ -89,6 +114,8 @@ namespace UEEditor
 				CatalogId = exclude.CatalogId,
 				DoNotShow = exclude.State == ProducerSynonymState.Unknown,
 				ProducerSynonym = exclude.Name,
+				OriginalSynonym = expression.CreatedProductSynonym,
+				OriginalSynonymId = expression.ProductSynonymId
 			});
 		}
 
@@ -211,9 +238,10 @@ namespace UEEditor
 				@"
 insert into farm.synonym (PriceCode, Synonym, Junk, ProductId) values (?PriceCode, ?Synonym, ?Junk, ?ProductId);
 set @LastSynonymID = last_insert_id();
-insert into farm.UsedSynonymLogs (SynonymCode) values (@LastSynonymID); 
+insert into farm.UsedSynonymLogs (SynonymCode) values (@LastSynonymID);
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
-  values (now(), ?OperatorName, ?OperatorHost, 0, @LastSynonymID, ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode)", masterConnection);
+	values (now(), ?OperatorName, ?OperatorHost, 0, @LastSynonymID, ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode);
+select @LastSynonymID as SynonymCode;", masterConnection);
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorName", operatorName);
 			daSynonym.InsertCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
 			daSynonym.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
@@ -249,8 +277,7 @@ insert into farm.UsedSynonymFirmCrLogs (SynonymFirmCrCode) values (@LastSynonymF
 				@"
 update farm.synonymFirmCr set CodeFirmCr = ?CodeFirmCr where SynonymFirmCrCode = ?SynonymFirmCrCode;
 delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFirmCrCode;
-",
-				masterConnection);
+", masterConnection);
 			var updateSynonymProducerEtalonSQL = daSynonymFirmCr.UpdateCommand.CommandText;
 			daSynonymFirmCr.UpdateCommand.Parameters.AddWithValue("?OperatorName", operatorName);
 			daSynonymFirmCr.UpdateCommand.Parameters.AddWithValue("?OperatorHost", Environment.MachineName);
@@ -282,9 +309,10 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 
 			formProgress.ApplyProgress = 10;
 
-			var forProducerSynonyms = new List<DataRow>();
+			var forProducerSynonyms = new List<Unrecexp>();
 			foreach (var dr in rows)
 			{
+				var expression = new Unrecexp(dr);
 				DelCount += UpDateUnrecExp(dtUnrecUpdate, dr, masterConnection);
 					
 				//Вставили новую запись в таблицу запрещённых выражений
@@ -317,13 +345,14 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					{
 						dtSynonym.Rows.Add(newDR);
 						stat.SynonymCount++;
+						expression.CreatedProductSynonym = newDR;
 					}
 					catch (ConstraintException)
 					{}
 				}
 				//если сопоставили по производителю
 				if (NotFirmForm(dr, "UEAlready") && !NotFirmForm(dr, "UEStatus"))
-					forProducerSynonyms.Add(dr);
+					forProducerSynonyms.Add(expression);
 			}
 
 			List<DbExclude> excludes;
@@ -371,25 +400,26 @@ where pricecode = ?PriceCode", masterConnection);
 
 					//Заполнили таблицу логов для синонимов наименований
 					daSynonym.SelectCommand.Connection = c;
-					var dtSynonymCopy = dtSynonym.Copy();
-					daSynonym.Update(dtSynonymCopy);
+					daSynonym.Update(dtSynonym);
 
 					formProgress.ApplyProgress += 10;
 
 					var insertExclude = new MySqlCommand(@"
-insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator) 
-value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator);", masterConnection);
+insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator, OriginalSynonymId) 
+value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?OriginalSynonymId);", masterConnection);
 					insertExclude.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 					insertExclude.Parameters.AddWithValue("?Operator", humanName);
 					insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
 					insertExclude.Parameters.Add("?DoNotShow", MySqlDbType.Byte);
 					insertExclude.Parameters.Add("?CatalogId", MySqlDbType.UInt32);
+					insertExclude.Parameters.Add("?OriginalSynonymId", MySqlDbType.UInt32);
 
 					foreach (var exclude in excludes.Where(e => e.Id == 0))
 					{
 						insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
 						insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
 						insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
+						insertExclude.Parameters["?OriginalSynonymId"].Value = exclude.GetOriginalSynonymId();
 						insertExclude.ExecuteScalar();
 					}
 
