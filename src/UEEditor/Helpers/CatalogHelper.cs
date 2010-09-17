@@ -60,20 +60,17 @@ and catalog.Id = products.CatalogId"
 					new MySqlParameter("?LockedSynonymPriceCode", lockedSynonymPriceCode),
 				//todo: здесь получается фигня с добавлением пробелов в конце строки
 					new MySqlParameter("?SynonymName", String.Format("{0}  ", synonymName))
-					)
-					!= null;
+					) != null;
 		}
 
-		public static bool IsProducerSynonymExists(MySqlConnection connection, long lockedSynonymPriceCode, string producerSynonymName)
+		public static bool IsProducerSynonymExists(MySqlConnection connection, long lockedSynonymPriceCode, string producerSynonymName, object producerId)
 		{
-			return
-				MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(
-					connection,
-					"select CodeFirmCr from farm.synonymFirmCr where synonym = ?ProducerSynonymName and PriceCode = ?LockedSynonymPriceCode",
-					new MySqlParameter("?LockedSynonymPriceCode", lockedSynonymPriceCode),
-					new MySqlParameter("?ProducerSynonymName", producerSynonymName)
-					)
-					!= null;
+			return MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(
+				connection,
+				"select CodeFirmCr from farm.synonymFirmCr where synonym = ?ProducerSynonymName and PriceCode = ?LockedSynonymPriceCode",
+				new MySqlParameter("?LockedSynonymPriceCode", lockedSynonymPriceCode),
+				new MySqlParameter("?ProducerSynonymName", producerSynonymName)
+				) != null;
 		}
 	}
 }

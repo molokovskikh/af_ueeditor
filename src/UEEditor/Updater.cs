@@ -177,10 +177,15 @@ namespace UEEditor
 				stat.DuplicateSynonymCount++;
 			}
 
+/*
+			Запрос не работает тк теперь могут быть одинаковые синонимы но разные производители
 			if ((((FormMask)Convert.ToByte(drUpdated["UEAlready"]) & FormMask.FirmForm) != FormMask.FirmForm)
 				&& (((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & FormMask.FirmForm) == FormMask.FirmForm) 
 					&& Convert.IsDBNull(drUpdated["UEProducerSynonymId"])
-						&& CatalogHelper.IsProducerSynonymExists(masterConnection, priceId, drUpdated["UEFirmCr"].ToString()))
+					&& CatalogHelper.IsProducerSynonymExists(masterConnection, 
+						priceId,
+						drUpdated["UEFirmCr"].ToString(),
+						drUpdated["UEPriorProducerId"]))
 			{
 				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
 				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
@@ -188,9 +193,9 @@ namespace UEEditor
 				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.FirmForm));
 				stat.DuplicateProducerSynonymCount++;
 			}
+*/
 
-
-			DataRow drNew = dtUnrecExpUpdate.Rows.Find( Convert.ToUInt32( drUpdated["UERowID"] ) );
+			var drNew = dtUnrecExpUpdate.Rows.Find( Convert.ToUInt32( drUpdated["UERowID"] ) );
 
 			if (drNew != null)
 			{
@@ -294,7 +299,7 @@ delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFir
 			var daForbidden = new MySqlDataAdapter("select * from farm.Forbidden limit 0", masterConnection);
 			var dtForbidden = new DataTable();
 			daForbidden.Fill(dtForbidden);
-			dtForbidden.Constraints.Add("UnicNameCode", new DataColumn[] {dtForbidden.Columns["Forbidden"]}, false);
+			dtForbidden.Constraints.Add("UnicNameCode", new[] {dtForbidden.Columns["Forbidden"]}, false);
 			daForbidden.InsertCommand = new MySqlCommand(
 				@"
 insert into farm.Forbidden (PriceCode, Forbidden) values (?PriceCode, ?Forbidden);
@@ -316,12 +321,13 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 				DelCount += UpDateUnrecExp(dtUnrecUpdate, dr, masterConnection);
 					
 				//Вставили новую запись в таблицу запрещённых выражений
+				var name = GetFullUnrecName(dr);
 				if (!MarkForbidden(dr, "UEAlready") && MarkForbidden(dr, "UEStatus"))
 				{
-					DataRow newDR = dtForbidden.NewRow();
+					var newDR = dtForbidden.NewRow();
 
 					newDR["PriceCode"] = LockedPriceCode;
-					newDR["Forbidden"] = GetFullUnrecName(dr);
+					newDR["Forbidden"] = name;
 					try
 					{
 						dtForbidden.Rows.Add(newDR);
@@ -333,23 +339,26 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					//Вставили новую запись в таблицу синонимов наименований
 				else if (NotNameForm(dr, "UEAlready") && !NotNameForm(dr, "UEStatus"))
 				{
-					DataRow newDR = dtSynonym.NewRow();
+					var newDR = dtSynonym.NewRow();
 
 					newDR["PriceCode"] = LockedSynonym;
-					newDR["Synonym"] = GetFullUnrecName(dr);
+					newDR["Synonym"] = name;
 					newDR["ProductId"] = dr["UEPriorProductId"];
 					newDR["Junk"] = dr["UEJunk"];
 					if (LockedSynonym != LockedPriceCode)
 						newDR["ChildPriceCode"] = LockedPriceCode;
-					try
+					var synonym = dtSynonym.Rows
+						.Cast<DataRow>()
+						.FirstOrDefault(r => r["Synonym"].ToString().Equals(name, StringComparison.CurrentCultureIgnoreCase));
+					if (synonym == null)
 					{
+						synonym = newDR;
 						dtSynonym.Rows.Add(newDR);
 						stat.SynonymCount++;
-						expression.CreatedProductSynonym = newDR;
 					}
-					catch (ConstraintException)
-					{}
+					expression.CreatedProductSynonym = synonym;
 				}
+
 				//если сопоставили по производителю
 				if (NotFirmForm(dr, "UEAlready") && !NotFirmForm(dr, "UEStatus"))
 					forProducerSynonyms.Add(expression);
