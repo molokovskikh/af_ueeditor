@@ -19,10 +19,7 @@ namespace UEEditor.Tests
 				catalogId = product.Id;
 			}
 
-			var query = ProducerQuery.Query(q => {
-				q.Equivalents.Where("a.CatalogId = ?catalogId", new {catalogId});
-				q.Producers.Where("a.CatalogId = ?catalogId", new {catalogId});
-			});
+			var query = ProducerQuery.Query(true, catalogId, q => {});
 			var table = new DataTable();
 			query.Load(table);
 		}

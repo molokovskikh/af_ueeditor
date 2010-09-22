@@ -10,17 +10,14 @@ namespace UEEditor
 		public Query Producers;
 		public Query Equivalents;
 
-		public static ProducerQuery Query(Action<ProducerQuery> action)
+		public static ProducerQuery Query(bool pharmacie, uint catalogId, Action<ProducerQuery> action)
 		{
 			var query = new ProducerQuery();
 			query.Producers = new Query()
 				.Select(@"
 p.Id As CCode,
 p.Name As CName")
-				.From(@"
-catalogs.Producers P
-  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id")
-				.Where("a.Checked = 1");
+				.From("catalogs.Producers P");
 
 			query.Equivalents = new Query()
 				.Select(@"
@@ -28,9 +25,20 @@ p.Id As CCode,
 concat(pe.Name, ' [', p.Name, ']') As CName")
 				.From(@"
 catalogs.Producers P
-  join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id
-  join catalogs.assortment a on a.CatalogId = ?CatalogId and a.ProducerId = p.Id")
-				.Where("a.Checked = 1");
+  join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id");
+
+			if (pharmacie)
+			{
+				query.Producers
+					.Join("join catalogs.assortment a on a.ProducerId = p.Id")
+					.Where("a.CatalogId = ?CatalogId", new {catalogId})
+					.Where("a.Checked = 1");
+				query.Equivalents
+					.Join("join catalogs.assortment a on a.ProducerId = p.Id")
+					.Where("a.CatalogId = ?CatalogId", new {catalogId})
+					.Where("a.Checked = 1");
+			}
+
 			action(query);
 			return query;
 		}

@@ -76,6 +76,12 @@ namespace UEEditor
 			if (!Name.Equals(destination["UEFirmCr"].ToString(), StringComparison.CurrentCultureIgnoreCase))
 				return false;
 
+			//если это фармацевтика то не нужно делать проверки по ассортименту
+			if (!Convert.ToBoolean(destination["pharmacie"]))
+			{
+				return ProducerId != 0;
+			}
+
 			var catalogId = Convert.ToUInt32(destination["UEPriorCatalogId"]);
 			if (this is Exclude && ((Exclude)this).CatalogId == catalogId)
 				return true;
@@ -149,7 +155,7 @@ namespace UEEditor
 				.Where("sfc.PriceCode = ?PriceId", new {priceId});
 		}
 
-		public static void UpdateStatusByProduct(DataRow item, uint productId, uint catalogId, bool markAsJunk)
+		public static void UpdateStatusByProduct(DataRow item, uint productId, uint catalogId, bool pharmacie, bool markAsJunk)
 		{
 			var table = item.Table;
 			var name = String.Format("{0}  ", item["UEName1"]);
@@ -170,6 +176,7 @@ namespace UEEditor
 						row["UEJunk"] = Convert.ToByte(markAsJunk);
 						row["UEPriorProductId"] = productId;
 						row["UEPriorCatalogId"] = catalogId;
+						row["Pharmacie"] = pharmacie;
 
 						TryToPickProducerSynonym(row, synonyms);
 					}
@@ -185,13 +192,13 @@ namespace UEEditor
 				destination["UEStatus"] = (int) (GetStatus(destination) | FormMask.FirmForm);
 				return;
 			}
+
 			synonyms = synonyms.OrderByDescending(s => s.ProducerId);
 			var assortment = LoadAssortmentByCatalog(Convert.ToUInt32(destination["UEPriorCatalogId"]));
-			foreach (var synonym in synonyms)
-			{
-				if (synonym.IsApplicable(destination, assortment))
-					synonym.Apply(destination);
-			}
+			var synonym = synonyms.FirstOrDefault(s => s.IsApplicable(destination, assortment));
+
+			if (synonym != null)
+				synonym.Apply(destination);
 		}
 
 		public static void UpdateStatusByProducer(DataRow item, uint producerId)

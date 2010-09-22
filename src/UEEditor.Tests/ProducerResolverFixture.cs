@@ -207,7 +207,7 @@ namespace UEEditor.Tests
 		private void Resolve(TestUnrecExp expression, TestProduct product)
 		{
 			var row = GetRow(expression);
-			ProducerSynonymResolver.UpdateStatusByProduct(row, product.Id, product.CatalogProduct.Id, false);
+			ProducerSynonymResolver.UpdateStatusByProduct(row, product.Id, product.CatalogProduct.Id, true, false);
 		}
 
 		private void Resolve(TestUnrecExp expression, TestProducer producer)

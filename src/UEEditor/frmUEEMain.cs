@@ -282,31 +282,32 @@ and synonymcd.FirmCode = synonympd.FirmCode"
 		private void UnrecExpGridFill()
 		{
 			With.Slave((slaveConnection) => { 
-				var commandHelper = new CommandHelper(new MySqlCommand(@"SELECT RowID As UERowID,
-                  Name1 As UEName1, 
-				  FirmCr As UEFirmCr, 
-				  Code As UECode, 
-				  CodeCr As UECodeCr, 
-				  Unit As UEUnit, 
-				  Volume As UEVolume, 
-				  Quantity As UEQuantity, 
-				  Note, 
-				  Period As UEPeriod, 
-				  Doc, 
-				  PriorProductId As UEPriorProductId,  
-				  p.CatalogId As UEPriorCatalogId,
-				  PriorProducerId As UEPriorProducerId, 
-				  ProductSynonymId As UEProductSynonymId,  
-				  ProducerSynonymId As UEProducerSynonymId, 
-				  Status As UEStatus,
-                  Already As UEAlready, 
-				  Junk As UEJunk,
-				  HandMade As UEHandMade
-				  FROM farm.UnrecExp 
-					left join Catalogs.Products p on p.Id = PriorProductId
-				  WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1"
-					,
-					slaveConnection));
+				var commandHelper = new CommandHelper(new MySqlCommand(@"
+SELECT RowID As UERowID,
+Name1 As UEName1,
+FirmCr As UEFirmCr,
+Code As UECode,
+CodeCr As UECodeCr,
+Unit As UEUnit,
+Volume As UEVolume,
+Quantity As UEQuantity,
+Note,
+Period As UEPeriod,
+Doc,
+PriorProductId As UEPriorProductId,
+p.CatalogId As UEPriorCatalogId,
+c.Pharmacie,
+PriorProducerId As UEPriorProducerId,
+ProductSynonymId As UEProductSynonymId,
+ProducerSynonymId As UEProducerSynonymId,
+Status As UEStatus,
+Already As UEAlready,
+Junk As UEJunk,
+HandMade As UEHandMade
+FROM farm.UnrecExp 
+left join Catalogs.Products p on p.Id = PriorProductId
+	left join Catalogs.Catalog c on c.Id = p.CatalogId
+WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1", slaveConnection));
 				commandHelper.AddParameter("?LockedPriceItemId", LockedPriceItemId);
 				
 				dtUnrecExp.Clear();
@@ -352,28 +353,33 @@ order by Name"
 			});
 		}
 
-		private void ProducersGridFillByName(uint catalogId)
+		private void ProducersGridFillByName(DataRow row)
 		{
+			var catalogId = Convert.ToUInt32(row["UEPriorCatalogId"]);
+			var pharmacie = Convert.ToBoolean(row["Pharmacie"]);
 			ProducerQuery
-				.Query(q => {
-					q.Producers
-						.Where("a.CatalogId = ?CatalogId", new {catalogId});
-					q.Equivalents
-						.Where("a.CatalogId = ?CatalogId", new {catalogId});
+				.Query(pharmacie, catalogId, q => {
+					if (!pharmacie)
+					{
+						q.Producers
+							.Where("( " + GetFilterString(row["UEFirmCr"].ToString(), "p.Name", "  ") + " )");
+						q.Equivalents
+							.Where("( " + GetFilterString(row["UEFirmCr"].ToString(), "pe.Name", "  ") + " )");
+					}
 				})
 				.Load(dtCatalogFirmCr);
 		}
 
-		private void ProducersGridFillByFilter(string filter, uint catalogId)
+		private void ProducersGridFillByFilter(string filter, DataRow row)
 		{
 			filter = "%" + filter + "%";
+			var catalogId = Convert.ToUInt32(row["UEPriorCatalogId"]);
+			var pharmacie = Convert.ToBoolean(row["Pharmacie"]);
 			ProducerQuery
-				.Query(q => {
+				.Query(pharmacie, catalogId, q => {
 					q.Producers
-						.Where("a.CatalogId = ?CatalogId", new {catalogId})
 						.Where("p.Name like ?filter", new {filter});
 					q.Equivalents
-						.Where("a.CatalogId = ?CatalogId", new {catalogId})
 						.Where("pe.Name like ?filter", new {filter});
 				})
 				.Load(dtCatalogFirmCr);
@@ -415,6 +421,7 @@ order by Form"
 SELECT
   Products.Id,
   Catalog.Id as CatalogId,
+  Catalog.Pharmacie,
   GROUP_CONCAT(PropertyValues.Value
     order by Properties.PropertyName, PropertyValues.Value
     SEPARATOR ', '
@@ -662,8 +669,8 @@ WHERE PriceItemId= ?PriceItemId",
 		private string GetFilterString(string Value, string FieldName, string fieldQuote)
 		{
 			int FirstLen = 4;
-			string[] flt = Value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			ArrayList newflt = new ArrayList();
+			string[] flt = Value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			var newflt = new ArrayList();
 			for(int i=0;i<flt.Length;i++)
 			{
 				if (flt[i].Length >= 3)
@@ -674,7 +681,7 @@ WHERE PriceItemId= ?PriceItemId",
 						newflt.Add(PrepareArg(flt[i].Replace("'", "''")));
 				}
 			}
-			string[] flt2 = new string[newflt.Count];
+			var flt2 = new string[newflt.Count];
 			newflt.CopyTo(flt2);
 			return fieldQuote[0] + FieldName + fieldQuote[1] + " like '" + String.Join("%' or " + fieldQuote[0] + FieldName + fieldQuote[1] + " like '", flt2) + "%'";
 		}
@@ -783,8 +790,7 @@ WHERE PriceItemId= ?PriceItemId",
 			
 			if (dr[UEFirmCr.ColumnName].ToString() != String.Empty)
 			{
-				ProducersGridFillByName(
-					Convert.ToUInt32(dr["UEPriorCatalogId"]));
+				ProducersGridFillByName(dr);
 				if (gvFirmCr.DataRowCount > 3)
 					GotoCatalogPosition(gvFirmCr, dr[UEFirmCr.ColumnName].ToString(), "CName");
 			}
@@ -1171,10 +1177,12 @@ WHERE PriceItemId= ?PriceItemId",
 			var catalog = bv.GetDataRow(bv.FocusedRowHandle);
 			var productId = Convert.ToUInt32(catalog["Id"]);
 			var catalogId = Convert.ToUInt32(catalog["CatalogId"]);
+			var pharmacie = Convert.ToBoolean(catalog["Pharmacie"]);
 
 			ProducerSynonymResolver.UpdateStatusByProduct(GetCurrentItem(), 
-				productId, 
+				productId,
 				catalogId,
+				pharmacie,
 				markAsJunk);
 			GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 		}
@@ -2043,9 +2051,7 @@ and c.Type = ?ContactType;",
 				{
 					producerSeachText = tbProducerSearch.Text;
 					tbProducerSearch.Text = "";
-					ProducersGridFillByFilter(
-						producerSeachText,
-						Convert.ToUInt32(dr["UEPriorCatalogId"]));
+					ProducersGridFillByFilter(producerSeachText, dr);
 				}
 			}
 		}
