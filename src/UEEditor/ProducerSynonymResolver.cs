@@ -76,14 +76,12 @@ namespace UEEditor
 			if (!Name.Equals(destination["UEFirmCr"].ToString(), StringComparison.CurrentCultureIgnoreCase))
 				return false;
 
+			var catalogId = Convert.ToUInt32(destination["UEPriorCatalogId"]);
+			if (this is Exclude)
+				return ((Exclude) this).CatalogId == catalogId;
+
 			//если это фармацевтика то не нужно делать проверки по ассортименту
 			if (!Convert.ToBoolean(destination["pharmacie"]))
-			{
-				return ProducerId != 0;
-			}
-
-			var catalogId = Convert.ToUInt32(destination["UEPriorCatalogId"]);
-			if (this is Exclude && ((Exclude)this).CatalogId == catalogId)
 				return true;
 
 			if (assortment == null)
