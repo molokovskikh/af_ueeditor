@@ -49,18 +49,20 @@ namespace UEEditor
 
 		//Время последнего обновления каталога
 		private DateTime catalogUpdate;
-        
+		
 		public string PriceFMT = String.Empty;
-        public string FileExt = String.Empty;
+		public string FileExt = String.Empty;
 		public long LockedPriceCode = -1;
 		public long LockedPriceItemId = -1;
 		public long LockedSynonym = -1;
-		public frmProgress formProgress = null;
+		public frmProgress formProgress;
 		public string producerSeachText;
 
 		public const string unknownProducer = "производитель не известен";
 
 		private PriceProcessorWcfHelper _priceProcessor;
+
+		private Button createExclude;
 
 		public frmUEEMain()
 		{
@@ -68,7 +70,7 @@ namespace UEEditor
 
 			_priceProcessor = new PriceProcessorWcfHelper(Settings.Default.WCFServiceUrl);
 
-			var createExclude = new Button {
+			createExclude = new Button {
 				Text = "Нет нужного производителя (F3)",
 				Dock = DockStyle.Bottom,
 				Visible = false
@@ -199,34 +201,34 @@ namespace UEEditor
 					new CommandHelper(
 						new MySqlCommand(@"
 SELECT
-        PD.FirmCode as JFirmCode,
-        cd.ShortName as FirmShortName,
-        pim.Id as JPriceItemId,
-        PD.PriceCode As JPriceCode,
-        concat(CD.ShortName, ' (', if(pd.CostType = 1, concat(pd.PriceName, ' [Колонка] ', pc.CostName), pd.PriceName), ')') as JName,
-        regions.region                                                                                                       As JRegion,
-        pim.PriceDate as JPriceDate,
-        statunrecexp.Pos                                                                        AS JPos,
-        statunrecexp.NamePos                                                                    AS JNamePos,
-        pim.LastFormalization                                                                   AS JJobDate,
-        CD.FirmSegment                                                                          As JWholeSale,
-        bp.BlockBy                                                                              As JBlockBy,
-        PD.ParentSynonym                                                                        as JParentSynonym,
-        pfmt.Format                                                                             As JPriceFMT,
-        pfmt.FileExtention                                                                      as JExt,
-        pim.LastFormalization                                                                   AS JDateLastForm,
-        if((synonympim.LastSynonymsCreation is not null) and (pim.LastFormalization < synonympim.LastSynonymsCreation), 1, 0) AS JNeedRetrans,
-        if(pim.LastFormalization < pim.LastRetrans, 1, 0)                                            AS JRetranced,
-        if(pd.ParentSynonym is null, '', concat(synonymcd.ShortName, ' (', synonympd.PriceName, ')')) AS JParentName
+		PD.FirmCode as JFirmCode,
+		cd.ShortName as FirmShortName,
+		pim.Id as JPriceItemId,
+		PD.PriceCode As JPriceCode,
+		concat(CD.ShortName, ' (', if(pd.CostType = 1, concat(pd.PriceName, ' [Колонка] ', pc.CostName), pd.PriceName), ')') as JName,
+		regions.region                                                                                                       As JRegion,
+		pim.PriceDate as JPriceDate,
+		statunrecexp.Pos                                                                        AS JPos,
+		statunrecexp.NamePos                                                                    AS JNamePos,
+		pim.LastFormalization                                                                   AS JJobDate,
+		CD.FirmSegment                                                                          As JWholeSale,
+		bp.BlockBy                                                                              As JBlockBy,
+		PD.ParentSynonym                                                                        as JParentSynonym,
+		pfmt.Format                                                                             As JPriceFMT,
+		pfmt.FileExtention                                                                      as JExt,
+		pim.LastFormalization                                                                   AS JDateLastForm,
+		if((synonympim.LastSynonymsCreation is not null) and (pim.LastFormalization < synonympim.LastSynonymsCreation), 1, 0) AS JNeedRetrans,
+		if(pim.LastFormalization < pim.LastRetrans, 1, 0)                                            AS JRetranced,
+		if(pd.ParentSynonym is null, '', concat(synonymcd.ShortName, ' (', synonympd.PriceName, ')')) AS JParentName
 FROM
   (
    (select
-      unrecexp.PriceItemId,
-      count(unrecexp.RowID) as Pos,
-      COUNT(IF(unrecexp.PriorProductId is null, 1, null)) as NamePos
-    from
-      farm.unrecexp
-    group by unrecexp.PriceItemId) statunrecexp,
+	  unrecexp.PriceItemId,
+	  count(unrecexp.RowID) as Pos,
+	  COUNT(IF(unrecexp.PriorProductId is null, 1, null)) as NamePos
+	from
+	  farm.unrecexp
+	group by unrecexp.PriceItemId) statunrecexp,
    usersettings.priceitems pim,
    usersettings.pricescosts pc,
    usersettings.pricesdata AS PD,
@@ -241,7 +243,7 @@ FROM
   )
   LEFT JOIN farm.blockedprice bp ON bp.PriceItemId = pim.Id
 WHERE
-    pim.Id = statunrecexp.PriceItemId
+	pim.Id = statunrecexp.PriceItemId
 and pc.PriceItemId = pim.Id"
 +
 listPriceItemIds
@@ -339,7 +341,7 @@ from
   catalogs.catalog cat,
   catalogs.products p
 where
-    cat.NameId = cn.Id
+	cat.NameId = cn.Id
 and cat.Hidden = 0
 and p.CatalogId = cat.Id
 and p.Hidden = 0
@@ -407,7 +409,7 @@ from
   catalogs.products
   left join catalogs.productproperties pp on pp.ProductId = products.id
 where
-    CatalogForms.Id = Catalog.FormId
+	CatalogForms.Id = Catalog.FormId
 and Catalog.Hidden = 0
 and products.CatalogId = Catalog.id
 and products.Hidden = 0
@@ -430,8 +432,8 @@ SELECT
   Catalog.Id as CatalogId,
   Catalog.Pharmacie,
   GROUP_CONCAT(PropertyValues.Value
-    order by Properties.PropertyName, PropertyValues.Value
-    SEPARATOR ', '
+	order by Properties.PropertyName, PropertyValues.Value
+	SEPARATOR ', '
   ) as Properties
 FROM
 (
@@ -442,7 +444,7 @@ left join catalogs.ProductProperties on ProductProperties.ProductId = Products.I
 left join catalogs.PropertyValues on PropertyValues.Id = ProductProperties.PropertyValueId
 left join catalogs.Properties on Properties.Id = PropertyValues.PropertyId
 where
-    Catalog.Id = Products.CatalogID
+	Catalog.Id = Products.CatalogID
 and Catalog.Id = ?CatalogId
 and Products.Hidden = 0
 group by Products.Id
@@ -465,8 +467,8 @@ SELECT
   Products.Id,
   Catalog.Id as CatalogId,
   cast(GROUP_CONCAT(PropertyValues.Value
-    order by Properties.PropertyName, PropertyValues.Value
-    SEPARATOR ', '
+	order by Properties.PropertyName, PropertyValues.Value
+	SEPARATOR ', '
   ) as char) as Properties
 FROM
 (
@@ -477,7 +479,7 @@ left join catalogs.ProductProperties on ProductProperties.ProductId = Products.I
 left join catalogs.PropertyValues on PropertyValues.Id = ProductProperties.PropertyValueId
 left join catalogs.Properties on Properties.Id = PropertyValues.PropertyId
 where
-    Catalog.Id = Products.CatalogID
+	Catalog.Id = Products.CatalogID
 and Products.Id = ?ProductId 
 and Products.Hidden = 0
 group by Products.Id
@@ -560,7 +562,7 @@ order by Properties
 DELETE FROM 
   farm.UnrecExp
 WHERE 
-    PriceItemId = ?PriceItemId
+	PriceItemId = ?PriceItemId
 AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.PriceItemId)",
 											connection, transaction);
 									cmdDeleteJob.Parameters.Add("?PriceItemId", MySqlDbType.Int64);
@@ -647,7 +649,7 @@ WHERE PriceItemId= ?PriceItemId",
 				});
 			}
 
-     	}
+		}
 
 		private FormMask GetMask(int NumRow, string FieldName)
 		{
@@ -789,7 +791,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 		private void ShowCatalogFirmCr(int FocusedRowHandle)
 		{
-			DataRow dr = gvUnrecExp.GetDataRow(FocusedRowHandle);
+			var dr = gvUnrecExp.GetDataRow(FocusedRowHandle);
 			grpBoxCatalog2.Text = "Каталог фирм производителей";
 			producerSeachText = String.Empty;
 			pFirmCr.Visible = true;
@@ -1206,18 +1208,16 @@ WHERE PriceItemId= ?PriceItemId",
 			GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 		}
 
-		private string GetFirmCr(int FocusedRowHandle)
+		private string GetFirmCr(int handle)
 		{
-			if (FocusedRowHandle != GridControl.InvalidRowHandle)
+			if (handle != GridControl.InvalidRowHandle)
 			{
-				DataRow dr = gvUnrecExp.GetDataRow(FocusedRowHandle);
+				var dr = gvUnrecExp.GetDataRow(handle);
 				if (dr != null)
 					return dr[UEFirmCr.ColumnName].ToString();
-				else
-					return String.Empty;
-			}
-			else
 				return String.Empty;
+			}
+			return String.Empty;
 		}
 
 		private void JobsGridControl_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1356,9 +1356,9 @@ WHERE PriceItemId= ?PriceItemId",
 					UnLockedInBlockedPrice(LockedPriceItemId);
 					LockedPriceCode = -1;
 					LockedPriceItemId = -1;
-                    PriceFMT = String.Empty;
-                    FileExt = String.Empty;
-                    LockedSynonym = -1;
+					PriceFMT = String.Empty;
+					FileExt = String.Empty;
+					LockedSynonym = -1;
 					gvUnrecExp.FocusedRowHandle = GridControl.InvalidRowHandle;
 					dtUnrecExp.Clear();
 					// Обновляем таблицу заданий
@@ -1475,8 +1475,7 @@ WHERE PriceItemId= ?PriceItemId",
 		private void UnLockedInBlockedPrice(long unLockPriceItemId)
 		{
 			With.Transaction(
-				(connection, transaction) =>
-				{
+				(connection, transaction) => {
 					GlobalMySql.MySqlHelper.ExecuteNonQuery(
 						connection,
 						"delete from blockedprice where PriceItemId = ?unLockPriceItemId",
@@ -1484,19 +1483,25 @@ WHERE PriceItemId= ?PriceItemId",
 				});
 		}
 
-		private void ChangeBigName(int FocusedRowHandle)
+		private void ChangeBigName(int handle)
 		{
-			if (FocusedRowHandle != GridControl.InvalidRowHandle)
+			if (handle != GridControl.InvalidRowHandle)
 			{
-				if (NotNameForm(FocusedRowHandle, "UEStatus"))
-					BigNameLabel2.Text = GetFullUnrecName(FocusedRowHandle);
+				if (NotNameForm(handle, "UEStatus"))
+					BigNameLabel2.Text = GetFullUnrecName(handle);
+				else if (NotFirmForm(handle, "UEStatus"))
+				{
+					BigNameLabel2.Text = GetFirmCr(handle);
+					if (String.IsNullOrEmpty(BigNameLabel2.Text)
+						&& Convert.ToBoolean(gvUnrecExp.GetDataRow(handle)["Pharmacie"]))
+						BigNameLabel2.Text = BigNameLabel2.Text + " (Фармацевтика)";
+					else
+						createExclude.Visible = false;
+				}
 				else
-					if (NotFirmForm(FocusedRowHandle, "UEStatus"))
-					BigNameLabel2.Text = GetFirmCr(FocusedRowHandle);
-				else
-					BigNameLabel2.Text = GetFullUnrecName(FocusedRowHandle);
+					BigNameLabel2.Text = GetFullUnrecName(handle);
 
-				sbpCurrent.Text = String.Format("Текущая позиция: {0}", FocusedRowHandle+1);
+				sbpCurrent.Text = String.Format("Текущая позиция: {0}", handle+1);
 			}
 			else
 				sbpCurrent.Text = String.Empty;
@@ -1595,13 +1600,13 @@ WHERE PriceItemId= ?PriceItemId",
 
 		private void gvJobs_CustomColumnDisplayText(object sender, CustomColumnDisplayTextEventArgs e)
 		{
-		    if (e.Column == colJWholeSale)
-		    {
-			    if (e.Value.ToString() == "0")
-				    e.DisplayText = "Опт";
-			    else
-				    e.DisplayText = "Розница";
-		    }
+			if (e.Column == colJWholeSale)
+			{
+				if (e.Value.ToString() == "0")
+					e.DisplayText = "Опт";
+				else
+					e.DisplayText = "Розница";
+			}
 		}
 
 		private void UnrecExpGridControl_Click(object sender, EventArgs e)
@@ -1701,7 +1706,7 @@ WHERE PriceItemId= ?PriceItemId",
 					dr["FirmShortName"], dr["JRegion"]);
 
 				string body = "";
-                body = Settings.Default.AboutFirmBody;
+				body = Settings.Default.AboutFirmBody;
 
 				body = String.Format(body, dr["FirmShortName"]);
 
@@ -1727,9 +1732,9 @@ WHERE PriceItemId= ?PriceItemId",
 select distinct c.contactText
 from usersettings.clientsdata cd
   join contacts.contact_groups cg on cd.ContactGroupOwnerId = cg.ContactGroupOwnerId
-    join contacts.contacts c on cg.Id = c.ContactOwnerId
+	join contacts.contacts c on cg.Id = c.ContactOwnerId
 where
-    firmcode = ?FirmCode
+	firmcode = ?FirmCode
 and cg.Type = ?ContactGroupType
 and c.Type = ?ContactType
 
@@ -1738,10 +1743,10 @@ union
 select distinct c.contactText
 from usersettings.clientsdata cd
   join contacts.contact_groups cg on cd.ContactGroupOwnerId = cg.ContactGroupOwnerId
-    join contacts.persons p on cg.id = p.ContactGroupId
-      join contacts.contacts c on p.Id = c.ContactOwnerId
+	join contacts.persons p on cg.id = p.ContactGroupId
+	  join contacts.contacts c on p.Id = c.ContactOwnerId
 where
-    firmcode = ?FirmCode
+	firmcode = ?FirmCode
 and cg.Type = ?ContactGroupType
 and c.Type = ?ContactType;",
 	new MySqlParameter("?FirmCode", FirmCode),
@@ -1821,7 +1826,7 @@ and c.Type = ?ContactType;",
 					else
 					{
 						if (((GetMask(i, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm) &&
-						    ((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
+							((GetMask(i, "UEStatus") & FormMask.NameForm) == FormMask.NameForm))
 						{
 							e.Appearance.BackColor = Color.Lime;
 						}
