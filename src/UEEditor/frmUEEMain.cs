@@ -368,6 +368,13 @@ order by Name"
 					}
 				})
 				.Load(dtCatalogFirmCr);
+
+			if (dtCatalogFirmCr.Rows.Count == 0 && !pharmacie)
+			{
+				ProducerQuery
+					.Query(pharmacie, catalogId, q => { })
+					.Load(dtCatalogFirmCr);
+			}
 		}
 
 		private void ProducersGridFillByFilter(string filter, DataRow row)
