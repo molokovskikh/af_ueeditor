@@ -299,7 +299,7 @@ where a.ProducerId = ?ProducerId", c);
 
 		public static void CreateExclude(DataRow source)
 		{
-			if (Convert.ToBoolean(source["Pharmacie"]))
+			if (!Convert.ToBoolean(source["Pharmacie"]))
 				return;
 
 			var exclude = new Exclude {
