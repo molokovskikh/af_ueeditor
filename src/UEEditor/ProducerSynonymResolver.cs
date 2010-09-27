@@ -299,6 +299,9 @@ where a.ProducerId = ?ProducerId", c);
 
 		public static void CreateExclude(DataRow source)
 		{
+			if (Convert.ToBoolean(source["Pharmacie"]))
+				return;
+
 			var exclude = new Exclude {
 				Name = source["UEFirmCr"].ToString(),
 				CatalogId = Convert.ToUInt32(source["UEPriorCatalogId"]),

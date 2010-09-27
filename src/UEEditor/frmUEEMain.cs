@@ -1492,9 +1492,12 @@ WHERE PriceItemId= ?PriceItemId",
 				else if (NotFirmForm(handle, "UEStatus"))
 				{
 					BigNameLabel2.Text = GetFirmCr(handle);
-					if (String.IsNullOrEmpty(BigNameLabel2.Text)
+					if (!String.IsNullOrEmpty(BigNameLabel2.Text)
 						&& Convert.ToBoolean(gvUnrecExp.GetDataRow(handle)["Pharmacie"]))
-						BigNameLabel2.Text = BigNameLabel2.Text + " (Фармацевтика)";
+					{
+						BigNameLabel2.Text = BigNameLabel2.Text + " (фармацевтика)";
+						createExclude.Visible = true;
+					}
 					else
 						createExclude.Visible = false;
 				}
