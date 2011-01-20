@@ -1,12 +1,10 @@
 ﻿import file from ClickOnce.bake
-import file from Migration.bake
-import file from Tools.bake
 
 Global(
 	Project : "UEEditor",
 	HumanReadableName : "Редактор нераспознанных выражений"
 )
 
-Task @default, [@build]
+task @default, [@ClickOnceBuild]
 
-Task @deploy, [@build, @Production, @Migrate, @publish]
+task @deploy, [@ClickOnceDeploy]
