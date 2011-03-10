@@ -425,6 +425,9 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 
 					foreach (var exclude in excludes.Where(e => e.Id == 0))
 					{
+						if (!IsExcludeCorrect(c, exclude))
+							continue;
+
 						insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
 						insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
 						insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
@@ -501,6 +504,19 @@ and priceitems.Id = pricescosts.PriceItemId",
 				
 			_logger.DebugFormat("Перепроведение пpайса завершено.");
 			formProgress.ApplyProgress = 100;
+		}
+
+		public static bool IsExcludeCorrect(MySqlConnection connection, DbExclude exclude)
+		{
+			if (exclude.DoNotShow)
+				return true;
+
+			var command = new MySqlCommand(@"
+select Pharmacie
+from Catalogs.Catalog
+where Id = ?CatalogId", connection);
+			command.Parameters.AddWithValue("?CatalogId", exclude.CatalogId);
+			return Convert.ToBoolean(command.ExecuteScalar());
 		}
 
 		private bool NotNameForm(DataRow row, string FieldName)
