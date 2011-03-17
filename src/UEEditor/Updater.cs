@@ -391,15 +391,7 @@ where pricecode = ?PriceCode", masterConnection);
 			{
 				With.DeadlockWraper(c => {
 
-					var humanName = "";
-					var command = new MySqlCommand(@"select ManagerName from accessright.regionaladmins where username = ?name", c);
-					command.Parameters.AddWithValue("name", operatorName);
-					using (var reader = command.ExecuteReader())
-					{
-						var name = reader.Cast<DbDataRecord>().SingleOrDefault()["ManagerName"].ToString();
-						if (!String.IsNullOrEmpty(name))
-							humanName = name;
-					}
+					var humanName = GetHumanName(c, operatorName);
 
 					var helper = new Common.MySql.MySqlHelper(masterConnection, null);
 					var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
@@ -504,6 +496,24 @@ and priceitems.Id = pricescosts.PriceItemId",
 				
 			_logger.DebugFormat("Перепроведение пpайса завершено.");
 			formProgress.ApplyProgress = 100;
+		}
+
+		public static string GetHumanName(MySqlConnection c, string operatorName)
+		{
+			var humanName = "";
+			var command = new MySqlCommand(@"select ManagerName from accessright.regionaladmins where username = ?name", c);
+			command.Parameters.AddWithValue("name", operatorName);
+			using (var reader = command.ExecuteReader())
+			{
+				var record = reader.Cast<DbDataRecord>().SingleOrDefault();
+				if (record != null)
+				{
+					var name = record["ManagerName"].ToString();
+					if (!String.IsNullOrEmpty(name))
+						humanName = name;
+				}
+			}
+			return humanName;
 		}
 
 		public static bool IsExcludeCorrect(MySqlConnection connection, DbExclude exclude)

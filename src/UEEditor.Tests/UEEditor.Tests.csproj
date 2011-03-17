@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HumanNameFixture.cs" />
     <Compile Include="ProducerQueryFixture.cs" />
     <Compile Include="ProducerResolverFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
