@@ -1671,7 +1671,8 @@ WHERE PriceItemId= ?PriceItemId",
 				body = Settings.Default.AboutNamesBody;
 
 				body = String.Format(body, dr["FirmShortName"]);
-
+				body += GetFooter();			
+	
 				Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "pharm@analit.net", subject, body));
 			}
 		}
@@ -1712,6 +1713,7 @@ WHERE PriceItemId= ?PriceItemId",
 				body = Settings.Default.AboutFirmBody;
 
 				body = String.Format(body, dr["FirmShortName"]);
+				body += GetFooter();
 
 				string mailUrl = String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}",
 					GetContactText((long)dr[JFirmCode.ColumnName], 2, 0),
@@ -1764,6 +1766,19 @@ and c.Type = ?ContactType;",
 			}
 
 			return String.Join("; ", contacts.ToArray());
+		}
+
+		public static string GetFooter()
+		{
+			string footer = "";
+			With.Slave((slaveConnection) =>
+			           	{
+			           		footer = Convert.ToString(GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
+			           		                                      "select EmailFooter from usersettings.Defaults limit 1"));				
+			});
+
+			footer = footer.Replace("\r\n", "%0D%0A");			
+			return footer;
 		}
 
 		private void gvUnrecExp_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
