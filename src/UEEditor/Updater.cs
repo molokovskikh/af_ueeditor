@@ -391,23 +391,27 @@ where pricecode = ?PriceCode", masterConnection);
 			{
 				With.DeadlockWraper(c => {
 
+                    _logger.Debug("1-->");
 					var humanName = GetHumanName(c, operatorName);
 
-					var helper = new Common.MySql.MySqlHelper(masterConnection, null);
+					var helper = new Common.MySql.MySqlHelper(/*masterConnection*/c, null);
 					var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
 					commandHelper.AddParameter("?Host", Environment.MachineName);
 					commandHelper.AddParameter("?UserName", operatorName);
+                    _logger.Debug("2-->");
 					commandHelper.Execute();
 
 					//Заполнили таблицу логов для синонимов наименований
 					daSynonym.SelectCommand.Connection = c;
+                    _logger.Debug("3-->");
 					daSynonym.Update(dtSynonym);
 
 					formProgress.ApplyProgress += 10;
 
+                    _logger.Debug("4-->");
 					var insertExclude = new MySqlCommand(@"
 insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator, OriginalSynonymId) 
-value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?OriginalSynonymId);", masterConnection);
+value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?OriginalSynonymId);", /*masterConnection*/c);
 					insertExclude.Parameters.AddWithValue("?PriceCode", LockedSynonym);
 					insertExclude.Parameters.AddWithValue("?Operator", humanName);
 					insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
@@ -415,6 +419,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 					insertExclude.Parameters.Add("?CatalogId", MySqlDbType.UInt32);
 					insertExclude.Parameters.Add("?OriginalSynonymId", MySqlDbType.UInt32);
 
+                    _logger.Debug("5-->");
 					foreach (var exclude in excludes.Where(e => e.Id == 0))
 					{
 						if (!IsExcludeCorrect(c, exclude))
@@ -430,6 +435,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Connection = c;
 					var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
+                    _logger.Debug("6-->");
 					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
 					{
 						lastUpdateSynonym = drInsertProducerSynonym;
@@ -440,7 +446,8 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 						daSynonymFirmCr.Update(new[] { drInsertProducerSynonym });
 					}
 
-					MySqlHelper.ExecuteNonQuery(masterConnection,
+                    _logger.Debug("7-->");
+					MySqlHelper.ExecuteNonQuery(/*masterConnection*/c,
 						@"
 update 
 usersettings.pricescosts,
@@ -455,15 +462,19 @@ and priceitems.Id = pricescosts.PriceItemId",
 
 					//Заполнили таблицу логов для запрещённых выражений
 					daForbidden.SelectCommand.Connection = c;
+                    _logger.Debug("8-->");
 					var dtForbiddenCopy = dtForbidden.Copy();
+                    _logger.Debug("9-->");
 					daForbidden.Update(dtForbiddenCopy);
 
 					formProgress.ApplyProgress += 10;
 					//Обновление таблицы нераспознанных выражений
+                    _logger.Debug("10-->");
 					daUnrecUpdate.SelectCommand.Connection = c;
 					var dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
+                    _logger.Debug("11-->");
 					daUnrecUpdate.Update(dtUnrecUpdateCopy);
-
+                    _logger.Debug("11-->");
 					formProgress.ApplyProgress += 10;
 				});
 			}
