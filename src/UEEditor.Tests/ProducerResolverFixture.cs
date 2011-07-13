@@ -179,9 +179,11 @@ namespace UEEditor.Tests
 				  Status As UEStatus,
 				  Already As UEAlready, 
 				  Junk As UEJunk,
-				  HandMade As UEHandMade
+				  HandMade As UEHandMade,
+                  c.Pharmacie  
 				  FROM farm.UnrecExp 
 					left join Catalogs.Products p on p.Id = PriorProductId
+                    left join Catalogs.Catalog c on p.CatalogId = c.Id
 				  WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1",c));
 				commandHelper.AddParameter("?LockedPriceItemId", price.Costs.First().PriceItem.Id);
 				
