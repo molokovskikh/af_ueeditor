@@ -549,7 +549,7 @@ where Id = ?CatalogId", connection);
 
 		private string GetFullUnrecName(DataRow row)
 		{
-			return String.Format("{0}  ", row["UEName1"]);
+			return String.Format("{0}", row["UEName1"]);
 		}
 
 		private bool NotFirmForm(DataRow row, string FieldName)
