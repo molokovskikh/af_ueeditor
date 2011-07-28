@@ -12,7 +12,10 @@ namespace UEEditor.Tests
 		{
 			Setup.Initialize();
 			if (Setup.IsIntegration())
+			{
 				With.DefaultConnectionStringName = "integration";
+				With.DefaultSlaveConnectionStringName = "integration";
+			}
 		}
 	}
 
