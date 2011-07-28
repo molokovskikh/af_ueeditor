@@ -239,11 +239,9 @@ namespace UEEditor.Tests
 		private void Save()
 		{
 			var updater = new Updater(price.Id, price.Id, price.Costs.First().PriceItem.Id, null);
-			using (var connection = new MySqlConnection(ConfigurationManager.ConnectionStrings["Main"].ConnectionString))
-			{
-				connection.Open();
-				updater.ApplyChanges(connection, new FakeNotifier(), data.Rows.Cast<DataRow>().ToList());
-			}
+			With.Connection(c => {
+				updater.ApplyChanges(c, new FakeNotifier(), data.Rows.Cast<DataRow>().ToList());
+			});
 		}
 
 		private void Resolve(TestUnrecExp expression, TestProduct product)
