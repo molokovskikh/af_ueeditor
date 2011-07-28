@@ -9,6 +9,7 @@ using MySql.Data.MySqlClient;
 using NUnit.Framework;
 using Test.Support;
 using Test.Support.Catalog;
+using Test.Support.Suppliers;
 
 namespace UEEditor.Tests
 {
@@ -24,12 +25,46 @@ namespace UEEditor.Tests
 	{
 		TestPrice price;
 		DataTable data;
+		ProducerSynonymResolver resolver;
 
 		[SetUp]
 		public void SetUp()
 		{
 			using(new TransactionScope())
-				price = TestOldClient.CreateTestSupplierWithPrice();
+				price = TestSupplier.CreateTestSupplierWithPrice();
+
+			resolver = new ProducerSynonymResolver(price.Id);
+		}
+
+		[Test]
+		public void After_unresolve_product_clear_exclude()
+		{
+			TestUnrecExp exp;
+			TestProduct product;
+			TestProduct product2;
+			using(new SessionScope())
+			{
+				exp = new TestUnrecExp("ПОЛЫНИ ГОРЬКОЙ ТРАВА сырье 75 г N1", "Кентавр ХФК", price);
+				exp.Save();
+				//исключения работают только для фармацевтики
+				var products = Pharmacie().Take(2).ToList();
+				product = products[0];
+				product2 = products[1];
+			}
+			Load();
+			var row = GetRow(exp);
+			Resolve(exp, product);
+			resolver.ExcludeProducer(row);
+			resolver.UnresolveProduct(row);
+
+			Resolve(exp, product2);
+			Save();
+
+			using(new SessionScope())
+			{
+				var excludes = TestExclude.Queryable.Where(e => e.Price == price);
+				Assert.That(excludes.Count(), Is.EqualTo(0), excludes.Implode());
+			}
 		}
 
 		[Test]
@@ -46,7 +81,7 @@ namespace UEEditor.Tests
 				producerSynonym.Save();
 				new TestAutomaticSynonym{ProducerSynonymId = producerSynonym.Id}.Create();
 
-				var productsWithAssortment = TestProduct.Queryable.Take(30).ToList().Where(p => p.CatalogProduct.Producers.Count > 0);
+				var productsWithAssortment = Pharmacie().Take(30).ToList().Where(p => p.CatalogProduct.Producers.Count > 0);
 				var first = productsWithAssortment.First();
 				var products = productsWithAssortment.Where(p => !p.CatalogProduct.Producers.Any(pr => pr.Id == first.CatalogProduct.Producers[0].Id)).Take(1).ToList();
 				products.Add(first);
@@ -106,7 +141,7 @@ namespace UEEditor.Tests
 			TestCatalogProduct catalogProduct;
 			using(new SessionScope())
 			{
-				var product = TestProduct.Queryable.First();
+				var product = Pharmacie().First();
 				catalogProduct = product.CatalogProduct;
 				var synonym = new TestProductSynonym("test", product, price);
 				synonym.Save();
@@ -117,7 +152,7 @@ namespace UEEditor.Tests
 			}
 
 			Load();
-			ProducerSynonymResolver.CreateExclude(GetRow(expression));
+			resolver.ExcludeProducer(GetRow(expression));
 			Save();
 
 			using (new SessionScope(FlushAction.Never))
@@ -140,12 +175,12 @@ namespace UEEditor.Tests
 			{
 				expression = new TestUnrecExp("test", "test", price);
 				expression.Save();
-				product = TestProduct.Queryable.First();
+				product = Pharmacie().First();
 			}
 
 			Load();
 			Resolve(expression, product);
-			ProducerSynonymResolver.CreateExclude(GetRow(expression));
+			resolver.ExcludeProducer(GetRow(expression));
 			Save();
 
 			using (new SessionScope(FlushAction.Never))
@@ -155,6 +190,11 @@ namespace UEEditor.Tests
 				var exclude = exlcudes.Single();
 				Assert.That(exclude.OriginalSynonym, Is.Not.Null);
 			}
+		}
+
+		private static IQueryable<TestProduct> Pharmacie()
+		{
+			return TestProduct.Queryable.Where(p => p.CatalogProduct.Pharmacie);
 		}
 
 		private void Load()
@@ -209,13 +249,13 @@ namespace UEEditor.Tests
 		private void Resolve(TestUnrecExp expression, TestProduct product)
 		{
 			var row = GetRow(expression);
-			ProducerSynonymResolver.UpdateStatusByProduct(row, product.Id, product.CatalogProduct.Id, true, false);
+			resolver.ResolveProduct(row, product.Id, product.CatalogProduct.Id, true, false);
 		}
 
 		private void Resolve(TestUnrecExp expression, TestProducer producer)
 		{
 			var row = GetRow(expression);
-			ProducerSynonymResolver.UpdateStatusByProducer(row, producer.Id);
+			resolver.ResolveProducer(row, producer.Id);
 		}
 
 		private DataRow GetRow(TestUnrecExp expression)

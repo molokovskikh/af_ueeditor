@@ -5,147 +5,26 @@ using System.Data.Common;
 using System.Linq;
 using Common.MySql;
 using MySql.Data.MySqlClient;
+using log4net;
 
 namespace UEEditor
 {
-	public class Exclude : ProducerSynonym
-	{
-		public uint CatalogId;
-
-		public Exclude()
-		{
-			State = ProducerSynonymState.Exclude;
-		}
-
-		public Exclude(IDataRecord record) : this()
-		{
-			Loaded = true;
-			Id = Convert.ToUInt32(record["SynonymFirmCrCode"]);
-			Name = record["Synonym"].ToString();
-			CatalogId = Convert.ToUInt32(record["CatalogId"]);
-		}
-	}
-
-	public class ProducerSynonym
-	{
-		public uint Id;
-		public uint ProducerId;
-		public string Name;
-		public bool Loaded;
-
-		public ProducerSynonymState State;
-
-		public ProducerSynonym()
-		{
-			State = ProducerSynonymState.Normal;
-		}
-
-		public ProducerSynonym(DataRow item, uint producerId) : this()
-		{
-			ProducerId = producerId;
-			Name = item["UEFirmCr"].ToString();
-			if (!(item["UEProducerSynonymId"] is DBNull))
-				Id = Convert.ToUInt32(item["UEProducerSynonymId"]);
-		}
-
-		public void Apply(DataRow row)
-		{
-			if (row["UEProducerSynonymId"] is DBNull)
-				row["UEProducerSynonymId"] = Id;
-
-			row["UEStatus"] = (int)(ProducerSynonymResolver.GetStatus(row) | FormMask.FirmForm);
-			if (ProducerId == 0)
-				row["UEPriorProducerId"] = DBNull.Value;
-			else
-				row["UEPriorProducerId"] = ProducerId;
-			row["SynonymObject"] = this;
-		}
-
-		public bool IsApplicable(DataRow destination, DataTable assortment)
-		{
-			var status = ProducerSynonymResolver.GetStatus(destination);
-			if ((status & FormMask.NameForm) != FormMask.NameForm)
-				return false;
-
-			if ((status & FormMask.FirmForm) == FormMask.FirmForm)
-				return false;
-
-			if (destination["UEPriorProductId"] is DBNull)
-				return false;
-
-			if (!Name.Equals(destination["UEFirmCr"].ToString(), StringComparison.CurrentCultureIgnoreCase))
-				return false;
-
-			var catalogId = Convert.ToUInt32(destination["UEPriorCatalogId"]);
-			if (this is Exclude)
-				return ((Exclude) this).CatalogId == catalogId;
-
-			//если это фармацевтика то не нужно делать проверки по ассортименту
-			if (!Convert.ToBoolean(destination["pharmacie"]))
-				return true;
-
-			if (assortment == null)
-				return false;
-
-			return assortment.Rows.Cast<DataRow>().Any(r => Convert.ToUInt32(r["CatalogId"]) == catalogId 
-				&& Convert.ToUInt32(r["ProducerId"]) == ProducerId);
-		}
-
-		public static ProducerSynonym CreateSynonym(DbDataRecord record)
-		{
-			if (record == null)
-				return null;
-			if (record["CatalogId"] is DBNull && !(record["ProducerId"] is DBNull))
-			{
-				return new ProducerSynonym {
-					Loaded = true,
-					Id = Convert.ToUInt32(record["SynonymFirmCrCode"]),
-					ProducerId = Convert.ToUInt32(record["ProducerId"]),
-					Name = record["Synonym"].ToString()
-				};
-			}
-			else
-			{
-				return new Exclude(record);
-			}
-		}
-
-		public static ProducerSynonym CreateSynonym(DataRow row, uint producerId)
-		{
-			if (producerId != 0)
-			{
-				return new ProducerSynonym(row, producerId);
-			}
-			else
-				return new Exclude {
-					Name = row["UEFirmCr"].ToString(),
-					CatalogId = Convert.ToUInt32(row["UEPriorCatalogId"]),
-					State = ProducerSynonymState.Unknown
-				};
-		}
-	}
-
-	public enum ProducerSynonymState
-	{
-		Normal = 0,
-		NotProcessed = 1,
-		Unknown = 2,
-		Exclude = 3,
-	}
-
 	public class ProducerSynonymResolver
 	{
-		private static List<ProducerSynonym> synonyms = new List<ProducerSynonym>();
-		private static uint priceId;
+		public static ProducerSynonymResolver Resolver;
 
-		public static void Init(uint priceId)
+		private List<ProducerSynonym> synonyms = new List<ProducerSynonym>();
+		private uint priceId;
+
+		private static ILog log = LogManager.GetLogger(typeof(ProducerSynonymResolver));
+
+		public ProducerSynonymResolver(uint priceId)
 		{
-			ProducerSynonymResolver.priceId = priceId;
+			this.priceId = priceId;
 			synonyms = new List<ProducerSynonym>();
 		}
 
-		
-		public static Query LoadSynonym()
+		public Query LoadSynonym()
 		{
 			return new Query()
 				.Select("sfc.SynonymFirmCrCode, sfc.CodeFirmCr as ProducerId, sfc.Synonym, null as CatalogId")
@@ -153,10 +32,10 @@ namespace UEEditor
 				.Where("sfc.PriceCode = ?PriceId", new {priceId});
 		}
 
-		public static void UpdateStatusByProduct(DataRow item, uint productId, uint catalogId, bool pharmacie, bool markAsJunk)
+		public void ResolveProduct(DataRow item, uint productId, uint catalogId, bool pharmacie, bool markAsJunk)
 		{
 			var table = item.Table;
-			var name = String.Format("{0}  ", item["UEName1"]);
+			var name = item["UEName1"].ToString().Trim();
 
 			var producer = item["UEFirmCr"].ToString();
 			var synonyms = GetSynonyms(producer);
@@ -165,7 +44,7 @@ namespace UEEditor
 			for(int i = 0; i < table.Rows.Count; i++)
 			{
 				var row = table.Rows[i];
-				if (name == GetName(row))
+				if (String.Equals(name, GetName(row), StringComparison.CurrentCultureIgnoreCase))
 				{
 					if (((FormMask)Convert.ToByte(row["UEStatus"]) & FormMask.NameForm) != FormMask.NameForm)
 					{
@@ -182,7 +61,54 @@ namespace UEEditor
 			}
 		}
 
-		private static void TryToPickProducerSynonym(DataRow destination, IEnumerable<ProducerSynonym> synonyms)
+		public void UnresolveProduct(DataRow row)
+		{
+			try
+			{
+				var status = GetStatus(row);
+				if ((status & FormMask.NameForm) == FormMask.NameForm)
+				{
+					row["UEStatus"] = status & (~FormMask.NameForm);
+					row["UEPriorProductId"] = DBNull.Value;
+					row["UEPriorCatalogId"] = DBNull.Value;
+					row["Pharmacie"] = false;
+				}
+				UnresolveProducer(row);
+			}
+			catch(Exception e)
+			{
+				log.Error(String.Format("Ошибка при отмене распознования позиции {0}", GetName(row)), e);
+			}
+		}
+
+		public void UnresolveProducer(DataRow row)
+		{
+			try
+			{
+				var status = GetStatus(row);
+				if ((status & FormMask.FirmForm) == FormMask.FirmForm)
+				{
+					var synonym = row["SynonymObject"] as ProducerSynonym;
+
+					row["UEStatus"] = status & (~FormMask.FirmForm);
+					row["UEProducerSynonymId"] = DBNull.Value;
+					row["UEPriorProducerId"] = DBNull.Value;
+					row["SynonymObject"] = null;
+
+					if (synonym != null
+						&& !row.Table.Rows.Cast<DataRow>().Any(r => r["SynonymObject"] == synonym))
+					{
+						synonyms.Remove(synonym);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				log.Error(String.Format("Ошибка при отмене распознования позиции {0}", GetName(row)), e);
+			}
+		}
+
+		private void TryToPickProducerSynonym(DataRow destination, IEnumerable<ProducerSynonym> synonyms)
 		{
 			var producer = destination["UEFirmCr"].ToString();
 			if (String.IsNullOrEmpty(producer))
@@ -199,7 +125,7 @@ namespace UEEditor
 				synonym.Apply(destination);
 		}
 
-		public static void UpdateStatusByProducer(DataRow item, uint producerId)
+		public void ResolveProducer(DataRow item, uint producerId)
 		{
 			var table = item.Table;
 			var assortment = LoadAssortmentByProducer(producerId);
@@ -223,7 +149,7 @@ namespace UEEditor
 			}
 		}
 
-		private static IEnumerable<ProducerSynonym> GetSynonyms(string synonym)
+		private IEnumerable<ProducerSynonym> GetSynonyms(string synonym)
 		{
 			return With.Slave(c => {
 				var command = new MySqlCommand(@"
@@ -254,7 +180,7 @@ group by e.CatalogId, sfc.Synonym", c);
 			});
 		}
 
-		public static DataTable LoadAssortmentByCatalog(uint producerId)
+		public DataTable LoadAssortmentByCatalog(uint producerId)
 		{
 			return With.Slave(c => {
 				var command = new MySqlCommand(@"
@@ -270,7 +196,7 @@ where a.CatalogId = ?CatalogId", c);
 			});
 		}
 
-		public static DataTable LoadAssortmentByProducer(uint producerId)
+		public DataTable LoadAssortmentByProducer(uint producerId)
 		{
 			return With.Slave(c => {
 				var command = new MySqlCommand(@"
@@ -294,10 +220,10 @@ where a.ProducerId = ?ProducerId", c);
 
 		public static string GetName(DataRow item)
 		{
-			return String.Format("{0}  ", item["UEName1"]);
+			return item["UEName1"].ToString().Trim();
 		}
 
-		public static void CreateExclude(DataRow source)
+		public void ExcludeProducer(DataRow source)
 		{
 			if (!Convert.ToBoolean(source["Pharmacie"]))
 				return;

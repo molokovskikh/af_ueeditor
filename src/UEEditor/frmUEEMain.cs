@@ -21,8 +21,6 @@ using Common.MySql;
 using GlobalMySql = MySql.Data.MySqlClient;
 using DevExpress.XtraGrid.Views.Base;
 
-
-[assembly: RegistryPermissionAttribute(SecurityAction.RequestMinimum, ViewAndModify = "HKEY_CURRENT_USER")]
 namespace UEEditor
 {
 	[FlagsAttribute]
@@ -76,7 +74,7 @@ namespace UEEditor
 				Visible = false
 			};
 			createExclude.Click += (s, a) => {
-				ProducerSynonymResolver.CreateExclude(GetCurrentItem());
+				ProducerSynonymResolver.Resolver.ExcludeProducer(GetCurrentItem());
 				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 			};
 			pFirmCr.VisibleChanged += (s, a) => {
@@ -883,7 +881,7 @@ WHERE PriceItemId= ?PriceItemId",
 								string Mess = String.Format("Наименование: {0}\r\nФорма: {1}\r\nОтменить сопоставление по наименованию?", drCatalogName[colCatalogNameName], drCatalog[colCatalogForm]);
 								if (MessageBox.Show(Mess, "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 								{
-									UnmarkUnrecExpAsNameForm(gvUnrecExp.FocusedRowHandle);
+									ProducerSynonymResolver.Resolver.UnresolveProduct(GetCurrentItem());
 									SetReserved(false, gvUnrecExp.FocusedRowHandle);
 									flag = true;
 								}
@@ -916,7 +914,7 @@ WHERE PriceItemId= ?PriceItemId",
 								!String.IsNullOrEmpty((string)FirmName) && 
 								(MessageBox.Show("Производитель: " + FirmName+ "\r\nОтменить сопоставление по производителю?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes))
 							{
-								UnmarkUnrecExpAsFirmForm(gvUnrecExp.FocusedRowHandle);
+								ProducerSynonymResolver.Resolver.UnresolveProducer(GetCurrentItem());
 								flag = true;
 							}
 						}
@@ -938,37 +936,6 @@ WHERE PriceItemId= ?PriceItemId",
 		{
 			DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
 			drUnrecExp["UEJunk"]=Convert.ToByte(reserved);
-		}
-
-		private void UnmarkUnrecExpAsNameForm(int FocusedRowHandle)
-		{
-			try
-			{
-				if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.NameForm) == FormMask.NameForm)
-				{
-					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-					drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & (~FormMask.NameForm));
-					drUnrecExp[UEPriorProductId.ColumnName] = DBNull.Value;
-				}
-			}
-			catch
-			{}
-		}
-
-		private void UnmarkUnrecExpAsFirmForm(int FocusedRowHandle)
-		{
-			try
-			{
-				if ((GetMask(FocusedRowHandle, "UEStatus") & FormMask.FirmForm) == FormMask.FirmForm)
-				{
-					DataRow drUnrecExp = gvUnrecExp.GetDataRow(FocusedRowHandle);
-					drUnrecExp[UEStatus.ColumnName] = (int)((FormMask)Convert.ToByte(drUnrecExp[UEStatus.ColumnName]) & (~FormMask.FirmForm));
-					drUnrecExp[UEPriorProducerId.ColumnName] = DBNull.Value;
-				}
-			}
-			catch
-			{
-			}
 		}
 
 		private void UnmarkUnrecExpAsForbidden(int FocusedRowHandle)
@@ -1188,7 +1155,7 @@ WHERE PriceItemId= ?PriceItemId",
 			var catalogId = Convert.ToUInt32(catalog["CatalogId"]);
 			var pharmacie = Convert.ToBoolean(catalog["Pharmacie"]);
 
-			ProducerSynonymResolver.UpdateStatusByProduct(GetCurrentItem(), 
+			ProducerSynonymResolver.Resolver.ResolveProduct(GetCurrentItem(), 
 				productId,
 				catalogId,
 				pharmacie,
@@ -1203,7 +1170,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 		private void DoSynonymFirmCr()
 		{
-			ProducerSynonymResolver.UpdateStatusByProducer(GetCurrentItem(), 
+			ProducerSynonymResolver.Resolver.ResolveProducer(GetCurrentItem(), 
 				Convert.ToUInt32(gvFirmCr.GetDataRow(gvFirmCr.FocusedRowHandle)["CCode"]));
 			GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 		}
@@ -1288,7 +1255,9 @@ WHERE PriceItemId= ?PriceItemId",
 							LockedSynonym = LockedPriceCode;
 						else
 							LockedSynonym = Convert.ToInt64(dr[JParentSynonym]);
-						ProducerSynonymResolver.Init((uint) LockedSynonym);
+
+						ProducerSynonymResolver.Resolver = new ProducerSynonymResolver((uint) LockedSynonym);
+
 						grpBoxCatalog2.Text = "Каталог";
 
 						tcMain.TabPages.Add(tpUnrecExp);
@@ -1957,7 +1926,7 @@ and c.Type = ?ContactType;",
 
 			if (e.KeyCode == Keys.F3)
 			{
-				ProducerSynonymResolver.CreateExclude(current);
+				ProducerSynonymResolver.Resolver.ExcludeProducer(current);
 				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 			}
 		}
