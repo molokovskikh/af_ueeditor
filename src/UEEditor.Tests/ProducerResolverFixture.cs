@@ -199,7 +199,7 @@ namespace UEEditor.Tests
 
 		private void Load()
 		{
-			With.Slave(c => { 
+			With.Connection(c => { 
 				var commandHelper = new CommandHelper(new MySqlCommand(@"SELECT RowID As UERowID,
 				  Name1 As UEName1, 
 				  FirmCr As UEFirmCr, 
