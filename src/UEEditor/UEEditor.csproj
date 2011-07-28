@@ -171,7 +171,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exclude.cs" />
     <Compile Include="ProducerQuery.cs" />
+    <Compile Include="ProducerSynonym.cs" />
     <Compile Include="Updater.cs" />
     <None Include="app.config">
       <SubType>Designer</SubType>
@@ -274,7 +276,7 @@
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
