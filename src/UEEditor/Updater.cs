@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Text;
 using Common.MySql;
 using log4net;
 using MySql.Data.MySqlClient;
@@ -232,11 +233,14 @@ namespace UEEditor
 
 			formProgress.Status = "Применение изменений в базу данных...";
 			DataRow lastUpdateSynonym = null;
+		    var debugString = new StringBuilder();
+
 			try
 			{
 				With.DeadlockWraper(c => {
 
                     _logger.Debug("1-->");
+				    debugString.Append("1-->");
 					var humanName = GetHumanName(c, operatorName);
 
 					var helper = new Common.MySql.MySqlHelper(/*masterConnection*/c, null);
@@ -244,16 +248,19 @@ namespace UEEditor
 					commandHelper.AddParameter("?Host", Environment.MachineName);
 					commandHelper.AddParameter("?UserName", operatorName);
                     _logger.Debug("2-->");
+                    debugString.Append("2-->");
 					commandHelper.Execute();
 
 					//Заполнили таблицу логов для синонимов наименований
 					daSynonym.SelectCommand.Connection = c;
                     _logger.Debug("3-->");
+                    debugString.Append("3-->");
 					daSynonym.Update(dtSynonym);
 
 					formProgress.ApplyProgress += 10;
 
                     _logger.Debug("4-->");
+                    debugString.Append("4-->");
 					var insertExclude = new MySqlCommand(@"
 insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator, OriginalSynonymId) 
 value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?OriginalSynonymId);", /*masterConnection*/c);
@@ -265,15 +272,25 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 					insertExclude.Parameters.Add("?OriginalSynonymId", MySqlDbType.UInt32);
 
                     _logger.Debug("5-->");
+                    debugString.Append("5-->");
 					foreach (var exclude in excludes.Where(e => e.Id == 0))
 					{
 						if (!IsExcludeCorrect(c, exclude))
 							continue;
-
+                        _logger.Debug("5.1-->");
+                        debugString.Append("5.1-->");
 						insertExclude.Parameters["?ProducerSynonym"].Value = exclude.ProducerSynonym;
+                        _logger.Debug("5.2-->");
+                        debugString.Append("5.2-->");
 						insertExclude.Parameters["?DoNotShow"].Value = exclude.DoNotShow;
+                        _logger.Debug("5.3-->");
+                        debugString.Append("5.3-->");
 						insertExclude.Parameters["?CatalogId"].Value = exclude.CatalogId;
+                        _logger.Debug("5.4-->");
+                        debugString.Append("5.4-->");
 						insertExclude.Parameters["?OriginalSynonymId"].Value = exclude.GetOriginalSynonymId();
+                        _logger.Debug("5.5-->");
+                        debugString.Append("5.5-->");
 						insertExclude.ExecuteScalar();
 					}
 
@@ -281,6 +298,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 					daSynonymFirmCr.SelectCommand.Connection = c;
 					var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
                     _logger.Debug("6-->");
+                    debugString.Append("6-->");
 					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows)
 					{
 						lastUpdateSynonym = drInsertProducerSynonym;
@@ -292,6 +310,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 					}
 
                     _logger.Debug("7-->");
+                    debugString.Append("7-->");
 					MySqlHelper.ExecuteNonQuery(/*masterConnection*/c,
 						@"
 update 
@@ -308,25 +327,32 @@ and priceitems.Id = pricescosts.PriceItemId",
 					//Заполнили таблицу логов для запрещённых выражений
 					daForbidden.SelectCommand.Connection = c;
                     _logger.Debug("8-->");
+                    debugString.Append("8-->");
 					var dtForbiddenCopy = dtForbidden.Copy();
                     _logger.Debug("9-->");
+                    debugString.Append("9-->");
 					daForbidden.Update(dtForbiddenCopy);
 
 					formProgress.ApplyProgress += 10;
 					//Обновление таблицы нераспознанных выражений
                     _logger.Debug("10-->");
+                    debugString.Append("10-->");
 					daUnrecUpdate.SelectCommand.Connection = c;
 					var dtUnrecUpdateCopy = dtUnrecUpdate.Copy();
                     _logger.Debug("11-->");
+                    debugString.Append("11-->");
 					daUnrecUpdate.Update(dtUnrecUpdateCopy);
-                    _logger.Debug("11-->");
-					formProgress.ApplyProgress += 10;
+                    _logger.Debug("12-->");
+                    debugString.Append("12-->");
+					formProgress.ApplyProgress += 10;				                             
 				});
 			}
 			catch (Exception e)
 			{
 				if (e.Message.Contains("Duplicate entry"))
 					Mailer.SendDebugLog(dtSynonymFirmCr, e, lastUpdateSynonym);
+                if(!String.IsNullOrEmpty(debugString.ToString()))
+                    Mailer.SendMessageToService(e, debugString.ToString(), "a.tyutin@analit.net");			    
 				throw;
 			}
 

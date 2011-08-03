@@ -15,15 +15,21 @@ namespace UEEditor
 
 		private static string EmailService = Settings.Default.EmailService;
 
-		public static void SendMessageToService(Exception exception)
+		public static void SendMessageToService(Exception exception, string msg = null, string _to = null)
 		{
 			try
 			{
 				var messageBody = String.Format("Версия: {0}\nКомпьютер: {1}\nОператор: {2}\nОшибка:{3}\n",
 					Application.ProductVersion, Environment.MachineName, Environment.UserName, exception.ToString());
+
+                if (!String.IsNullOrEmpty(msg))
+                    messageBody = String.Format("Версия: {0}\nКомпьютер: {1}\nОператор: {2}\nОшибка:{3}\nОтладка:{4}\n",
+                      Application.ProductVersion, Environment.MachineName, Environment.UserName, exception.ToString(), msg);
 				//Формируем сообщение
 				var from = EmailService;
-				var to = EmailService;
+                var to = EmailService;
+                if (!String.IsNullOrEmpty(_to))
+                    to = _to;
 #if DEBUG
 				to = "KvasovTest@analit.net";
 #endif
