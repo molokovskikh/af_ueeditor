@@ -171,6 +171,8 @@ namespace UEEditor.Tests
 		{
 			TestUnrecExp expression;
 			TestProduct product;
+
+            
 			using (new SessionScope())
 			{
 				expression = new TestUnrecExp("test", "test", price);
@@ -194,7 +196,7 @@ namespace UEEditor.Tests
 
 		private static IQueryable<TestProduct> Pharmacie()
 		{
-			return TestProduct.Queryable.Where(p => p.CatalogProduct.Pharmacie);
+			return TestProduct.Queryable.Where(p => p.CatalogProduct.Pharmacie && !p.Hidden);
 		}
 
 		private void Load()
