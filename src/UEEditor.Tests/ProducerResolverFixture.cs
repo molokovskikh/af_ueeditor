@@ -194,7 +194,7 @@ namespace UEEditor.Tests
 
 		private static IQueryable<TestProduct> Pharmacie()
 		{
-			return TestProduct.Queryable.Where(p => p.CatalogProduct.Pharmacie);
+			return TestProduct.Queryable.Where(p => p.CatalogProduct.Pharmacie && !p.CatalogProduct.Hidden);
 		}
 
 		private void Load()
