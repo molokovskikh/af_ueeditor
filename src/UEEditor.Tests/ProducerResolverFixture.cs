@@ -123,7 +123,7 @@ namespace UEEditor.Tests
 			{
 				expression = new TestUnrecExp("test", "", price);
 				expression.Save();
-				product = TestProduct.Queryable.First();
+				product = TestProduct.Queryable.Where(p => !p.Hidden).First();
 			}
 			Load();
 			Resolve(expression, product);
@@ -194,6 +194,60 @@ namespace UEEditor.Tests
 			}
 		}
 
+		[Test]
+		public void Unresolve_product_if_product_was_hidden_before_save()
+		{
+			TestUnrecExp expression;
+			TestProduct product;
+
+			using (new SessionScope())
+			{
+				expression = new TestUnrecExp("test", "test", price);
+				expression.Save();
+				product = Pharmacie().First();
+			}
+
+			Load();
+			Resolve(expression, product); // сопоставляем по продукту
+			using (new SessionScope()) // скрываем продукт
+			{
+				product.CatalogProduct.Hidden = true;
+				product.Hidden = true;
+				product.Save();
+				product.CatalogProduct.Save();
+			}
+			resolver.ExcludeProducer(GetRow(expression)); // создаем исключение
+			Save();
+
+			using (new SessionScope(FlushAction.Never))
+			{
+				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
+				Assert.That(exlcudes.Count, Is.EqualTo(0));				
+			}
+
+
+			using (new SessionScope())
+			{
+				product.CatalogProduct.Hidden = false;
+				product.Hidden = false;
+				product.Save();
+				product.CatalogProduct.Save();
+			}
+
+			Load();
+			Resolve(expression, product);			
+
+			resolver.ExcludeProducer(GetRow(expression));
+			Save();
+			using (new SessionScope(FlushAction.Never))
+			{
+				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
+				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
+				var exclude = exlcudes.Single();
+				Assert.That(exclude.OriginalSynonym, Is.Not.Null);				
+			}
+		}
+
 		private static IQueryable<TestProduct> Pharmacie()
 		{
 			return TestProduct.Queryable.Where(p => p.CatalogProduct.Pharmacie && !p.CatalogProduct.Hidden);
@@ -240,7 +294,7 @@ namespace UEEditor.Tests
 
 		private void Save()
 		{
-			var updater = new Updater(price.Id, price.Id, price.Costs.First().PriceItem.Id, null);
+			var updater = new Updater(price.Id, price.Id, price.Costs.First().PriceItem.Id, null, resolver);
 			With.Connection(c => {
 				updater.ApplyChanges(c, new FakeNotifier(), data.Rows.Cast<DataRow>().ToList());
 			});

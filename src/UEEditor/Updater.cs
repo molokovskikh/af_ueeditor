@@ -62,13 +62,15 @@ namespace UEEditor
 
 		private ILog _logger = LogManager.GetLogger(typeof(Updater));
 		private PriceProcessorWcfHelper _remotePriceProcessor;
+		private ProducerSynonymResolver resolver;
 
-		public Updater(uint priceId, uint childPriceId, uint priceItemId, PriceProcessorWcfHelper remotePriceProcessor)
+		public Updater(uint priceId, uint childPriceId, uint priceItemId, PriceProcessorWcfHelper remotePriceProcessor, ProducerSynonymResolver _resolver)
 		{
 			this.priceId = priceId;
 			this.childPriceId = childPriceId;
 			this.priceItemId = priceItemId;
 			_remotePriceProcessor = remotePriceProcessor;
+			resolver = _resolver;
 		}
 
 		public void UpdateProducerSynonym(List<Unrecexp> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr)
@@ -163,8 +165,7 @@ namespace UEEditor
 			{
 				//Производим проверку того, что синоним может быть сопоставлен со скрытым каталожным наименованием
 				//Если в процессе распознования каталожное наименование скрыли, то сбрасываем распознавание
-				drUpdated["UEPriorProductId"] = DBNull.Value;
-				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
+				resolver.UnresolveProduct(drUpdated);
 				stat.HideSynonymCount++;
 			}
 
