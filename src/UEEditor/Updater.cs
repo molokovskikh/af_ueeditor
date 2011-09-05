@@ -156,7 +156,7 @@ namespace UEEditor
 			{}
 		}
 
-		private int UpDateUnrecExp(DataTable dtUnrecExpUpdate, DataRow drUpdated, MySqlConnection masterConnection)
+		private int UpDateUnrecExp(DataTable dtUnrecExpUpdate, DataRow drUpdated, MySqlConnection masterConnection, Unrecexp expression)
 		{
 			int DelCount = 0;
 
@@ -175,7 +175,15 @@ namespace UEEditor
 				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
 				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
 				drUpdated["UEPriorProductId"] = DBNull.Value;
-				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));
+				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.NameForm));				
+				var synonym = dtSynonym.NewRow();
+				synonym["SynonymCode"] = MySqlHelper.ExecuteScalar(
+					masterConnection,
+					"select SynonymCode from farm.synonym where synonym = ?SynonymName and PriceCode = ?LockedSynonymPriceCode",
+					new MySqlParameter("?LockedSynonymPriceCode", priceId),
+					new MySqlParameter("?SynonymName", String.Format("{0}  ", drUpdated["UEName1"].ToString()))
+					);
+				expression.CreatedProductSynonym = synonym;
 				stat.DuplicateSynonymCount++;
 			}
 
@@ -491,7 +499,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 			foreach (var dr in rows)
 			{
 				var expression = new Unrecexp(dr);
-				DelCount += UpDateUnrecExp(dtUnrecUpdate, dr, masterConnection);
+				DelCount += UpDateUnrecExp(dtUnrecUpdate, dr, masterConnection, expression);
 
 				//Вставили новую запись в таблицу запрещённых выражений
 				var name = GetFullUnrecName(dr);

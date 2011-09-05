@@ -167,6 +167,47 @@ namespace UEEditor.Tests
 		}
 
 		[Test]
+		public void Fill_original_synonym_for_second_created_exclude()
+		{
+			TestUnrecExp expression;
+			TestProduct product;
+
+			using (new SessionScope())
+			{
+				expression = new TestUnrecExp("Полыни горькой трава" + new Random().Next(), "Тестовый производитель" + new Random().Next(), price);
+				expression.Save();
+				product = Pharmacie().First();
+			}
+
+			Load();
+			Resolve(expression, product);
+			resolver.ExcludeProducer(GetRow(expression));
+			Save();
+
+			TestProduct product2;
+			using (new SessionScope())
+			{
+				product2 = Pharmacie().Where(p => p.Id != product.Id).First();
+			}
+
+			resolver = new ProducerSynonymResolver(price.Id);
+			Load();
+			Resolve(expression, product2);
+			resolver.ExcludeProducer(GetRow(expression));
+			Save();
+
+			using (new SessionScope(FlushAction.Never))
+			{
+				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
+				Assert.That(exlcudes.Count, Is.EqualTo(2), "не создали исключение");
+				var exclude = exlcudes[0];
+				Assert.That(exclude.OriginalSynonym, Is.Not.Null);
+				exclude = exlcudes[1];
+				Assert.That(exclude.OriginalSynonym, Is.Not.Null);
+			}
+		}
+
+		[Test]
 		public void Fill_original_synonym_for_created_exclude()
 		{
 			TestUnrecExp expression;
@@ -175,7 +216,7 @@ namespace UEEditor.Tests
             
 			using (new SessionScope())
 			{
-				expression = new TestUnrecExp("test", "test", price);
+				expression = new TestUnrecExp("Полыни горькой трава 2", "Тестовый производитель", price);
 				expression.Save();
 				product = Pharmacie().First();
 			}
