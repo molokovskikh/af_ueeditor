@@ -135,6 +135,7 @@ namespace UEEditor
 			else
 				synonym["CodeFirmCr"] = DBNull.Value;
 			synonym["PriceCode"] = priceId;
+			synonym["SupplierCode"] = producerSynonym.SupplierCode;
 			synonym["Processed"] = true;
 			if (priceId != childPriceId)
 				synonym["ChildPriceCode"] = childPriceId;
@@ -146,7 +147,7 @@ namespace UEEditor
 				return;
 			var synonymRow = synonyms.NewRow();
 			UpdateSynonym(synonymRow, synonym);
-			synonymRow["Synonym"] = synonym.Name;
+			synonymRow["Synonym"] = synonym.Name;			
 			try
 			{
 				synonyms.Rows.Add(synonymRow);
@@ -418,7 +419,7 @@ and priceitems.Id = pricescosts.PriceItemId",
 			dtSynonym.Columns.Add("ChildPriceCode", typeof (long));
 			daSynonym.InsertCommand = new MySqlCommand(
 				@"
-insert into farm.synonym (PriceCode, Synonym, Junk, ProductId) values (?PriceCode, ?Synonym, ?Junk, ?ProductId);
+insert into farm.synonym (PriceCode, Synonym, Junk, ProductId, SupplierCode) values (?PriceCode, ?Synonym, ?Junk, ?ProductId, ?SupplierCode);
 set @LastSynonymID = last_insert_id();
 insert into farm.UsedSynonymLogs (SynonymCode) values (@LastSynonymID);
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
@@ -431,6 +432,7 @@ select @LastSynonymID as SynonymCode;",
 			daSynonym.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
 			daSynonym.InsertCommand.Parameters.Add("?Junk", MySqlDbType.Byte, 0, "Junk");
 			daSynonym.InsertCommand.Parameters.Add("?ProductId", MySqlDbType.UInt64, 0, "ProductId");
+			daSynonym.InsertCommand.Parameters.Add("?SupplierCode", MySqlDbType.VarString, 0, "SupplierCode");
 			daSynonym.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 
 			formProgress.ApplyProgress += 1;
@@ -448,7 +450,7 @@ select @LastSynonymID as SynonymCode;",
 			dtSynonymFirmCr.Columns.Add("Processed", typeof (bool));
 			daSynonymFirmCr.InsertCommand = new MySqlCommand(
 				@"
-insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym) values (?PriceCode, ?CodeFirmCr, ?Synonym);
+insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym, SupplierCode) values (?PriceCode, ?CodeFirmCr, ?Synonym, ?SupplierCode);
 set @LastSynonymFirmCrID = last_insert_id();
 insert into farm.UsedSynonymFirmCrLogs (SynonymFirmCrCode) values (@LastSynonymFirmCrID); 
 ",
@@ -458,6 +460,7 @@ insert into farm.UsedSynonymFirmCrLogs (SynonymFirmCrCode) values (@LastSynonymF
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?PriceCode", MySqlDbType.UInt64, 0, "PriceCode");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?Synonym", MySqlDbType.VarString, 0, "Synonym");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?CodeFirmCr", MySqlDbType.UInt64, 0, "CodeFirmCr");
+			daSynonymFirmCr.InsertCommand.Parameters.Add("?SupplierCode", MySqlDbType.VarString, 0, "SupplierCode");
 			daSynonymFirmCr.InsertCommand.Parameters.Add("?ChildPriceCode", MySqlDbType.Int64, 0, "ChildPriceCode");
 			daSynonymFirmCr.UpdateCommand = new MySqlCommand(
 				@"
@@ -527,6 +530,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 					newDR["Synonym"] = name;
 					newDR["ProductId"] = dr["UEPriorProductId"];
 					newDR["Junk"] = dr["UEJunk"];
+					newDR["SupplierCode"] = dr["UECode"];
 					if (priceId != childPriceId)
 						newDR["ChildPriceCode"] = childPriceId;
 					var synonym = dtSynonym.Rows

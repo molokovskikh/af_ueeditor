@@ -231,6 +231,7 @@ where a.ProducerId = ?ProducerId", c);
 			var exclude = new Exclude {
 				Name = source["UEFirmCr"].ToString(),
 				CatalogId = Convert.ToUInt32(source["UEPriorCatalogId"]),
+				SupplierCode = source["UECode"].ToString()
 			};
 			synonyms.Add(exclude);
 

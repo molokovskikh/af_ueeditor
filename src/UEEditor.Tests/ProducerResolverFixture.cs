@@ -236,6 +236,66 @@ namespace UEEditor.Tests
 		}
 
 		[Test]
+		public void TestFillSupplierCode()
+		{
+			TestUnrecExp expression;
+			TestProduct product;
+			TestProducer producer;
+			using (new SessionScope())
+			{
+				expression = new TestUnrecExp("Тестовый продукт", "Тестовый производитель", price);
+				expression.Code = new Random().Next().ToString();
+				expression.Save();
+				product = Pharmacie().First();
+				producer = TestProducer.Queryable.FirstOrDefault();
+				TestAssortment.CheckAndCreate(product, producer);
+			}
+			Load();
+			Resolve(expression, product);
+			Resolve(expression, producer);
+			Save();
+			using (new SessionScope())
+			{
+				var synonym = TestProductSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
+				var synonymFirmCr = TestProducerSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
+				Assert.That(synonym, Is.Not.Null);
+				Assert.That(synonymFirmCr, Is.Not.Null);
+				Assert.That(synonym.SupplierCode, Is.EqualTo(expression.Code));
+				Assert.That(synonymFirmCr.SupplierCode, Is.EqualTo(expression.Code));
+			}
+		}
+
+		[Test]
+		public void TestFillSupplierCodeIfProducerExclude()
+		{
+			TestUnrecExp expression;
+			TestProduct product;			
+			using (new SessionScope())
+			{
+				expression = new TestUnrecExp("Тестовый продукт", "Тестовый производитель", price);
+				expression.Code = new Random().Next().ToString();
+				expression.Save();
+				product = Pharmacie().First();
+			}
+			Load();
+			Resolve(expression, product);
+			resolver.ExcludeProducer(GetRow(expression));
+			Save();
+			using (new SessionScope())
+			{
+				var synonym = TestProductSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
+				var synonymFirmCr = TestProducerSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
+				Assert.That(synonym, Is.Not.Null);
+				Assert.That(synonymFirmCr, Is.Not.Null);
+				Assert.That(synonym.SupplierCode, Is.EqualTo(expression.Code));
+				Assert.That(synonymFirmCr.SupplierCode, Is.EqualTo(expression.Code));
+				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
+				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
+			}
+
+		}
+
+		[Test]
 		public void Unresolve_product_if_product_was_hidden_before_save()
 		{
 			TestUnrecExp expression;

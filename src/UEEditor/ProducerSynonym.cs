@@ -19,6 +19,7 @@ namespace UEEditor
 		public uint ProducerId;
 		public string Name;
 		public bool Loaded;
+		public string SupplierCode;
 
 		public ProducerSynonymState State;
 
@@ -33,6 +34,7 @@ namespace UEEditor
 			Name = item["UEFirmCr"].ToString();
 			if (!(item["UEProducerSynonymId"] is DBNull))
 				Id = Convert.ToUInt32(item["UEProducerSynonymId"]);
+			SupplierCode = item["UECode"].ToString();
 		}
 
 		public void Apply(DataRow row)
@@ -104,11 +106,13 @@ namespace UEEditor
 				return new ProducerSynonym(row, producerId);
 			}
 			else
-				return new Exclude {
-					Name = row["UEFirmCr"].ToString(),
-					CatalogId = Convert.ToUInt32(row["UEPriorCatalogId"]),
-					State = ProducerSynonymState.Unknown
-				};
+				return new Exclude
+				       	{
+				       		Name = row["UEFirmCr"].ToString(),
+				       		CatalogId = Convert.ToUInt32(row["UEPriorCatalogId"]),
+				       		State = ProducerSynonymState.Unknown,
+				       		SupplierCode = row["UECode"].ToString()
+						};
 		}
 	}
 }
