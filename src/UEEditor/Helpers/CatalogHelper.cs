@@ -13,7 +13,7 @@ namespace UEEditor.Helpers
 		public static bool IsAssortmentExists(long productId, long producerId)
 		{
 			object assortmentExists = null;
-			With.Slave((slaveConnection) =>
+			With.Connection((slaveConnection) =>
 			{
 				assortmentExists = MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(slaveConnection, @"
 select 

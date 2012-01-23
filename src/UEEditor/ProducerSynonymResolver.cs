@@ -151,7 +151,7 @@ namespace UEEditor
 
 		private IEnumerable<ProducerSynonym> GetSynonyms(string synonym)
 		{
-			return With.Slave(c => {
+			return With.Connection(c => {
 				var command = new MySqlCommand(@"
 select sfc.SynonymFirmCrCode, sfc.CodeFirmCr as ProducerId, sfc.Synonym, null as CatalogId
 from Farm.SynonymFirmCr sfc
@@ -182,7 +182,7 @@ group by e.CatalogId, sfc.Synonym", c);
 
 		public DataTable LoadAssortmentByCatalog(uint producerId)
 		{
-			return With.Slave(c => {
+			return With.Connection(c => {
 				var command = new MySqlCommand(@"
 select a.CatalogId, a.ProducerId
 from Catalogs.Assortment a
@@ -198,7 +198,7 @@ where a.CatalogId = ?CatalogId", c);
 
 		public DataTable LoadAssortmentByProducer(uint producerId)
 		{
-			return With.Slave(c => {
+			return With.Connection(c => {
 				var command = new MySqlCommand(@"
 select a.CatalogId, a.ProducerId
 from Catalogs.Assortment a

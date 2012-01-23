@@ -49,7 +49,7 @@ catalogs.Producers P
 
 			var sql = Producers.ToSql() + " union " + Equivalents.ToSql() + " order by CName";
 
-			With.Slave(c => {
+			With.Connection(c => {
 				var adapter = new MySqlDataAdapter(sql, c);
 				Producers.BindParameters(adapter.SelectCommand);
 				adapter.Fill(table);

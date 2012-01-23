@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using System.Data;
+using Common.Tools;
 using MySql.Data.MySqlClient;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
@@ -193,34 +195,32 @@ namespace UEEditor
 			if (listPriceItemIds.Length > 0)
 				listPriceItemIds = String.Format(" and pim.Id not in ({0})", listPriceItemIds);
 
-			With.Slave((slaveConnection) =>
+			With.Connection((slaveConnection) =>
 			{
 				var commandHelper =
 					new CommandHelper(
 						new MySqlCommand(@"
 SELECT
 		PD.FirmCode as JFirmCode,
-		cd.ShortName as FirmShortName,
+		s.Name as FirmShortName,
 		pim.Id as JPriceItemId,
 		PD.PriceCode As JPriceCode,
-		concat(CD.ShortName, ' (', if(pd.CostType = 1, concat(pd.PriceName, ' [Колонка] ', pc.CostName), pd.PriceName), ')') as JName,
-		regions.region                                                                                                       As JRegion,
+		concat(s.Name, ' (', if(pd.CostType = 1, concat(pd.PriceName, ' [Колонка] ', pc.CostName), pd.PriceName), ')') as JName,
+		regions.region As JRegion,
 		pim.PriceDate as JPriceDate,
-		statunrecexp.Pos                                                                        AS JPos,
-		statunrecexp.NamePos                                                                    AS JNamePos,
-		pim.LastFormalization                                                                   AS JJobDate,
-		CD.FirmSegment                                                                          As JWholeSale,
-		bp.BlockBy                                                                              As JBlockBy,
-		PD.ParentSynonym                                                                        as JParentSynonym,
-		pfmt.Format                                                                             As JPriceFMT,
-		pfmt.FileExtention                                                                      as JExt,
-		pim.LastFormalization                                                                   AS JDateLastForm,
+		statunrecexp.Pos AS JPos,
+		statunrecexp.NamePos AS JNamePos,
+		pim.LastFormalization AS JJobDate,
+		s.Segment As JWholeSale,
+		bp.BlockBy As JBlockBy,
+		PD.ParentSynonym as JParentSynonym,
+		pfmt.Format As JPriceFMT,
+		pfmt.FileExtention as JExt,
+		pim.LastFormalization AS JDateLastForm,
 		if((synonympim.LastSynonymsCreation is not null) and (pim.LastFormalization < synonympim.LastSynonymsCreation), 1, 0) AS JNeedRetrans,
 		if(pim.LastFormalization < pim.LastRetrans, 1, 0)                                            AS JRetranced,
-		if(pd.ParentSynonym is null, '', concat(synonymcd.ShortName, ' (', synonympd.PriceName, ')')) AS JParentName
-FROM
-  (
-   (select
+		if(pd.ParentSynonym is null, '', concat(synonyms.Name, ' (', synonympd.PriceName, ')')) AS JParentName
+FROM ((select
 	  unrecexp.PriceItemId,
 	  count(unrecexp.RowID) as Pos,
 	  COUNT(IF(unrecexp.PriorProductId is null, 1, null)) as NamePos
@@ -230,36 +230,31 @@ FROM
    usersettings.priceitems pim,
    usersettings.pricescosts pc,
    usersettings.pricesdata AS PD,
-   usersettings.ClientsData AS CD,
+   Future.Suppliers s,
    farm.regions,
    farm.FormRules,
    farm.PriceFMTs as pfmt,
    usersettings.pricesdata synonympd,
    usersettings.pricescosts synonympc,
    usersettings.priceitems synonympim,
-   usersettings.clientsdata synonymcd
-  )
+   Future.Suppliers synonyms)
   LEFT JOIN farm.blockedprice bp ON bp.PriceItemId = pim.Id
 WHERE
 	pim.Id = statunrecexp.PriceItemId
-and pc.PriceItemId = pim.Id"
-+
-listPriceItemIds
-+
-@"
+and pc.PriceItemId = pim.Id" +
+listPriceItemIds + @"
 and pc.PriceCode = pd.PriceCode
 and ((pd.CostType = 1) or (pc.BaseCost = 1))
-AND pd.agencyenabled   =1
-and pd.FirmCode = cd.FirmCode
-AND regions.regioncode =CD.regioncode
+and pd.agencyenabled = 1
+and pd.FirmCode = s.Id
+and regions.regioncode = s.HomeRegion
 and FormRules.id = pim.FormRuleId
 and pfmt.Id = FormRules.PriceFormatId
 and synonympd.PriceCode = ifnull(pd.ParentSynonym, PD.pricecode)
 and synonympc.PriceCode = synonympd.PriceCode
 and synonympc.BaseCost = 1
 and synonympim.Id = synonympc.PriceItemId
-and synonymcd.FirmCode = synonympd.FirmCode"
-					,
+and synonyms.Id = synonympd.FirmCode",
 					slaveConnection));
 
 				dtJobs.Clear();
@@ -273,7 +268,7 @@ and synonymcd.FirmCode = synonympd.FirmCode"
 				{
 					JobsGridControl.EndUpdate();
 				}
-			});			
+			});
 
 			LocateJobs(CurrPriceItemId, (selectedPrices.Count <= 1) ? null : selectedPrices);
 			statusBar1.Panels[0].Text = "Заданий в очереди: " + dtJobs.Rows.Count;
@@ -281,7 +276,7 @@ and synonymcd.FirmCode = synonympd.FirmCode"
 
 		private void UnrecExpGridFill()
 		{
-			With.Slave((slaveConnection) => { 
+			With.Connection((slaveConnection) => { 
 				var commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT RowID As UERowID,
 Name1 As UEName1,
@@ -323,13 +318,12 @@ WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1", slaveConnection));
 				{
 					UnrecExpGridControl.EndUpdate();
 				}
-
 			});
 		}
 
 		private void CatalogNameGridFill()
 		{
-			With.Slave((slaveConnection) =>
+			With.Connection((slaveConnection) =>
 			{
 				var commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT
@@ -394,7 +388,7 @@ order by Name"
 
 		private void FormGridFill()
 		{
-			With.Slave((slaveConnection) =>
+			With.Connection((slaveConnection) =>
 			{
 				var commandHelper = new CommandHelper(new MySqlCommand(@"
 select
@@ -422,7 +416,7 @@ order by Form"
 
 		private void ProductsFill(ulong CatalogId)
 		{
-			With.Slave((slaveConnection) =>
+			With.Connection((slaveConnection) =>
 			{
 				var commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT
@@ -458,7 +452,7 @@ order by Properties
 
 		private void ProductsFillByProductId(ulong ProductId)
 		{
-			With.Slave((slaveConnection) =>
+			With.Connection((slaveConnection) =>
 			{
 				var commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT
@@ -496,7 +490,7 @@ order by Properties
 			DateTime CatalogUpdateTime = DateTime.Now;
 			DateTime ProductsUpdateTime = DateTime.Now;
 
-			With.Slave((slaveConnection) =>
+			With.Connection((slaveConnection) =>
 			{
 				CatalogUpdateTime = Convert.ToDateTime(
 					GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection, "select max(UpdateTime) from catalogs.catalog"));
@@ -609,7 +603,7 @@ AND not exists(select * from blockedprice bp where bp.PriceItemId = UnrecExp.Pri
 			{
 				ForbGridControl.Select();
 
-				With.Slave((slaveConnection) =>
+				With.Connection((slaveConnection) =>
 				{
 					var commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT 
@@ -630,7 +624,7 @@ WHERE PriceItemId= ?PriceItemId",
 			{
 				ZeroGridControl.Select();
 
-				With.Slave((slaveConnection) =>
+				With.Connection((slaveConnection) =>
 				{
 					var commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT 
@@ -903,7 +897,7 @@ WHERE PriceItemId= ?PriceItemId",
 							else
 							{
 								//Если сопоставлено и (UEPriorProducerId is DBNull), то значение кода = 0, иначе берем значение кода из поля UEPriorProducerId
-								With.Slave((slaveConnection) =>
+								With.Connection((slaveConnection) =>
 								{
 									FirmName = GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
 									"select Name from catalogs.Producers where Id = " + drUN[UEPriorProducerId].ToString());
@@ -959,7 +953,7 @@ WHERE PriceItemId= ?PriceItemId",
 			{
 				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
 				object SynonymExists = null;
-				With.Slave((slaveConnection) =>
+				With.Connection((slaveConnection) =>
 				{
 					SynonymExists = GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
 										"select ProductId from farm.synonym where synonym = ?Synonym and PriceCode=" + LockedSynonym.ToString(),
@@ -1608,45 +1602,36 @@ WHERE PriceItemId= ?PriceItemId",
 		}
 
 		private void miSendAboutNames_Click(object sender, System.EventArgs e)
-		{	
-			DataRow[] drs = dtJobs.Select("JPriceItemId = " + LockedPriceItemId.ToString());
+		{
+			ShowMail(GetForbiddenNames());
+		}
 
-			if (drs.Length > 0)
+		private string[] GetForbiddenNames()
+		{
+			var names = new ArrayList();
+
+			foreach (DataRow UEdr in dtUnrecExp.Rows)
 			{
-				DataRow dr = drs[0];
-
-				ArrayList NameArray = new ArrayList();
-
-				foreach(DataRow UEdr in dtUnrecExp.Rows)
+				if (((FormMask) Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.MarkForb) == FormMask.MarkForb)
 				{
-					if (((FormMask)Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.MarkForb) == FormMask.MarkForb)
+					string tmp =
+						(UEdr["UECode"] + " " + UEdr["UEName1"] + " " + UEdr[UEFirmCr.ColumnName]).Trim();
+					if (!names.Contains(tmp))
 					{
-						string tmp = (UEdr["UECode"].ToString() + " " +UEdr["UEName1"].ToString() + " " + UEdr[UEFirmCr.ColumnName].ToString()).Trim();
-						if (!NameArray.Contains(tmp))
-						{
-							NameArray.Add( tmp );
-						}
+						names.Add(tmp);
 					}
 				}
-
-				string UnrecName = String.Join("\r\n", (string[])NameArray.ToArray(typeof(string)));
-
-				Clipboard.SetDataObject(UnrecName);
-
-				string subject = String.Format(Settings.Default.AboutNamesSubject, 
-					dr["FirmShortName"], dr["JRegion"]);
-
-				string body = "";
-				body = Settings.Default.AboutNamesBody;
-
-				body = String.Format(body, dr["FirmShortName"]);
-				body += GetFooter();			
-	
-				Process.Start(String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}", GetContactText((long)dr[JFirmCode.ColumnName], 2, 0), "pharm@analit.net", subject, body));
 			}
+			return (string[]) names.ToArray(typeof (string));
 		}
 
 		private void miSendAboutFirmCr_Click(object sender, System.EventArgs e)
+		{
+			var unknownProducers = GetUnknownProducers();
+			ShowMail(unknownProducers);
+		}
+
+		private void ShowMail(IEnumerable<string> bodyLines)
 		{
 			DataRow[] drs = dtJobs.Select("JPriceItemId = " + LockedPriceItemId.ToString());
 
@@ -1654,100 +1639,50 @@ WHERE PriceItemId= ?PriceItemId",
 			{
 				DataRow dr = drs[0];
 
-				Dictionary<string, string> UnrecFirmCr = new Dictionary<string, string>();
 
-				foreach(DataRow UEdr in dtUnrecExp.Rows)
-				{
-					if (((FormMask)Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm)
-					{
-						string tmp = UEdr[UEFirmCr.ColumnName].ToString().Trim();
-						if (!UnrecFirmCr.ContainsKey(tmp))
-							UnrecFirmCr.Add(tmp, UEdr["UEName1"].ToString().Trim());
-					}
-				}
+				string unrecFirmCrString = String.Join("\r\n", bodyLines);
 
+				Clipboard.SetDataObject(unrecFirmCrString);
 
-				List<string> UnrecFirmCrAndNameList = new List<string>();
-				foreach (string key in UnrecFirmCr.Keys)
-					UnrecFirmCrAndNameList.Add(UnrecFirmCr[key] + "  -  " + key);
-
-				string UnrecFirmCrString = String.Join("\r\n", UnrecFirmCrAndNameList.ToArray());
-
-				Clipboard.SetDataObject(UnrecFirmCrString);
-
-				string subject = String.Format(Settings.Default.AboutFirmSubject, 
+				string subject = String.Format(Settings.Default.AboutFirmSubject,
 					dr["FirmShortName"], dr["JRegion"]);
 
 				string body = "";
 				body = Settings.Default.AboutFirmBody;
 
 				body = String.Format(body, dr["FirmShortName"]);
-				body += GetFooter();
+				body = MailHelper.ApplyFooter(body);
 
 				string mailUrl = String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}",
-					GetContactText((long)dr[JFirmCode.ColumnName], 2, 0),
-					"pharm@analit.net", subject, body);
-				Process.Start(mailUrl); 
+					GetToForSupplierMail((long) dr[JFirmCode.ColumnName]),
+					"pharm@analit.net", subject, Uri.EscapeDataString(body));
+				Process.Start(mailUrl);
 			}
 		}
 
-		/// <summary>
-		/// Получить текст контактов из базы
-		/// </summary>
-		/// <param name="FirmCode">Код поставщика</param>
-		/// <param name="ContactGroupType">Тип контактной группы: 0 - General, 1 - ClientManager, 2 - OrderManager, 3 - Accountant</param>
-		/// <param name="ContactType">Тип контакта: 0 - Email, 1 - Phone</param>
-		/// <returns>Текст контактов, разделенный ";"</returns>
-		private string GetContactText(long FirmCode, byte ContactGroupType, byte ContactType)
+		private List<string> GetUnknownProducers()
 		{
-			DataSet dsContacts = null;
-			With.Connection((mainConnection) => {
-				dsContacts = GlobalMySql.MySqlHelper.ExecuteDataset(mainConnection, @"
-select distinct c.contactText
-from usersettings.clientsdata cd
-  join contacts.contact_groups cg on cd.ContactGroupOwnerId = cg.ContactGroupOwnerId
-	join contacts.contacts c on cg.Id = c.ContactOwnerId
-where
-	firmcode = ?FirmCode
-and cg.Type = ?ContactGroupType
-and c.Type = ?ContactType
+			var UnrecFirmCr = new Dictionary<string, string>();
 
-union
-
-select distinct c.contactText
-from usersettings.clientsdata cd
-  join contacts.contact_groups cg on cd.ContactGroupOwnerId = cg.ContactGroupOwnerId
-	join contacts.persons p on cg.id = p.ContactGroupId
-	  join contacts.contacts c on p.Id = c.ContactOwnerId
-where
-	firmcode = ?FirmCode
-and cg.Type = ?ContactGroupType
-and c.Type = ?ContactType;",
-	new MySqlParameter("?FirmCode", FirmCode),
-	new MySqlParameter("?ContactGroupType", ContactGroupType),
-	new MySqlParameter("?ContactType", ContactType));
-			});
-			List<string> contacts = new List<string>();
-			foreach (DataRow drContact in dsContacts.Tables[0].Rows)
+			foreach (DataRow UEdr in dtUnrecExp.Rows)
 			{
-				if (!contacts.Contains(drContact["contactText"].ToString()))
-					contacts.Add(drContact["contactText"].ToString());
+				if (((FormMask) Convert.ToByte(UEdr[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm)
+				{
+					string tmp = UEdr[UEFirmCr.ColumnName].ToString().Trim();
+					if (!UnrecFirmCr.ContainsKey(tmp))
+						UnrecFirmCr.Add(tmp, UEdr["UEName1"].ToString().Trim());
+				}
 			}
 
-			return String.Join("; ", contacts.ToArray());
+			var UnrecFirmCrAndNameList = new List<string>();
+			foreach (string key in UnrecFirmCr.Keys)
+				UnrecFirmCrAndNameList.Add(UnrecFirmCr[key] + "  -  " + key);
+			return UnrecFirmCrAndNameList;
 		}
 
-		public static string GetFooter()
+		public string GetToForSupplierMail(long id)
 		{
-			string footer = "";
-			With.Slave((slaveConnection) =>
-			           	{
-			           		footer = Convert.ToString(GlobalMySql.MySqlHelper.ExecuteScalar(slaveConnection,
-			           		                                      "select EmailFooter from usersettings.Defaults limit 1"));				
-			});
-
-			footer = footer.Replace("\r\n", "%0D%0A");			
-			return footer;
+			return ContactHelper.GetContactText(id, 2, 0).Implode(";");
 		}
 
 		private void gvUnrecExp_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
