@@ -1603,7 +1603,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 		private void miSendAboutNames_Click(object sender, System.EventArgs e)
 		{
-			ShowMail(GetForbiddenNames());
+			ShowMail(Settings.Default.AboutNamesSubject, Settings.Default.AboutNamesBody, GetForbiddenNames());
 		}
 
 		private string[] GetForbiddenNames()
@@ -1628,34 +1628,30 @@ WHERE PriceItemId= ?PriceItemId",
 		private void miSendAboutFirmCr_Click(object sender, System.EventArgs e)
 		{
 			var unknownProducers = GetUnknownProducers();
-			ShowMail(unknownProducers);
+			ShowMail(Settings.Default.AboutFirmSubject, Settings.Default.AboutFirmBody, unknownProducers);
 		}
 
-		private void ShowMail(IEnumerable<string> bodyLines)
+		private void ShowMail(string subject, string body, IEnumerable<string> bodyLines)
 		{
-			DataRow[] drs = dtJobs.Select("JPriceItemId = " + LockedPriceItemId.ToString());
+			var drs = dtJobs.Select("JPriceItemId = " + LockedPriceItemId.ToString());
 
 			if (drs.Length > 0)
 			{
-				DataRow dr = drs[0];
+				var dr = drs[0];
 
-
-				string unrecFirmCrString = String.Join("\r\n", bodyLines);
+				var unrecFirmCrString = String.Join("\r\n", bodyLines);
 
 				Clipboard.SetDataObject(unrecFirmCrString);
 
-				string subject = String.Format(Settings.Default.AboutFirmSubject,
+				subject = String.Format(subject,
 					dr["FirmShortName"], dr["JRegion"]);
 
-				string body = "";
-				body = Settings.Default.AboutFirmBody;
-
-				body = String.Format(body, dr["FirmShortName"]);
+				body = Uri.UnescapeDataString(String.Format(body, dr["FirmShortName"]));
 				body = MailHelper.ApplyFooter(body);
 
-				string mailUrl = String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}",
+				var mailUrl = String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}",
 					GetToForSupplierMail((long) dr[JFirmCode.ColumnName]),
-					"pharm@analit.net", subject, Uri.EscapeDataString(body));
+					"pharm@analit.net", subject, MailHelper.FakeEscape(body));
 				Process.Start(mailUrl);
 			}
 		}
