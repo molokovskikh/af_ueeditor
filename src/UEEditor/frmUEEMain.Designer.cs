@@ -69,7 +69,6 @@ namespace UEEditor
 		private System.Windows.Forms.ImageList imageList1;
 		private System.Data.DataTable dtRegions;
 		private System.Data.DataColumn RRegion;
-		private System.Data.DataColumn JWholeSale;
 		private System.Data.DataColumn JPriceCode;
 		private System.Windows.Forms.Panel pnlBottom2;
 		private DevExpress.XtraGrid.GridControl UnrecExpGridControl;
@@ -125,7 +124,6 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colJPos;
 		private DevExpress.XtraGrid.Columns.GridColumn colJNamePos;
 		private DevExpress.XtraGrid.Columns.GridColumn colJJobDate;
-		private DevExpress.XtraGrid.Columns.GridColumn colJWholeSale;
 		private System.Windows.Forms.Label lbJobs50Text;
 		private System.Windows.Forms.Label lbJobsNamePosText;
 		private System.Windows.Forms.Label lbJobsBlockText;
@@ -195,7 +193,6 @@ namespace UEEditor
 			this.JPriceItemId = new System.Data.DataColumn();
 			this.JJobDate = new System.Data.DataColumn();
 			this.JBlockBy = new System.Data.DataColumn();
-			this.JWholeSale = new System.Data.DataColumn();
 			this.JParentSynonym = new System.Data.DataColumn();
 			this.JPriceFMT = new System.Data.DataColumn();
 			this.JNeedRetrans = new System.Data.DataColumn();
@@ -272,7 +269,6 @@ namespace UEEditor
 			this.gvJobs = new DevExpress.XtraGrid.Views.Grid.GridView();
 			this.colJName = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJParentName = new DevExpress.XtraGrid.Columns.GridColumn();
-			this.colJWholeSale = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJRegion = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJPos = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colJNamePos = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -486,7 +482,6 @@ namespace UEEditor
             this.JNamePos,
             this.JJobDate,
             this.JBlockBy,
-            this.JWholeSale,
             this.JParentSynonym,
             this.JPriceFMT,
             this.JNeedRetrans,
@@ -541,12 +536,6 @@ namespace UEEditor
 			// 
 			this.JBlockBy.Caption = "Блокировано";
 			this.JBlockBy.ColumnName = "JBlockBy";
-			// 
-			// JWholeSale
-			// 
-			this.JWholeSale.ColumnName = "JWholeSale";
-			this.JWholeSale.DataType = typeof(long);
-			this.JWholeSale.ReadOnly = true;
 			// 
 			// JParentSynonym
 			// 
@@ -1058,7 +1047,6 @@ namespace UEEditor
 			this.gvJobs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colJName,
             this.colJParentName,
-            this.colJWholeSale,
             this.colJRegion,
             this.colJPos,
             this.colJNamePos,
@@ -1076,7 +1064,6 @@ namespace UEEditor
 			this.gvJobs.OptionsSelection.MultiSelect = true;
 			this.gvJobs.OptionsView.ShowGroupPanel = false;
 			this.gvJobs.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvJobs_CustomDrawRowIndicator);
-			this.gvJobs.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvJobs_CustomColumnDisplayText);
 			this.gvJobs.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvJobs_RowStyle);
 			// 
 			// colJName
@@ -1104,21 +1091,6 @@ namespace UEEditor
 			this.colJParentName.Visible = true;
 			this.colJParentName.VisibleIndex = 1;
 			this.colJParentName.Width = 52;
-			// 
-			// colJWholeSale
-			// 
-			this.colJWholeSale.AppearanceCell.Options.UseTextOptions = true;
-			this.colJWholeSale.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
-			this.colJWholeSale.Caption = "Сегмент";
-			this.colJWholeSale.FieldName = "JWholeSale";
-			this.colJWholeSale.Name = "colJWholeSale";
-			this.colJWholeSale.OptionsColumn.AllowEdit = false;
-			this.colJWholeSale.OptionsColumn.AllowFocus = false;
-			this.colJWholeSale.OptionsColumn.AllowIncrementalSearch = false;
-			this.colJWholeSale.OptionsColumn.ReadOnly = true;
-			this.colJWholeSale.Visible = true;
-			this.colJWholeSale.VisibleIndex = 2;
-			this.colJWholeSale.Width = 52;
 			// 
 			// colJRegion
 			// 

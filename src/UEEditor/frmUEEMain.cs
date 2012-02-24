@@ -211,7 +211,6 @@ SELECT
 		statunrecexp.Pos AS JPos,
 		statunrecexp.NamePos AS JNamePos,
 		pim.LastFormalization AS JJobDate,
-		s.Segment As JWholeSale,
 		bp.BlockBy As JBlockBy,
 		PD.ParentSynonym as JParentSynonym,
 		pfmt.Format As JPriceFMT,
@@ -1561,17 +1560,6 @@ WHERE PriceItemId= ?PriceItemId",
 				}
 				else
 					e.Result = v1-v2;
-			}
-		}
-
-		private void gvJobs_CustomColumnDisplayText(object sender, CustomColumnDisplayTextEventArgs e)
-		{
-			if (e.Column == colJWholeSale)
-			{
-				if (e.Value.ToString() == "0")
-					e.DisplayText = "Опт";
-				else
-					e.DisplayText = "Розница";
 			}
 		}
 
