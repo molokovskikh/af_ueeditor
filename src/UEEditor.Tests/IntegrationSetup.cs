@@ -14,7 +14,6 @@ namespace UEEditor.Tests
 			if (Setup.IsIntegration())
 			{
 				With.DefaultConnectionStringName = "integration";
-				With.DefaultSlaveConnectionStringName = "integration";
 			}
 		}
 	}
