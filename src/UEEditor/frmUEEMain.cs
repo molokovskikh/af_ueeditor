@@ -229,14 +229,14 @@ FROM ((select
    usersettings.priceitems pim,
    usersettings.pricescosts pc,
    usersettings.pricesdata AS PD,
-   Future.Suppliers s,
+   Customers.Suppliers s,
    farm.regions,
    farm.FormRules,
    farm.PriceFMTs as pfmt,
    usersettings.pricesdata synonympd,
    usersettings.pricescosts synonympc,
    usersettings.priceitems synonympim,
-   Future.Suppliers synonyms)
+   Customers.Suppliers synonyms)
   LEFT JOIN farm.blockedprice bp ON bp.PriceItemId = pim.Id
 WHERE
 	pim.Id = statunrecexp.PriceItemId
