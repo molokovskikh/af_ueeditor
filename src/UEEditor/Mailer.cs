@@ -11,7 +11,7 @@ namespace UEEditor
 {
 	public static class Mailer
 	{
-		private static string SmtpServerName = "mail.adc.analit.net";
+		private static string SmtpServerName = "box.analit.net";
 
 		private static string EmailService = Settings.Default.EmailService;
 
