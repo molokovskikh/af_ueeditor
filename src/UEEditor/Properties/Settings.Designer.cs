@@ -88,7 +88,16 @@ namespace UEEditor.Properties {
                 return ((string)(this["WCFServiceUrl"]));
             }
         }
-        
+
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("net.msmq://fms.adc.analit.net/private/PriceProcessorWCFQueue")]
+        public string WCFQueueName {
+            get {
+                return ((string)(this["WCFQueueName"]));
+            }
+        }
+
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("KvasovTest@analit.net")]

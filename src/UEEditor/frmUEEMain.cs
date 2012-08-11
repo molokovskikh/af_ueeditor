@@ -68,7 +68,7 @@ namespace UEEditor
 		{
 			InitializeComponent();
 
-			_priceProcessor = new PriceProcessorWcfHelper(Settings.Default.WCFServiceUrl);
+			_priceProcessor = new PriceProcessorWcfHelper(Settings.Default.WCFServiceUrl, Settings.Default.WCFQueueName);
 
 			createExclude = new Button {
 				Text = "Нет нужного производителя (F3)",

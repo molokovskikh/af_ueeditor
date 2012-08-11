@@ -377,7 +377,7 @@ and priceitems.Id = pricescosts.PriceItemId",
 			try
 			{
 #if !DEBUG
-				_remotePriceProcessor.RetransPriceSmart(priceId);
+				_remotePriceProcessor.RetransPriceSmartMsMq(priceId);
 #endif
 			}
 			catch (Exception e)
