@@ -63,6 +63,7 @@ namespace UEEditor
 		private PriceProcessorWcfHelper _priceProcessor;
 
 		private Button createExclude;
+		private Button createForbiddenProducer;
 
 		public frmUEEMain()
 		{
@@ -81,8 +82,20 @@ namespace UEEditor
 			};
 			pFirmCr.VisibleChanged += (s, a) => {
 				createExclude.Visible = pFirmCr.Visible;
+				createForbiddenProducer.Visible = pFirmCr.Visible;
 			};
 			pnlCenter2.Controls.Add(createExclude);
+
+			createForbiddenProducer = new Button {
+				Text = "Имя производителя не является корректным (F4)",
+				Dock = DockStyle.Bottom,
+				Visible = false
+			};
+			createForbiddenProducer.Click += (sender, args) => {
+				ProducerSynonymResolver.Resolver.ExcludeProducer(GetCurrentItem(), ProducerSynonymState.Forbidden);
+				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
+			};
+			pnlCenter2.Controls.Add(createForbiddenProducer);
 		}
 
 		private void frmUEEMain_Load(object sender, EventArgs e)
@@ -1459,9 +1472,12 @@ WHERE PriceItemId= ?PriceItemId",
 					{
 						BigNameLabel2.Text = BigNameLabel2.Text + " (фармацевтика)";
 						createExclude.Visible = true;
+						createForbiddenProducer.Visible = true;
 					}
-					else
+					else {
 						createExclude.Visible = false;
+						createForbiddenProducer.Visible = false;
+					}
 				}
 				else
 					BigNameLabel2.Text = GetFullUnrecName(handle);
@@ -1848,6 +1864,12 @@ WHERE PriceItemId= ?PriceItemId",
 				ProducerSynonymResolver.Resolver.ExcludeProducer(current);
 				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 			}
+
+			if (e.KeyCode == Keys.F4)
+			{
+				ProducerSynonymResolver.Resolver.ExcludeProducer(GetCurrentItem(), ProducerSynonymState.Forbidden);
+				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
+			}
 		}
 
 		private void gvCatForm_RowStyle(object sender, RowStyleEventArgs e)
@@ -1984,6 +2006,11 @@ WHERE PriceItemId= ?PriceItemId",
 		{
 			if (!Char.IsControl(e.KeyChar))
 				tbProducerSearch.Text += e.KeyChar;
+		}
+
+		private void pnlTop1_Paint(object sender, PaintEventArgs e)
+		{
+
 		}
 	}
 }

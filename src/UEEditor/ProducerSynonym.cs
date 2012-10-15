@@ -11,6 +11,7 @@ namespace UEEditor
 		NotProcessed = 1,
 		Unknown = 2,
 		Exclude = 3,
+		Forbidden = 4
 	}
 
 	public class ProducerSynonym

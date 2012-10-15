@@ -185,12 +185,12 @@ namespace UEEditor
 			this.CatalogGridControl = new DevExpress.XtraGrid.GridControl();
 			this.dsMain = new System.Data.DataSet();
 			this.dtJobs = new System.Data.DataTable();
+			this.JPriceItemId = new System.Data.DataColumn();
 			this.JPriceCode = new System.Data.DataColumn();
 			this.JName = new System.Data.DataColumn();
 			this.JRegion = new System.Data.DataColumn();
 			this.JPos = new System.Data.DataColumn();
 			this.JNamePos = new System.Data.DataColumn();
-			this.JPriceItemId = new System.Data.DataColumn();
 			this.JJobDate = new System.Data.DataColumn();
 			this.JBlockBy = new System.Data.DataColumn();
 			this.JParentSynonym = new System.Data.DataColumn();
@@ -403,8 +403,8 @@ namespace UEEditor
 			this.gvCatForm.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvCatForm.OptionsView.ShowGroupPanel = false;
 			this.gvCatForm.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvCatForm_CustomDrawRowIndicator);
-			this.gvCatForm.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			this.gvCatForm.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvCatForm_RowStyle);
+			this.gvCatForm.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			// 
 			// colFForm
 			// 
@@ -419,12 +419,15 @@ namespace UEEditor
 			this.colFForm.Visible = true;
 			this.colFForm.VisibleIndex = 0;
 			this.colFForm.Width = 295;
-			// 
+			//
 			// CatalogGridControl
-			// 
+			//
 			this.CatalogGridControl.DataMember = "dtCatalogNames";
 			this.CatalogGridControl.DataSource = this.dsMain;
 			this.CatalogGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			//
+			//
+			//
 			this.CatalogGridControl.EmbeddedNavigator.Name = "";
 			this.CatalogGridControl.Enabled = false;
 			gridLevelNode1.LevelTemplate = this.gvCatForm;
@@ -474,7 +477,7 @@ namespace UEEditor
 			// dtJobs
 			// 
 			this.dtJobs.Columns.AddRange(new System.Data.DataColumn[] {
-			this.JPriceItemId,
+            this.JPriceItemId,
             this.JPriceCode,
             this.JName,
             this.JRegion,
@@ -490,9 +493,15 @@ namespace UEEditor
             this.JExt,
             this.JFirmCode});
 			this.dtJobs.TableName = "JobsGrid";
-			// 
+			//
+			// JPriceItemId
+			//
+			this.JPriceItemId.Caption = "PriceItemId";
+			this.JPriceItemId.ColumnName = "JPriceItemId";
+			this.JPriceItemId.DataType = typeof(long);
+			//
 			// JPriceCode
-			// 
+			//
 			this.JPriceCode.Caption = "Код прайса";
 			this.JPriceCode.ColumnName = "JPriceCode";
 			this.JPriceCode.DataType = typeof(long);
@@ -519,12 +528,6 @@ namespace UEEditor
 			this.JNamePos.Caption = "Строго";
 			this.JNamePos.ColumnName = "JNamePos";
 			this.JNamePos.DataType = typeof(long);
-			// 
-			// JPriceItemId
-			// 
-			this.JPriceItemId.Caption = "PriceItemId";
-			this.JPriceItemId.ColumnName = "JPriceItemId";
-			this.JPriceItemId.DataType = typeof(long);
 			// 
 			// JJobDate
 			// 
@@ -568,11 +571,6 @@ namespace UEEditor
 			// 
 			this.JFirmCode.ColumnName = "JFirmCode";
 			this.JFirmCode.DataType = typeof(long);
-			// 
-			// JPriceItemId
-			// 
-			this.JPriceItemId.ColumnName = "JPriceItemId";
-			this.JPriceItemId.DataType = typeof(long);
 			// 
 			// dtUnrecExp
 			// 
@@ -924,8 +922,8 @@ namespace UEEditor
 			this.gvProducts.OptionsView.ShowDetailButtons = false;
 			this.gvProducts.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvProducts.OptionsView.ShowGroupPanel = false;
-			this.gvProducts.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvProducts_CustomColumnDisplayText);
 			this.gvProducts.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
+			this.gvProducts.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvProducts_CustomColumnDisplayText);
 			// 
 			// colProperties
 			// 
@@ -1022,12 +1020,16 @@ namespace UEEditor
 			this.pnlTop1.Name = "pnlTop1";
 			this.pnlTop1.Size = new System.Drawing.Size(712, 681);
 			this.pnlTop1.TabIndex = 1;
+			this.pnlTop1.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlTop1_Paint);
 			// 
 			// JobsGridControl
 			// 
 			this.JobsGridControl.DataMember = "JobsGrid";
 			this.JobsGridControl.DataSource = this.dsMain;
 			this.JobsGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			//
+			//
+			//
 			this.JobsGridControl.EmbeddedNavigator.Name = "";
 			this.JobsGridControl.Location = new System.Drawing.Point(0, 0);
 			this.JobsGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
@@ -1102,7 +1104,7 @@ namespace UEEditor
 			this.colJRegion.OptionsColumn.AllowIncrementalSearch = false;
 			this.colJRegion.OptionsColumn.ReadOnly = true;
 			this.colJRegion.Visible = true;
-			this.colJRegion.VisibleIndex = 3;
+			this.colJRegion.VisibleIndex = 2;
 			this.colJRegion.Width = 52;
 			// 
 			// colJPos
@@ -1115,7 +1117,7 @@ namespace UEEditor
 			this.colJPos.OptionsColumn.AllowIncrementalSearch = false;
 			this.colJPos.OptionsColumn.ReadOnly = true;
 			this.colJPos.Visible = true;
-			this.colJPos.VisibleIndex = 6;
+			this.colJPos.VisibleIndex = 3;
 			this.colJPos.Width = 56;
 			// 
 			// colJNamePos
@@ -1128,7 +1130,7 @@ namespace UEEditor
 			this.colJNamePos.OptionsColumn.AllowIncrementalSearch = false;
 			this.colJNamePos.OptionsColumn.ReadOnly = true;
 			this.colJNamePos.Visible = true;
-			this.colJNamePos.VisibleIndex = 7;
+			this.colJNamePos.VisibleIndex = 4;
 			this.colJNamePos.Width = 64;
 			// 
 			// colJJobDate
@@ -1144,7 +1146,7 @@ namespace UEEditor
 			this.colJJobDate.OptionsColumn.ReadOnly = true;
 			this.colJJobDate.UnboundType = DevExpress.Data.UnboundColumnType.DateTime;
 			this.colJJobDate.Visible = true;
-			this.colJJobDate.VisibleIndex = 8;
+			this.colJJobDate.VisibleIndex = 5;
 			this.colJJobDate.Width = 121;
 			// 
 			// colJBlockBy
@@ -1157,7 +1159,7 @@ namespace UEEditor
 			this.colJBlockBy.OptionsColumn.AllowIncrementalSearch = false;
 			this.colJBlockBy.OptionsColumn.ReadOnly = true;
 			this.colJBlockBy.Visible = true;
-			this.colJBlockBy.VisibleIndex = 9;
+			this.colJBlockBy.VisibleIndex = 6;
 			this.colJBlockBy.Width = 38;
 			// 
 			// imageList1
@@ -1314,6 +1316,9 @@ namespace UEEditor
 			// 
 			this.UnrecExpGridControl.DataSource = this.dtUnrecExp;
 			this.UnrecExpGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			//
+			//
+			//
 			this.UnrecExpGridControl.EmbeddedNavigator.Name = "";
 			this.UnrecExpGridControl.Location = new System.Drawing.Point(0, 0);
 			this.UnrecExpGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
@@ -1324,8 +1329,8 @@ namespace UEEditor
 			this.UnrecExpGridControl.TabIndex = 1;
 			this.UnrecExpGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvUnrecExp});
-			this.UnrecExpGridControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.UnrecExpGridControl_KeyDown);
 			this.UnrecExpGridControl.Click += new System.EventHandler(this.UnrecExpGridControl_Click);
+			this.UnrecExpGridControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.UnrecExpGridControl_KeyDown);
 			// 
 			// gvUnrecExp
 			// 
@@ -1353,11 +1358,11 @@ namespace UEEditor
 			this.gvUnrecExp.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvUnrecExp.OptionsSelection.EnableAppearanceFocusedCell = false;
 			this.gvUnrecExp.OptionsView.ShowGroupPanel = false;
-			this.gvUnrecExp.FocusedRowChanged += new DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventHandler(this.gvUnrecExp_FocusedRowChanged);
-			this.gvUnrecExp.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvUnrecExp_CustomColumnDisplayText);
 			this.gvUnrecExp.CustomDrawCell += new DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventHandler(this.gvUnrecExp_CustomDrawCell);
-			this.gvUnrecExp.CustomColumnSort += new DevExpress.XtraGrid.Views.Base.CustomColumnSortEventHandler(this.gvUnrecExp_CustomColumnSort);
 			this.gvUnrecExp.RowCellStyle += new DevExpress.XtraGrid.Views.Grid.RowCellStyleEventHandler(this.gvUnrecExp_RowCellStyle);
+			this.gvUnrecExp.FocusedRowChanged += new DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventHandler(this.gvUnrecExp_FocusedRowChanged);
+			this.gvUnrecExp.CustomColumnSort += new DevExpress.XtraGrid.Views.Base.CustomColumnSortEventHandler(this.gvUnrecExp_CustomColumnSort);
+			this.gvUnrecExp.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvUnrecExp_CustomColumnDisplayText);
 			// 
 			// colUEColumn1
 			// 
@@ -1536,6 +1541,9 @@ namespace UEEditor
 			this.gcFirmCr.DataMember = "CatalogFirmCrGrid";
 			this.gcFirmCr.DataSource = this.dsMain;
 			this.gcFirmCr.Dock = System.Windows.Forms.DockStyle.Fill;
+			//
+			//
+			//
 			this.gcFirmCr.EmbeddedNavigator.Name = "";
 			this.gcFirmCr.Enabled = false;
 			this.gcFirmCr.Location = new System.Drawing.Point(0, 20);
@@ -1543,12 +1551,12 @@ namespace UEEditor
 			this.gcFirmCr.LookAndFeel.UseDefaultLookAndFeel = false;
 			this.gcFirmCr.MainView = this.gvFirmCr;
 			this.gcFirmCr.Name = "gcFirmCr";
-			this.gcFirmCr.Size = new System.Drawing.Size(383, 194);
+			this.gcFirmCr.Size = new System.Drawing.Size(706, 194);
 			this.gcFirmCr.TabIndex = 0;
 			this.gcFirmCr.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvFirmCr});
-			this.gcFirmCr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.gcFirmCr_KeyPress);
 			this.gcFirmCr.KeyDown += new System.Windows.Forms.KeyEventHandler(this.gcFirmCr_KeyDown);
+			this.gcFirmCr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.gcFirmCr_KeyPress);
 			// 
 			// gvFirmCr
 			// 
@@ -1637,6 +1645,9 @@ namespace UEEditor
 			// 
 			this.ZeroGridControl.DataSource = this.dtZero;
 			this.ZeroGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			//
+			//
+			//
 			this.ZeroGridControl.EmbeddedNavigator.Name = "";
 			this.ZeroGridControl.Location = new System.Drawing.Point(0, 0);
 			this.ZeroGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
@@ -1752,6 +1763,9 @@ namespace UEEditor
 			// 
 			this.ForbGridControl.DataSource = this.dtForb;
 			this.ForbGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			//
+			//
+			//
 			this.ForbGridControl.EmbeddedNavigator.Name = "";
 			this.ForbGridControl.Location = new System.Drawing.Point(0, 0);
 			this.ForbGridControl.LookAndFeel.Style = DevExpress.LookAndFeel.LookAndFeelStyle.Style3D;
@@ -1828,8 +1842,8 @@ namespace UEEditor
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Редактор нераспознанных выражений";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-			this.Load += new System.EventHandler(this.frmUEEMain_Load);
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.frmUEEMain_Closing);
+			this.Load += new System.EventHandler(this.frmUEEMain_Load);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmUEEMain_KeyDown);
 			((System.ComponentModel.ISupportInitialize)(this.gvCatForm)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.CatalogGridControl)).EndInit();

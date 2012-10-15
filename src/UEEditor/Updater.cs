@@ -73,7 +73,7 @@ namespace UEEditor
 			resolver = _resolver;
 		}
 
-		public void UpdateProducerSynonym(List<Unrecexp> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr)
+		public void UpdateProducerSynonym(List<Unrecexp> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr, List<DbExclude> forbiddenProducers)
 		{
 			//priceprocessor создает на одно наименование один синоним, но в результате сопоставления мы можем получить два разных синонима
 			var synonyms = rows.Select(e => e.Row).Where(r => !(r["SynonymObject"] is DBNull)).Select(r => (ProducerSynonym) r["SynonymObject"]);
@@ -104,8 +104,23 @@ namespace UEEditor
 					CreateSynonym(dtSynonymFirmCr, exclude);
 				else
 					UpdateSynonym(synonymRow[0], exclude);
-				CreateExclude(exclude, excludes, rows.First(r => r.Row["SynonymObject"] == exclude));
+				if (exclude.State == ProducerSynonymState.Exclude) {
+					CreateExclude(exclude, excludes, rows.First(r => r.Row["SynonymObject"] == exclude));
+				}
+				else if(exclude.State == ProducerSynonymState.Forbidden) {
+					CreateForbiddenProducer(exclude, forbiddenProducers);
+				}
 			}
+		}
+
+		private void CreateForbiddenProducer(Exclude exclude, List<DbExclude> forbiddenProducers)
+		{
+			if (forbiddenProducers.Any(e => e.ProducerSynonym.Equals(exclude.Name, StringComparison.CurrentCultureIgnoreCase)))
+				return;
+
+			forbiddenProducers.Add(new DbExclude {
+				ProducerSynonym = exclude.Name
+			});
 		}
 
 		private void CreateExclude(Exclude exclude, List<DbExclude> excludes, Unrecexp expression)
@@ -226,6 +241,9 @@ namespace UEEditor
 		MySqlDataAdapter daSynonym;
 		DataTable dtSynonym;
 		MySqlDataAdapter daSynonymFirmCr;
+		DataTable dtForbiddenProducers;
+		MySqlDataAdapter daForbiddenProducers;
+		public List<DbExclude> ForbiddenProducers;
 
 		string operatorName;
 
@@ -354,7 +372,22 @@ and priceitems.Id = pricescosts.PriceItemId",
 					daUnrecUpdate.Update(dtUnrecUpdateCopy);
                     _logger.Debug("12-->");
                     debugString.Append("12-->");
-					formProgress.ApplyProgress += 10;				                             
+					formProgress.ApplyProgress += 10;
+
+					// Сохраняем запрещенные имена производителей
+					var insertForbiddenProducer = new MySqlCommand(@"
+insert into Farm.Forbiddenproducers(Name)
+value (?Name);", c);
+					insertForbiddenProducer.Parameters.Add("?Name", MySqlDbType.VarChar);
+					_logger.Debug("13-->");
+					debugString.Append("13-->");
+					foreach (var producer in ForbiddenProducers.Where(e => e.Id == 0))
+					{
+						insertForbiddenProducer.Parameters["?Name"].Value = producer.ProducerSynonym;
+						_logger.Debug("13.1-->");
+						debugString.Append("13.1-->");
+						insertForbiddenProducer.ExecuteScalar();
+					}
 				});
 			}
 			catch (Exception e)
@@ -567,7 +600,18 @@ where pricecode = ?PriceCode",
 				}).ToList();
 			}
 
-			UpdateProducerSynonym(forProducerSynonyms, excludes, dtSynonymFirmCr);
+			var selectForbiddenProducers = new MySqlCommand(
+				"select * from farm.forbiddenproducers",
+				masterConnection);
+			using (var reader = selectForbiddenProducers.ExecuteReader())
+			{
+				ForbiddenProducers = reader.Cast<DbDataRecord>().Select(r => new DbExclude {
+					Id = Convert.ToUInt32(r["Id"]),
+					ProducerSynonym = r["Name"].ToString()
+				}).ToList();
+			}
+
+			UpdateProducerSynonym(forProducerSynonyms, excludes, dtSynonymFirmCr, ForbiddenProducers);
 		}
 
 		public static string GetHumanName(MySqlConnection c, string operatorName)

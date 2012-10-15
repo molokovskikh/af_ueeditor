@@ -6,6 +6,7 @@ using Castle.ActiveRecord;
 using Common.MySql;
 using Common.Tools;
 using MySql.Data.MySqlClient;
+using NHibernate.Linq;
 using NUnit.Framework;
 using Test.Support;
 using Test.Support.Catalog;
@@ -133,6 +134,40 @@ namespace UEEditor.Tests
 			Assert.That(status & FormMask.FirmForm, Is.EqualTo(FormMask.FirmForm));
 		}
 
+		[Test]
+		public void CreateForbiddenProducerName()
+		{
+			var sessionHolder = ActiveRecordMediator.GetSessionFactoryHolder();
+			var session = sessionHolder.CreateSession(typeof(ActiveRecordBase));
+			TestUnrecExp expression;
+			TestCatalogProduct catalogProduct;
+			try {
+				var product = new TestProduct("Тестовый Продукт");
+				catalogProduct = product.CatalogProduct;
+				catalogProduct.Pharmacie = true;
+				session.Save(product);
+				var synonym = new TestProductSynonym("test", product, price);
+				session.Save(synonym);
+				var producerSynonym = new TestProducerSynonym("testTest", null, price);
+				session.Save(producerSynonym);
+				expression = new TestUnrecExp(synonym, producerSynonym);
+				session.Save(expression);
+
+				Load();
+				resolver.ExcludeProducer(GetRow(expression), ProducerSynonymState.Forbidden);
+				Save();
+
+				var query = session.CreateSQLQuery(String.Format("SELECT count(*) FROM farm.ForbiddenProducers F where F.Name='{0}'", "testTest"));
+				var count = query.UniqueResult();
+				Assert.That(count, Is.GreaterThan(0));
+				var exclude = session.Query<TestExclude>().Where(e => e.Price == price);
+				Assert.That(exclude.Count(), Is.EqualTo(0));
+			}
+			finally
+			{
+				sessionHolder.ReleaseSession(session);
+			}
+		}
 
 		[Test]
 		public void Create_excludes()

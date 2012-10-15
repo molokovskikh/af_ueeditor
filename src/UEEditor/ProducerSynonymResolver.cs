@@ -223,7 +223,7 @@ where a.ProducerId = ?ProducerId", c);
 			return item["UEName1"].ToString().Trim();
 		}
 
-		public void ExcludeProducer(DataRow source)
+		public void ExcludeProducer(DataRow source, ProducerSynonymState state = ProducerSynonymState.Exclude)
 		{
 			if (!Convert.ToBoolean(source["Pharmacie"]))
 				return;
@@ -233,6 +233,7 @@ where a.ProducerId = ?ProducerId", c);
 				CatalogId = Convert.ToUInt32(source["UEPriorCatalogId"]),
 				SupplierCode = source["UECode"].ToString()
 			};
+			exclude.State = state;
 			synonyms.Add(exclude);
 
 			foreach (var destination in source.Table.Rows.Cast<DataRow>())
