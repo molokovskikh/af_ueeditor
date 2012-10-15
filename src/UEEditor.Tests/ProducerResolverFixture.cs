@@ -137,35 +137,29 @@ namespace UEEditor.Tests
 		[Test]
 		public void CreateForbiddenProducerName()
 		{
-			var sessionHolder = ActiveRecordMediator.GetSessionFactoryHolder();
-			var session = sessionHolder.CreateSession(typeof(ActiveRecordBase));
 			TestUnrecExp expression;
-			TestCatalogProduct catalogProduct;
-			try {
+			using (new SessionScope()) {
 				var product = new TestProduct("Тестовый Продукт");
-				catalogProduct = product.CatalogProduct;
+				var catalogProduct = product.CatalogProduct;
 				catalogProduct.Pharmacie = true;
-				session.Save(product);
+				product.Save();
 				var synonym = new TestProductSynonym("test", product, price);
-				session.Save(synonym);
+				synonym.Save();
 				var producerSynonym = new TestProducerSynonym("testTest", null, price);
-				session.Save(producerSynonym);
+				producerSynonym.Save();
 				expression = new TestUnrecExp(synonym, producerSynonym);
-				session.Save(expression);
-
-				Load();
-				resolver.ExcludeProducer(GetRow(expression), ProducerSynonymState.Forbidden);
-				Save();
-
+				expression.Save();
+			}
+			Load();
+			resolver.ExcludeProducer(GetRow(expression), ProducerSynonymState.Forbidden);
+			Save();
+			var sessionHolder = ActiveRecordMediator.GetSessionFactoryHolder();
+			using(var session = sessionHolder.CreateSession(typeof(ActiveRecordBase))) {
 				var query = session.CreateSQLQuery(String.Format("SELECT count(*) FROM farm.ForbiddenProducers F where F.Name='{0}'", "testTest"));
 				var count = query.UniqueResult();
 				Assert.That(count, Is.GreaterThan(0));
 				var exclude = session.Query<TestExclude>().Where(e => e.Price == price);
 				Assert.That(exclude.Count(), Is.EqualTo(0));
-			}
-			finally
-			{
-				sessionHolder.ReleaseSession(session);
 			}
 		}
 
