@@ -87,7 +87,7 @@ namespace UEEditor
 			pnlCenter2.Controls.Add(createExclude);
 
 			createForbiddenProducer = new Button {
-				Text = "Имя производителя не является корректным (F4)",
+				Text = "Имя производителя некорректно (F4)",
 				Dock = DockStyle.Bottom,
 				Visible = false
 			};
