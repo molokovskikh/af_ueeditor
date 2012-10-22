@@ -38,7 +38,7 @@ namespace UEEditor
 			SupplierCode = item["UECode"].ToString();
 		}
 
-		public void Apply(DataRow row)
+		public virtual void Apply(DataRow row)
 		{
 			if (row["UEProducerSynonymId"] is DBNull)
 				row["UEProducerSynonymId"] = Id;
@@ -51,7 +51,7 @@ namespace UEEditor
 			row["SynonymObject"] = this;
 		}
 
-		public bool IsApplicable(DataRow destination, DataTable assortment)
+		public virtual bool IsApplicable(DataRow destination, DataTable assortment)
 		{
 			var status = ProducerSynonymResolver.GetStatus(destination);
 			if ((status & FormMask.NameForm) != FormMask.NameForm)

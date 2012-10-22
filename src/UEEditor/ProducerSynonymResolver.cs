@@ -223,7 +223,21 @@ where a.ProducerId = ?ProducerId", c);
 			return item["UEName1"].ToString().Trim();
 		}
 
-		public void ExcludeProducer(DataRow source, ProducerSynonymState state = ProducerSynonymState.Exclude)
+		public void ForbidProducer(DataRow source)
+		{
+			if (!Convert.ToBoolean(source["Pharmacie"]))
+				return;
+
+			var forbiddenProducer = new ForbiddenProducerSynonym() {
+				Name = source["UEFirmCr"].ToString()
+			};
+			synonyms.Add(forbiddenProducer);
+			foreach (var destination in source.Table.Rows.Cast<DataRow>())
+				if (forbiddenProducer.IsApplicable(destination, null))
+					forbiddenProducer.Apply(destination);
+		}
+
+		public void ExcludeProducer(DataRow source)
 		{
 			if (!Convert.ToBoolean(source["Pharmacie"]))
 				return;
@@ -233,7 +247,6 @@ where a.ProducerId = ?ProducerId", c);
 				CatalogId = Convert.ToUInt32(source["UEPriorCatalogId"]),
 				SupplierCode = source["UECode"].ToString()
 			};
-			exclude.State = state;
 			synonyms.Add(exclude);
 
 			foreach (var destination in source.Table.Rows.Cast<DataRow>())

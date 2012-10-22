@@ -87,12 +87,12 @@ namespace UEEditor
 			pnlCenter2.Controls.Add(createExclude);
 
 			createForbiddenProducer = new Button {
-				Text = "Имя производителя не является корректным (F4)",
+				Text = "Некорректное имя производителя (F4)",
 				Dock = DockStyle.Bottom,
 				Visible = false
 			};
 			createForbiddenProducer.Click += (sender, args) => {
-				ProducerSynonymResolver.Resolver.ExcludeProducer(GetCurrentItem(), ProducerSynonymState.Forbidden);
+				ProducerSynonymResolver.Resolver.ForbidProducer(GetCurrentItem());
 				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 			};
 			pnlCenter2.Controls.Add(createForbiddenProducer);
@@ -1867,7 +1867,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 			if (e.KeyCode == Keys.F4)
 			{
-				ProducerSynonymResolver.Resolver.ExcludeProducer(GetCurrentItem(), ProducerSynonymState.Forbidden);
+				ProducerSynonymResolver.Resolver.ForbidProducer(GetCurrentItem());
 				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 			}
 		}
