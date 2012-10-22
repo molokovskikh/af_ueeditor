@@ -14,7 +14,7 @@ namespace UEEditor
 
 		public void Reset()
 		{
-			SynonymCount = 0; 
+			SynonymCount = 0;
 			SynonymFirmCrCount = 0;
 			ForbiddenCount = 0;
 			HideSynonymCount = 0;
@@ -26,19 +26,19 @@ namespace UEEditor
 		public string Print()
 		{
 			return String.Format(
-@"Создано:
-	запрещённых выражений - {0}
-Синонимов:
-	по наименованию - {1}
-	по производителю - {2}
-Отклонено скрытых синонимов: {3}
-Отклонено дублирующихся синонимов: {4}
-Отклонено скрытых синонимов производителей: {5}
-Отклонено дублирующихся синонимов производителей: {6}
+@"РЎРѕР·РґР°РЅРѕ:
+	Р·Р°РїСЂРµС‰С‘РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№ - {0}
+РЎРёРЅРѕРЅРёРјРѕРІ:
+	РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ - {1}
+	РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ - {2}
+РћС‚РєР»РѕРЅРµРЅРѕ СЃРєСЂС‹С‚С‹С… СЃРёРЅРѕРЅРёРјРѕРІ: {3}
+РћС‚РєР»РѕРЅРµРЅРѕ РґСѓР±Р»РёСЂСѓСЋС‰РёС…СЃСЏ СЃРёРЅРѕРЅРёРјРѕРІ: {4}
+РћС‚РєР»РѕРЅРµРЅРѕ СЃРєСЂС‹С‚С‹С… СЃРёРЅРѕРЅРёРјРѕРІ РїСЂРѕРёР·РІРѕРґРёС‚РµР»РµР№: {5}
+РћС‚РєР»РѕРЅРµРЅРѕ РґСѓР±Р»РёСЂСѓСЋС‰РёС…СЃСЏ СЃРёРЅРѕРЅРёРјРѕРІ РїСЂРѕРёР·РІРѕРґРёС‚РµР»РµР№: {6}
 
-Перепровести прайс?", 
-				ForbiddenCount, SynonymCount, SynonymFirmCrCount, 
-				HideSynonymCount, DuplicateSynonymCount, HideSynonymFirmCrCount, 
+РџРµСЂРµРїСЂРѕРІРµСЃС‚Рё РїСЂР°Р№СЃ?",
+				ForbiddenCount, SynonymCount, SynonymFirmCrCount,
+				HideSynonymCount, DuplicateSynonymCount, HideSynonymFirmCrCount,
 				DuplicateProducerSynonymCount);
 		}
 	}

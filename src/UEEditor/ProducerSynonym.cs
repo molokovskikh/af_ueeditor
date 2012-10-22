@@ -70,14 +70,14 @@ namespace UEEditor
 			if (this is Exclude)
 				return ((Exclude) this).CatalogId == catalogId;
 
-			//если это фармацевтика то не нужно делать проверки по ассортименту
+			//РµСЃР»Рё СЌС‚Рѕ С„Р°СЂРјР°С†РµРІС‚РёРєР° С‚Рѕ РЅРµ РЅСѓР¶РЅРѕ РґРµР»Р°С‚СЊ РїСЂРѕРІРµСЂРєРё РїРѕ Р°СЃСЃРѕСЂС‚РёРјРµРЅС‚Сѓ
 			if (!Convert.ToBoolean(destination["pharmacie"]))
 				return true;
 
 			if (assortment == null)
 				return false;
 
-			return assortment.Rows.Cast<DataRow>().Any(r => Convert.ToUInt32(r["CatalogId"]) == catalogId 
+			return assortment.Rows.Cast<DataRow>().Any(r => Convert.ToUInt32(r["CatalogId"]) == catalogId
 				&& Convert.ToUInt32(r["ProducerId"]) == ProducerId);
 		}
 
