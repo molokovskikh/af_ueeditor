@@ -21,10 +21,8 @@ namespace Subway.Helpers
 				return;
 
 			InputLanguage russianInputLanguage = null;
-			foreach (InputLanguage inputLanguage in InputLanguage.InstalledInputLanguages)
-			{
-				if (inputLanguage.Culture.Equals(culture))
-				{
+			foreach (InputLanguage inputLanguage in InputLanguage.InstalledInputLanguages) {
+				if (inputLanguage.Culture.Equals(culture)) {
 					russianInputLanguage = inputLanguage;
 					break;
 				}

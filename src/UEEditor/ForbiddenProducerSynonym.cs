@@ -8,7 +8,6 @@ namespace UEEditor
 {
 	public class ForbiddenProducerSynonym : ProducerSynonym
 	{
-
 		public override void Apply(DataRow row)
 		{
 			if (row["UEProducerSynonymId"] is DBNull)

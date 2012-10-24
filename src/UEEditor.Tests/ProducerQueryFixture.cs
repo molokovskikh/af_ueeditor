@@ -31,7 +31,7 @@ namespace UEEditor.Tests
 			var product = TestCatalogProduct.Queryable.First(c => c.Producers.Count() > 0);
 			var catalogId = product.Id;
 
-			var query = ProducerQuery.Query(true, catalogId, q => {});
+			var query = ProducerQuery.Query(true, catalogId, q => { });
 			var table = new DataTable();
 			query.Load(table);
 		}
@@ -43,9 +43,7 @@ namespace UEEditor.Tests
 			var exclude = new DbExclude {
 				CatalogId = product.Id
 			};
-			With.Connection(c => {
-				Assert.That(Updater.IsExcludeCorrect(c, exclude), Is.False);
-			});
+			With.Connection(c => { Assert.That(Updater.IsExcludeCorrect(c, exclude), Is.False); });
 		}
 	}
 }

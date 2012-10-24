@@ -68,7 +68,7 @@ namespace UEEditor
 
 			var catalogId = Convert.ToUInt32(destination["UEPriorCatalogId"]);
 			if (this is Exclude)
-				return ((Exclude) this).CatalogId == catalogId;
+				return ((Exclude)this).CatalogId == catalogId;
 
 			//если это фармацевтика то не нужно делать проверки по ассортименту
 			if (!Convert.ToBoolean(destination["pharmacie"]))
@@ -85,8 +85,7 @@ namespace UEEditor
 		{
 			if (record == null)
 				return null;
-			if (record["CatalogId"] is DBNull && !(record["ProducerId"] is DBNull))
-			{
+			if (record["CatalogId"] is DBNull && !(record["ProducerId"] is DBNull)) {
 				return new ProducerSynonym {
 					Loaded = true,
 					Id = Convert.ToUInt32(record["SynonymFirmCrCode"]),
@@ -94,26 +93,23 @@ namespace UEEditor
 					Name = record["Synonym"].ToString()
 				};
 			}
-			else
-			{
+			else {
 				return new Exclude(record);
 			}
 		}
 
 		public static ProducerSynonym CreateSynonym(DataRow row, uint producerId)
 		{
-			if (producerId != 0)
-			{
+			if (producerId != 0) {
 				return new ProducerSynonym(row, producerId);
 			}
 			else
-				return new Exclude
-				       	{
-				       		Name = row["UEFirmCr"].ToString(),
-				       		CatalogId = Convert.ToUInt32(row["UEPriorCatalogId"]),
-				       		State = ProducerSynonymState.Unknown,
-				       		SupplierCode = row["UECode"].ToString()
-						};
+				return new Exclude {
+					Name = row["UEFirmCr"].ToString(),
+					CatalogId = Convert.ToUInt32(row["UEPriorCatalogId"]),
+					State = ProducerSynonymState.Unknown,
+					SupplierCode = row["UECode"].ToString()
+				};
 		}
 	}
 }

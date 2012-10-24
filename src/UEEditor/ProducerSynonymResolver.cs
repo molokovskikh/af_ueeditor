@@ -29,7 +29,7 @@ namespace UEEditor
 			return new Query()
 				.Select("sfc.SynonymFirmCrCode, sfc.CodeFirmCr as ProducerId, sfc.Synonym, null as CatalogId")
 				.From("Farm.SynonymFirmCr sfc")
-				.Where("sfc.PriceCode = ?PriceId", new {priceId});
+				.Where("sfc.PriceCode = ?PriceId", new { priceId });
 		}
 
 		public void ResolveProduct(DataRow item, uint productId, uint catalogId, bool pharmacie, bool markAsJunk)
@@ -41,13 +41,10 @@ namespace UEEditor
 			var synonyms = GetSynonyms(producer);
 			synonyms = synonyms.Concat(synonyms.Where(s => s.Name == producer)).ToList();
 
-			for(int i = 0; i < table.Rows.Count; i++)
-			{
+			for (int i = 0; i < table.Rows.Count; i++) {
 				var row = table.Rows[i];
-				if (String.Equals(name, GetName(row), StringComparison.CurrentCultureIgnoreCase))
-				{
-					if (((FormMask)Convert.ToByte(row["UEStatus"]) & FormMask.NameForm) != FormMask.NameForm)
-					{
+				if (String.Equals(name, GetName(row), StringComparison.CurrentCultureIgnoreCase)) {
+					if (((FormMask)Convert.ToByte(row["UEStatus"]) & FormMask.NameForm) != FormMask.NameForm) {
 						//TODO: Здесь потребуется завести дополнительный столбец в таблицу нераспознанных выражений
 						row["UEStatus"] = (int)((FormMask)Convert.ToByte(row["UEStatus"]) | FormMask.NameForm);
 						row["UEJunk"] = Convert.ToByte(markAsJunk);
@@ -63,11 +60,9 @@ namespace UEEditor
 
 		public void UnresolveProduct(DataRow row)
 		{
-			try
-			{
+			try {
 				var status = GetStatus(row);
-				if ((status & FormMask.NameForm) == FormMask.NameForm)
-				{
+				if ((status & FormMask.NameForm) == FormMask.NameForm) {
 					row["UEStatus"] = status & (~FormMask.NameForm);
 					row["UEPriorProductId"] = DBNull.Value;
 					row["UEPriorCatalogId"] = DBNull.Value;
@@ -75,19 +70,16 @@ namespace UEEditor
 				}
 				UnresolveProducer(row);
 			}
-			catch(Exception e)
-			{
+			catch (Exception e) {
 				log.Error(String.Format("Ошибка при отмене распознования позиции {0}", GetName(row)), e);
 			}
 		}
 
 		public void UnresolveProducer(DataRow row)
 		{
-			try
-			{
+			try {
 				var status = GetStatus(row);
-				if ((status & FormMask.FirmForm) == FormMask.FirmForm)
-				{
+				if ((status & FormMask.FirmForm) == FormMask.FirmForm) {
 					var synonym = row["SynonymObject"] as ProducerSynonym;
 
 					row["UEStatus"] = status & (~FormMask.FirmForm);
@@ -96,14 +88,12 @@ namespace UEEditor
 					row["SynonymObject"] = null;
 
 					if (synonym != null
-						&& !row.Table.Rows.Cast<DataRow>().Any(r => r["SynonymObject"] == synonym))
-					{
+						&& !row.Table.Rows.Cast<DataRow>().Any(r => r["SynonymObject"] == synonym)) {
 						synonyms.Remove(synonym);
 					}
 				}
 			}
-			catch (Exception e)
-			{
+			catch (Exception e) {
 				log.Error(String.Format("Ошибка при отмене распознования позиции {0}", GetName(row)), e);
 			}
 		}
@@ -111,9 +101,8 @@ namespace UEEditor
 		private void TryToPickProducerSynonym(DataRow destination, IEnumerable<ProducerSynonym> synonyms)
 		{
 			var producer = destination["UEFirmCr"].ToString();
-			if (String.IsNullOrEmpty(producer))
-			{
-				destination["UEStatus"] = (int) (GetStatus(destination) | FormMask.FirmForm);
+			if (String.IsNullOrEmpty(producer)) {
+				destination["UEStatus"] = (int)(GetStatus(destination) | FormMask.FirmForm);
 				return;
 			}
 
@@ -131,9 +120,9 @@ namespace UEEditor
 			var assortment = LoadAssortmentByProducer(producerId);
 
 			var synonym = ProducerSynonym.CreateSynonym(item, producerId);
-			
+
 			var loadedSynonym = LoadSynonym()
-				.Where("sfc.Synonym = ?Name && sfc.CodeFirmCr = ?ProducerId", new {synonym.Name, synonym.ProducerId})
+				.Where("sfc.Synonym = ?Name && sfc.CodeFirmCr = ?ProducerId", new { synonym.Name, synonym.ProducerId })
 				.SingleOrDefault(ProducerSynonym.CreateSynonym);
 
 			if (loadedSynonym != null)
@@ -141,8 +130,7 @@ namespace UEEditor
 			else
 				synonyms.Add(synonym);
 
-			for(var i = 0; i < table.Rows.Count; i++)
-			{
+			for (var i = 0; i < table.Rows.Count; i++) {
 				var row = table.Rows[i];
 				if (synonym.IsApplicable(row, assortment))
 					synonym.Apply(row);
@@ -173,7 +161,7 @@ group by e.CatalogId, sfc.Synonym", c);
 				command.Parameters.AddWithValue("?PriceCode", priceId);
 				command.Parameters.AddWithValue("?Synonym", synonym);
 
-				using(var reader = command.ExecuteReader())
+				using (var reader = command.ExecuteReader())
 					synonyms = synonyms.Concat(reader.Cast<DbDataRecord>().Select(ProducerSynonym.CreateSynonym)).ToList();
 
 				return synonyms;
@@ -215,7 +203,7 @@ where a.ProducerId = ?ProducerId", c);
 
 		public static FormMask GetStatus(DataRow row)
 		{
-			return (FormMask) Convert.ToByte(row["UEStatus"]);
+			return (FormMask)Convert.ToByte(row["UEStatus"]);
 		}
 
 		public static string GetName(DataRow item)

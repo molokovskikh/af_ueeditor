@@ -13,8 +13,7 @@ namespace UEEditor.Helpers
 		public static bool IsAssortmentExists(long productId, long producerId)
 		{
 			object assortmentExists = null;
-			With.Connection((slaveConnection) =>
-			{
+			With.Connection((slaveConnection) => {
 				assortmentExists = MySql.Data.MySqlClient.MySqlHelper.ExecuteScalar(slaveConnection, @"
 select 
   assortment.CatalogId 
@@ -25,8 +24,8 @@ where
     (products.Id = ?ProductId)
 and (assortment.CatalogId = products.CatalogId) 
 and (assortment.ProducerId = ?ProducerId)",
-				new MySqlParameter("?ProductId", productId),
-				new MySqlParameter("?ProducerId", producerId));
+					new MySqlParameter("?ProductId", productId),
+					new MySqlParameter("?ProducerId", producerId));
 			});
 			return (assortmentExists != null);
 		}
@@ -44,11 +43,8 @@ from
   catalogs.products
 where
     products.Id = {0}
-and catalog.Id = products.CatalogId"
-					,
-					productId)
-					)
-			);
+and catalog.Id = products.CatalogId",
+						productId)));
 		}
 
 		public static bool IsSynonymExists(MySqlConnection connection, long lockedSynonymPriceCode, string synonymName)
@@ -58,9 +54,8 @@ and catalog.Id = products.CatalogId"
 					connection,
 					"select ProductId from farm.synonym where synonym = ?SynonymName and PriceCode = ?LockedSynonymPriceCode",
 					new MySqlParameter("?LockedSynonymPriceCode", lockedSynonymPriceCode),
-				//todo: здесь получается фигня с добавлением пробелов в конце строки
-					new MySqlParameter("?SynonymName", String.Format("{0}  ", synonymName))
-					) != null;
+					//todo: здесь получается фигня с добавлением пробелов в конце строки
+					new MySqlParameter("?SynonymName", String.Format("{0}  ", synonymName))) != null;
 		}
 
 		public static bool IsProducerSynonymExists(MySqlConnection connection, long lockedSynonymPriceCode, string producerSynonymName, object producerId)
@@ -69,8 +64,7 @@ and catalog.Id = products.CatalogId"
 				connection,
 				"select CodeFirmCr from farm.synonymFirmCr where synonym = ?ProducerSynonymName and PriceCode = ?LockedSynonymPriceCode",
 				new MySqlParameter("?LockedSynonymPriceCode", lockedSynonymPriceCode),
-				new MySqlParameter("?ProducerSynonymName", producerSynonymName)
-				) != null;
+				new MySqlParameter("?ProducerSynonymName", producerSynonymName)) != null;
 		}
 	}
 }

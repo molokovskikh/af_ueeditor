@@ -8,13 +8,13 @@ using log4net.Config;
 
 namespace UEEditor
 {
-	static class Program
+	internal static class Program
 	{
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			XmlConfigurator.Configure();
 

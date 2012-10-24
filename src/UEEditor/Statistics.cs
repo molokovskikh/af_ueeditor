@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace UEEditor
 {
@@ -26,7 +26,7 @@ namespace UEEditor
 		public string Print()
 		{
 			return String.Format(
-@"Создано:
+				@"Создано:
 	запрещённых выражений - {0}
 Синонимов:
 	по наименованию - {1}

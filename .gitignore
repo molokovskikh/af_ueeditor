@@ -1,6 +1,7 @@
 obj
 bin
 output/
+packages/
 AssemblyInfo.cs
 _ReSharper.*
 *.csproj.user

@@ -27,15 +27,14 @@ concat(pe.Name, ' [', p.Name, ']') As CName")
 catalogs.Producers P
   join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id");
 
-			if (pharmacie)
-			{
+			if (pharmacie) {
 				query.Producers
 					.Join("join catalogs.assortment a on a.ProducerId = p.Id")
-					.Where("a.CatalogId = ?CatalogId", new {catalogId})
+					.Where("a.CatalogId = ?CatalogId", new { catalogId })
 					.Where("a.Checked = 1");
 				query.Equivalents
 					.Join("join catalogs.assortment a on a.ProducerId = p.Id")
-					.Where("a.CatalogId = ?CatalogId", new {catalogId})
+					.Where("a.CatalogId = ?CatalogId", new { catalogId })
 					.Where("a.Checked = 1");
 			}
 

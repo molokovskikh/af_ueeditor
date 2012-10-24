@@ -24,14 +24,14 @@ namespace UEEditor.Tests
 	[TestFixture]
 	public class ProducerResolverFixture
 	{
-		TestPrice price;
-		DataTable data;
-		ProducerSynonymResolver resolver;
+		private TestPrice price;
+		private DataTable data;
+		private ProducerSynonymResolver resolver;
 
 		[SetUp]
 		public void SetUp()
 		{
-			using(new TransactionScope())
+			using (new TransactionScope())
 				price = TestSupplier.CreateTestSupplierWithPrice();
 
 			resolver = new ProducerSynonymResolver(price.Id);
@@ -43,8 +43,7 @@ namespace UEEditor.Tests
 			TestUnrecExp exp;
 			TestProduct product;
 			TestProduct product2;
-			using(new SessionScope())
-			{
+			using (new SessionScope()) {
 				exp = new TestUnrecExp("ПОЛЫНИ ГОРЬКОЙ ТРАВА сырье 75 г N1", "Кентавр ХФК", price);
 				exp.Save();
 				//исключения работают только для фармацевтики
@@ -61,8 +60,7 @@ namespace UEEditor.Tests
 			Resolve(exp, product2);
 			Save();
 
-			using(new SessionScope())
-			{
+			using (new SessionScope()) {
 				var excludes = TestExclude.Queryable.Where(e => e.Price == price);
 				Assert.That(excludes.Count(), Is.EqualTo(0), excludes.Implode());
 			}
@@ -76,11 +74,10 @@ namespace UEEditor.Tests
 			TestUnrecExp exp1;
 			TestUnrecExp exp2;
 			TestProducerSynonym producerSynonym;
-			using (new TransactionScope())
-			{
+			using (new TransactionScope()) {
 				producerSynonym = new TestProducerSynonym("Test", null, price);
 				producerSynonym.Save();
-				new TestAutomaticSynonym{ProducerSynonymId = producerSynonym.Id}.Create();
+				new TestAutomaticSynonym { ProducerSynonymId = producerSynonym.Id }.Create();
 
 				var productsWithAssortment = Pharmacie().Take(30).ToList().Where(p => p.CatalogProduct.Producers.Count > 0);
 				var first = productsWithAssortment.First();
@@ -103,8 +100,7 @@ namespace UEEditor.Tests
 			Resolve(exp1, producer1);
 			Resolve(exp2, producer2);
 			Save();
-			using (new SessionScope(FlushAction.Never))
-			{
+			using (new SessionScope(FlushAction.Never)) {
 				var synonyms = TestProducerSynonym.Queryable.Where(s => s.Price == price).ToList();
 				Assert.That(synonyms.Count, Is.EqualTo(2), "должны были создать два разных синонима, создали только ({0})",
 					synonyms.Implode(s => s.Name));
@@ -120,8 +116,7 @@ namespace UEEditor.Tests
 		{
 			TestUnrecExp expression;
 			TestProduct product;
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				expression = new TestUnrecExp("test", "", price);
 				expression.Save();
 				product = TestProduct.Queryable.Where(p => !p.Hidden).First();
@@ -154,7 +149,7 @@ namespace UEEditor.Tests
 			resolver.ForbidProducer(GetRow(expression));
 			Save();
 			var sessionHolder = ActiveRecordMediator.GetSessionFactoryHolder();
-			using(var session = sessionHolder.CreateSession(typeof(ActiveRecordBase))) {
+			using (var session = sessionHolder.CreateSession(typeof(ActiveRecordBase))) {
 				var query = session.CreateSQLQuery(String.Format("SELECT count(*) FROM farm.ForbiddenProducers F where F.Name='{0}'", "testTest"));
 				var count = query.UniqueResult();
 				Assert.That(count, Is.GreaterThan(0));
@@ -168,8 +163,7 @@ namespace UEEditor.Tests
 		{
 			TestUnrecExp expression;
 			TestCatalogProduct catalogProduct;
-			using(new SessionScope())
-			{
+			using (new SessionScope()) {
 				var product = Pharmacie().First();
 				catalogProduct = product.CatalogProduct;
 				var synonym = new TestProductSynonym("test", product, price);
@@ -184,8 +178,7 @@ namespace UEEditor.Tests
 			resolver.ExcludeProducer(GetRow(expression));
 			Save();
 
-			using (new SessionScope(FlushAction.Never))
-			{
+			using (new SessionScope(FlushAction.Never)) {
 				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
 				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
 				var exclude = exlcudes.Single();
@@ -201,8 +194,7 @@ namespace UEEditor.Tests
 			TestUnrecExp expression;
 			TestProduct product;
 
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				expression = new TestUnrecExp("Полыни горькой трава" + new Random().Next(), "Тестовый производитель" + new Random().Next(), price);
 				expression.Save();
 				product = Pharmacie().First();
@@ -214,8 +206,7 @@ namespace UEEditor.Tests
 			Save();
 
 			TestProduct product2;
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				product2 = Pharmacie().Where(p => p.Id != product.Id).First();
 			}
 
@@ -225,8 +216,7 @@ namespace UEEditor.Tests
 			resolver.ExcludeProducer(GetRow(expression));
 			Save();
 
-			using (new SessionScope(FlushAction.Never))
-			{
+			using (new SessionScope(FlushAction.Never)) {
 				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
 				Assert.That(exlcudes.Count, Is.EqualTo(2), "не создали исключение");
 				var exclude = exlcudes[0];
@@ -242,9 +232,8 @@ namespace UEEditor.Tests
 			TestUnrecExp expression;
 			TestProduct product;
 
-            
-			using (new SessionScope())
-			{
+
+			using (new SessionScope()) {
 				expression = new TestUnrecExp("Полыни горькой трава 2", "Тестовый производитель", price);
 				expression.Save();
 				product = Pharmacie().First();
@@ -255,8 +244,7 @@ namespace UEEditor.Tests
 			resolver.ExcludeProducer(GetRow(expression));
 			Save();
 
-			using (new SessionScope(FlushAction.Never))
-			{
+			using (new SessionScope(FlushAction.Never)) {
 				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
 				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
 				var exclude = exlcudes.Single();
@@ -270,8 +258,7 @@ namespace UEEditor.Tests
 			TestUnrecExp expression;
 			TestProduct product;
 			TestProducer producer;
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				expression = new TestUnrecExp("Тестовый продукт", "Тестовый производитель", price);
 				expression.Code = new Random().Next().ToString();
 				expression.Save();
@@ -283,8 +270,7 @@ namespace UEEditor.Tests
 			Resolve(expression, product);
 			Resolve(expression, producer);
 			Save();
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				var synonym = TestProductSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
 				var synonymFirmCr = TestProducerSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
 				Assert.That(synonym, Is.Not.Null);
@@ -298,9 +284,8 @@ namespace UEEditor.Tests
 		public void TestFillSupplierCodeIfProducerExclude()
 		{
 			TestUnrecExp expression;
-			TestProduct product;			
-			using (new SessionScope())
-			{
+			TestProduct product;
+			using (new SessionScope()) {
 				expression = new TestUnrecExp("Тестовый продукт", "Тестовый производитель", price);
 				expression.Code = new Random().Next().ToString();
 				expression.Save();
@@ -310,8 +295,7 @@ namespace UEEditor.Tests
 			Resolve(expression, product);
 			resolver.ExcludeProducer(GetRow(expression));
 			Save();
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				var synonym = TestProductSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
 				var synonymFirmCr = TestProducerSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
 				Assert.That(synonym, Is.Not.Null);
@@ -321,7 +305,6 @@ namespace UEEditor.Tests
 				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
 				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
 			}
-
 		}
 
 		[Test]
@@ -330,8 +313,7 @@ namespace UEEditor.Tests
 			TestUnrecExp expression;
 			TestProduct product;
 
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				expression = new TestUnrecExp("test", "test", price);
 				expression.Save();
 				product = Pharmacie().First();
@@ -339,8 +321,7 @@ namespace UEEditor.Tests
 
 			Load();
 			Resolve(expression, product); // сопоставляем по продукту
-			using (new SessionScope()) // скрываем продукт
-			{
+			using (new SessionScope()) { // скрываем продукт
 				product.CatalogProduct.Hidden = true;
 				product.Hidden = true;
 				product.Save();
@@ -349,15 +330,13 @@ namespace UEEditor.Tests
 			resolver.ExcludeProducer(GetRow(expression)); // создаем исключение
 			Save();
 
-			using (new SessionScope(FlushAction.Never))
-			{
+			using (new SessionScope(FlushAction.Never)) {
 				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
-				Assert.That(exlcudes.Count, Is.EqualTo(0));				
+				Assert.That(exlcudes.Count, Is.EqualTo(0));
 			}
 
 
-			using (new SessionScope())
-			{
+			using (new SessionScope()) {
 				product.CatalogProduct.Hidden = false;
 				product.Hidden = false;
 				product.Save();
@@ -365,16 +344,15 @@ namespace UEEditor.Tests
 			}
 
 			Load();
-			Resolve(expression, product);			
+			Resolve(expression, product);
 
 			resolver.ExcludeProducer(GetRow(expression));
 			Save();
-			using (new SessionScope(FlushAction.Never))
-			{
+			using (new SessionScope(FlushAction.Never)) {
 				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
 				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
 				var exclude = exlcudes.Single();
-				Assert.That(exclude.OriginalSynonym, Is.Not.Null);				
+				Assert.That(exclude.OriginalSynonym, Is.Not.Null);
 			}
 		}
 
@@ -385,7 +363,7 @@ namespace UEEditor.Tests
 
 		private void Load()
 		{
-			With.Connection(c => { 
+			With.Connection(c => {
 				var commandHelper = new CommandHelper(new MySqlCommand(@"SELECT RowID As UERowID,
 				  Name1 As UEName1, 
 				  FirmCr As UEFirmCr, 
@@ -410,24 +388,22 @@ namespace UEEditor.Tests
 				  FROM farm.UnrecExp 
 					left join Catalogs.Products p on p.Id = PriorProductId
                     left join Catalogs.Catalog c on p.CatalogId = c.Id
-				  WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1",c));
+				  WHERE PriceItemId= ?LockedPriceItemId ORDER BY Name1", c));
 				commandHelper.AddParameter("?LockedPriceItemId", price.Costs.First().PriceItem.Id);
-				
+
 
 				var set = new DataSet();
 				commandHelper.Fill(set, "Data");
 				data = set.Tables[0];
 				if (!data.Columns.Contains("SynonymObject"))
-					data.Columns.Add("SynonymObject", typeof (object));
+					data.Columns.Add("SynonymObject", typeof(object));
 			});
 		}
 
 		private void Save()
 		{
 			var updater = new Updater(price.Id, price.Id, price.Costs.First().PriceItem.Id, null, resolver);
-			With.Connection(c => {
-				updater.ApplyChanges(c, new FakeNotifier(), data.Rows.Cast<DataRow>().ToList());
-			});
+			With.Connection(c => { updater.ApplyChanges(c, new FakeNotifier(), data.Rows.Cast<DataRow>().ToList()); });
 		}
 
 		private void Resolve(TestUnrecExp expression, TestProduct product)

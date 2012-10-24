@@ -24,32 +24,27 @@ namespace UEEditor
 
 		public frmProgress()
 		{
-			//
 			// Required for Windows Form Designer support
-			//
 			InitializeComponent();
 
-			//
 			// TODO: Add any constructor code after InitializeComponent call
-			//
 		}
 
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
-		protected override void Dispose( bool disposing )
+		protected override void Dispose(bool disposing)
 		{
-			if( disposing )
-			{
-				if(components != null)
-				{
+			if (disposing) {
+				if (components != null) {
 					components.Dispose();
 				}
 			}
-			base.Dispose( disposing );
+			base.Dispose(disposing);
 		}
 
 		#region Windows Form Designer generated code
+
 		/// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
@@ -147,11 +142,11 @@ namespace UEEditor
 			((System.ComponentModel.ISupportInitialize)(this.timerProgress)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
-
 		}
+
 		#endregion
 
-    	private void timerProgress_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		private void timerProgress_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			Progress.Value = ApplyProgress;
 			label1.Text = Status;
@@ -164,6 +159,6 @@ namespace UEEditor
 
 		public string Error { get; set; }
 
-		public int ApplyProgress{ get; set; }
+		public int ApplyProgress { get; set; }
 	}
 }
