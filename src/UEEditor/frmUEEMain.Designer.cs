@@ -383,9 +383,9 @@ namespace UEEditor
 			((System.ComponentModel.ISupportInitialize)(this.ForbGridControl)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gvForb)).BeginInit();
 			this.SuspendLayout();
-			// 
+			//
 			// gvCatForm
-			// 
+			//
 			this.gvCatForm.Appearance.HideSelectionRow.Options.UseBackColor = true;
 			this.gvCatForm.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colFForm});
@@ -405,14 +405,14 @@ namespace UEEditor
 			this.gvCatForm.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvCatForm_CustomDrawRowIndicator);
 			this.gvCatForm.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvCatForm_RowStyle);
 			this.gvCatForm.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
-			// 
+			//
 			// colFForm
-			// 
+			//
 			this.colFForm.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.colFForm.AppearanceCell.Options.UseFont = true;
 			this.colFForm.AppearanceHeader.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.colFForm.AppearanceHeader.Options.UseFont = true;
-			this.colFForm.Caption = "Форма выпуска";
+			this.colFForm.Caption = "Р¤РѕСЂРјР° РІС‹РїСѓСЃРєР°";
 			this.colFForm.FieldName = "Form";
 			this.colFForm.Name = "colFForm";
 			this.colFForm.OptionsColumn.ReadOnly = true;
@@ -450,9 +450,9 @@ namespace UEEditor
             this.gvProducts,
             this.gvCatForm});
 			this.CatalogGridControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatalogGridControl_KeyDown);
-			// 
+			//
 			// dsMain
-			// 
+			//
 			this.dsMain.DataSetName = "NewDataSet";
 			this.dsMain.Locale = new System.Globalization.CultureInfo("ru-RU");
 			this.dsMain.Relations.AddRange(new System.Data.DataRelation[] {
@@ -473,9 +473,9 @@ namespace UEEditor
             this.dtCatalogNames,
             this.dtCatalog,
             this.dtProducts});
-			// 
+			//
 			// dtJobs
-			// 
+			//
 			this.dtJobs.Columns.AddRange(new System.Data.DataColumn[] {
             this.JPriceItemId,
             this.JPriceCode,
@@ -502,78 +502,78 @@ namespace UEEditor
 			//
 			// JPriceCode
 			//
-			this.JPriceCode.Caption = "Код прайса";
+			this.JPriceCode.Caption = "РљРѕРґ РїСЂР°Р№СЃР°";
 			this.JPriceCode.ColumnName = "JPriceCode";
 			this.JPriceCode.DataType = typeof(long);
 			this.JPriceCode.Namespace = "";
-			// 
+			//
 			// JName
-			// 
-			this.JName.Caption = "Фирмы (прайс-лист)";
+			//
+			this.JName.Caption = "Р¤РёСЂРјС‹ (РїСЂР°Р№СЃ-Р»РёСЃС‚)";
 			this.JName.ColumnName = "JName";
-			// 
+			//
 			// JRegion
-			// 
-			this.JRegion.Caption = "Регион";
+			//
+			this.JRegion.Caption = "Р РµРіРёРѕРЅ";
 			this.JRegion.ColumnName = "JRegion";
-			// 
+			//
 			// JPos
-			// 
-			this.JPos.Caption = "Всего";
+			//
+			this.JPos.Caption = "Р’СЃРµРіРѕ";
 			this.JPos.ColumnName = "JPos";
 			this.JPos.DataType = typeof(long);
-			// 
+			//
 			// JNamePos
-			// 
-			this.JNamePos.Caption = "Строго";
+			//
+			this.JNamePos.Caption = "РЎС‚СЂРѕРіРѕ";
 			this.JNamePos.ColumnName = "JNamePos";
 			this.JNamePos.DataType = typeof(long);
-			// 
+			//
 			// JJobDate
-			// 
-			this.JJobDate.Caption = "Дата задания";
+			//
+			this.JJobDate.Caption = "Р”Р°С‚Р° Р·Р°РґР°РЅРёСЏ";
 			this.JJobDate.ColumnName = "JJobDate";
 			this.JJobDate.DataType = typeof(System.DateTime);
-			// 
+			//
 			// JBlockBy
-			// 
-			this.JBlockBy.Caption = "Блокировано";
+			//
+			this.JBlockBy.Caption = "Р‘Р»РѕРєРёСЂРѕРІР°РЅРѕ";
 			this.JBlockBy.ColumnName = "JBlockBy";
-			// 
+			//
 			// JParentSynonym
-			// 
+			//
 			this.JParentSynonym.ColumnName = "JParentSynonym";
 			this.JParentSynonym.DataType = typeof(long);
-			// 
+			//
 			// JPriceFMT
-			// 
+			//
 			this.JPriceFMT.ColumnName = "JPriceFMT";
-			// 
+			//
 			// JNeedRetrans
-			// 
+			//
 			this.JNeedRetrans.ColumnName = "JNeedRetrans";
 			this.JNeedRetrans.DataType = typeof(int);
-			// 
+			//
 			// JRetranced
-			// 
+			//
 			this.JRetranced.ColumnName = "JRetranced";
 			this.JRetranced.DataType = typeof(int);
-			// 
+			//
 			// JParentName
-			// 
+			//
 			this.JParentName.ColumnName = "JParentName";
-			// 
+			//
 			// JExt
-			// 
+			//
 			this.JExt.ColumnName = "JExt";
-			// 
+			//
 			// JFirmCode
-			// 
+			//
 			this.JFirmCode.ColumnName = "JFirmCode";
 			this.JFirmCode.DataType = typeof(long);
-			// 
+			//
 			// dtUnrecExp
-			// 
+			//
 			this.dtUnrecExp.Columns.AddRange(new System.Data.DataColumn[] {
             this.EUColumn1,
             this.UEColumn2,
@@ -595,106 +595,106 @@ namespace UEEditor
             this.UEProductSynonymId,
             this.UEProducerSynonymId});
 			this.dtUnrecExp.TableName = "UnrecExpGrid";
-			// 
+			//
 			// EUColumn1
-			// 
+			//
 			this.EUColumn1.Caption = "";
 			this.EUColumn1.ColumnName = "UEColumn1";
 			this.EUColumn1.DefaultValue = "";
-			// 
+			//
 			// UEColumn2
-			// 
+			//
 			this.UEColumn2.Caption = "";
 			this.UEColumn2.ColumnName = "UEColumn2";
-			// 
+			//
 			// UECode
-			// 
-			this.UECode.Caption = "Код";
+			//
+			this.UECode.Caption = "РљРѕРґ";
 			this.UECode.ColumnName = "UECode";
-			// 
+			//
 			// UECodeCr
-			// 
-			this.UECodeCr.Caption = "Код производителя";
+			//
+			this.UECodeCr.Caption = "РљРѕРґ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ";
 			this.UECodeCr.ColumnName = "UECodeCr";
-			// 
+			//
 			// UEName1
-			// 
-			this.UEName1.Caption = "Наименование";
+			//
+			this.UEName1.Caption = "РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			this.UEName1.ColumnName = "UEName1";
-			// 
+			//
 			// UEFirmCr
-			// 
-			this.UEFirmCr.Caption = "Производитель";
+			//
+			this.UEFirmCr.Caption = "РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ";
 			this.UEFirmCr.ColumnName = "UEFirmCr";
-			// 
+			//
 			// UEUnit
-			// 
-			this.UEUnit.Caption = "Ед. измерения";
+			//
+			this.UEUnit.Caption = "Р•Рґ. РёР·РјРµСЂРµРЅРёСЏ";
 			this.UEUnit.ColumnName = "UEUnit";
-			// 
+			//
 			// UEVolume
-			// 
-			this.UEVolume.Caption = "Цех. уп.";
+			//
+			this.UEVolume.Caption = "Р¦РµС…. СѓРї.";
 			this.UEVolume.ColumnName = "UEVolume";
-			// 
+			//
 			// UEQuantity
-			// 
-			this.UEQuantity.Caption = "Количество";
+			//
+			this.UEQuantity.Caption = "РљРѕР»РёС‡РµСЃС‚РІРѕ";
 			this.UEQuantity.ColumnName = "UEQuantity";
-			// 
+			//
 			// UEPeriod
-			// 
-			this.UEPeriod.Caption = "Срок годности";
+			//
+			this.UEPeriod.Caption = "РЎСЂРѕРє РіРѕРґРЅРѕСЃС‚Рё";
 			this.UEPeriod.ColumnName = "UEPeriod";
-			// 
+			//
 			// UEJunk
-			// 
-			this.UEJunk.Caption = "Просроченный";
+			//
+			this.UEJunk.Caption = "РџСЂРѕСЃСЂРѕС‡РµРЅРЅС‹Р№";
 			this.UEJunk.ColumnName = "UEJunk";
 			this.UEJunk.DataType = typeof(byte);
-			// 
+			//
 			// UEStatus
-			// 
+			//
 			this.UEStatus.ColumnName = "UEStatus";
 			this.UEStatus.DataType = typeof(int);
-			// 
+			//
 			// UEPriorProductId
-			// 
+			//
 			this.UEPriorProductId.ColumnName = "UEPriorProductId";
 			this.UEPriorProductId.DataType = typeof(long);
-			// 
+			//
 			// UEPriorProducerId
-			// 
+			//
 			this.UEPriorProducerId.ColumnName = "UEPriorProducerId";
 			this.UEPriorProducerId.DataType = typeof(long);
-			// 
+			//
 			// UEAlready
-			// 
+			//
 			this.UEAlready.ColumnName = "UEAlready";
 			this.UEAlready.DataType = typeof(int);
-			// 
+			//
 			// UERowID
-			// 
+			//
 			this.UERowID.ColumnName = "UERowID";
 			this.UERowID.DataType = typeof(long);
-			// 
+			//
 			// UEHandMade
-			// 
+			//
 			this.UEHandMade.ColumnName = "UEHandMade";
 			this.UEHandMade.DataType = typeof(byte);
-			// 
+			//
 			// UEProductSynonymId
-			// 
+			//
 			this.UEProductSynonymId.ColumnName = "UEProductSynonymId";
 			this.UEProductSynonymId.DataType = typeof(long);
-			// 
+			//
 			// UEProducerSynonymId
-			// 
+			//
 			this.UEProducerSynonymId.ColumnName = "UEProducerSynonymId";
 			this.UEProducerSynonymId.DataType = typeof(long);
-			// 
+			//
 			// dtZero
-			// 
+			//
 			this.dtZero.Columns.AddRange(new System.Data.DataColumn[] {
             this.ZCode,
             this.ZCodeCr,
@@ -706,93 +706,93 @@ namespace UEEditor
             this.ZPeriod,
             this.ZJunk});
 			this.dtZero.TableName = "ZeroGrid";
-			// 
+			//
 			// ZCode
-			// 
+			//
 			this.ZCode.ColumnName = "ZCode";
-			// 
+			//
 			// ZCodeCr
-			// 
+			//
 			this.ZCodeCr.ColumnName = "ZCodeCr";
-			// 
+			//
 			// ZName
-			// 
+			//
 			this.ZName.ColumnName = "ZName";
-			// 
+			//
 			// ZFirmCr
-			// 
+			//
 			this.ZFirmCr.ColumnName = "ZFirmCr";
-			// 
+			//
 			// ZUnit
-			// 
+			//
 			this.ZUnit.ColumnName = "ZUnit";
-			// 
+			//
 			// ZVolume
-			// 
+			//
 			this.ZVolume.ColumnName = "ZVolume";
-			// 
+			//
 			// ZQuantity
-			// 
+			//
 			this.ZQuantity.ColumnName = "ZQuantity";
-			// 
+			//
 			// ZPeriod
-			// 
+			//
 			this.ZPeriod.ColumnName = "ZPeriod";
-			// 
+			//
 			// ZJunk
-			// 
+			//
 			this.ZJunk.ColumnName = "ZJunk";
 			this.ZJunk.DataType = typeof(byte);
-			// 
+			//
 			// dtForb
-			// 
+			//
 			this.dtForb.Columns.AddRange(new System.Data.DataColumn[] {
             this.FForb});
 			this.dtForb.TableName = "ForbGrid";
-			// 
+			//
 			// FForb
-			// 
+			//
 			this.FForb.ColumnName = "FForb";
-			// 
+			//
 			// dtRegions
-			// 
+			//
 			this.dtRegions.Columns.AddRange(new System.Data.DataColumn[] {
             this.RRegion});
 			this.dtRegions.TableName = "RegionsGrid";
-			// 
+			//
 			// RRegion
-			// 
+			//
 			this.RRegion.ColumnName = "RRegion";
-			// 
+			//
 			// dtCatalogFirmCr
-			// 
+			//
 			this.dtCatalogFirmCr.Columns.AddRange(new System.Data.DataColumn[] {
             this.CCodeFirmCr,
             this.CFirmCr});
 			this.dtCatalogFirmCr.TableName = "CatalogFirmCrGrid";
-			// 
+			//
 			// CCodeFirmCr
-			// 
+			//
 			this.CCodeFirmCr.AllowDBNull = false;
 			this.CCodeFirmCr.ColumnName = "CCode";
 			this.CCodeFirmCr.DataType = typeof(long);
-			// 
+			//
 			// CFirmCr
-			// 
+			//
 			this.CFirmCr.ColumnName = "CName";
-			// 
+			//
 			// dtSections
-			// 
+			//
 			this.dtSections.Columns.AddRange(new System.Data.DataColumn[] {
             this.SSection});
 			this.dtSections.TableName = "SectionsGrid";
-			// 
+			//
 			// SSection
-			// 
+			//
 			this.SSection.ColumnName = "SSection";
-			// 
+			//
 			// dtCatalogNames
-			// 
+			//
 			this.dtCatalogNames.Columns.AddRange(new System.Data.DataColumn[] {
             this.colCatalogNameID,
             this.colCatalogNameName});
@@ -800,18 +800,18 @@ namespace UEEditor
             new System.Data.UniqueConstraint("Constraint1", new string[] {
                         "ID"}, false)});
 			this.dtCatalogNames.TableName = "dtCatalogNames";
-			// 
+			//
 			// colCatalogNameID
-			// 
+			//
 			this.colCatalogNameID.ColumnName = "ID";
 			this.colCatalogNameID.DataType = typeof(ulong);
-			// 
+			//
 			// colCatalogNameName
-			// 
+			//
 			this.colCatalogNameName.ColumnName = "Name";
-			// 
+			//
 			// dtCatalog
-			// 
+			//
 			this.dtCatalog.Columns.AddRange(new System.Data.DataColumn[] {
             this.colCatalogID,
             this.colCatalog_NameID,
@@ -825,33 +825,33 @@ namespace UEEditor
             new System.Data.UniqueConstraint("Constraint1", new string[] {
                         "ID"}, false)});
 			this.dtCatalog.TableName = "dtCatalog";
-			// 
+			//
 			// colCatalogID
-			// 
+			//
 			this.colCatalogID.ColumnName = "ID";
 			this.colCatalogID.DataType = typeof(ulong);
-			// 
+			//
 			// colCatalog_NameID
-			// 
+			//
 			this.colCatalog_NameID.ColumnName = "NameID";
 			this.colCatalog_NameID.DataType = typeof(ulong);
-			// 
+			//
 			// colCatalog_FormId
-			// 
+			//
 			this.colCatalog_FormId.ColumnName = "FormId";
 			this.colCatalog_FormId.DataType = typeof(ulong);
-			// 
+			//
 			// colCatalogForm
-			// 
+			//
 			this.colCatalogForm.ColumnName = "Form";
-			// 
+			//
 			// colCatalogProductsCount
-			// 
+			//
 			this.colCatalogProductsCount.ColumnName = "ProductsCount";
 			this.colCatalogProductsCount.DataType = typeof(long);
-			// 
+			//
 			// dtProducts
-			// 
+			//
 			this.dtProducts.Columns.AddRange(new System.Data.DataColumn[] {
             this.colProductId,
             this.colProductCatalogId,
@@ -861,23 +861,23 @@ namespace UEEditor
                         "ID"}, new string[] {
                         "CatalogId"}, System.Data.AcceptRejectRule.None, System.Data.Rule.Cascade, System.Data.Rule.Cascade)});
 			this.dtProducts.TableName = "dtProducts";
-			// 
+			//
 			// colProductId
-			// 
+			//
 			this.colProductId.ColumnName = "ID";
 			this.colProductId.DataType = typeof(ulong);
-			// 
+			//
 			// colProductCatalogId
-			// 
+			//
 			this.colProductCatalogId.ColumnName = "CatalogId";
 			this.colProductCatalogId.DataType = typeof(ulong);
-			// 
+			//
 			// colProductProperties
-			// 
+			//
 			this.colProductProperties.ColumnName = "Properties";
-			// 
+			//
 			// gvCatalog
-			// 
+			//
 			this.gvCatalog.Appearance.HideSelectionRow.Options.UseBackColor = true;
 			this.gvCatalog.ChildGridLevelName = "gvCatForm";
 			this.gvCatalog.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
@@ -895,20 +895,20 @@ namespace UEEditor
 			this.gvCatalog.OptionsView.ShowFilterPanelMode = DevExpress.XtraGrid.Views.Base.ShowFilterPanelMode.Never;
 			this.gvCatalog.OptionsView.ShowGroupPanel = false;
 			this.gvCatalog.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
-			// 
+			//
 			// colCName
-			// 
+			//
 			this.colCName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.colCName.AppearanceCell.Options.UseFont = true;
-			this.colCName.Caption = "Наименование";
+			this.colCName.Caption = "РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			this.colCName.FieldName = "Name";
 			this.colCName.Name = "colCName";
 			this.colCName.OptionsColumn.ReadOnly = true;
 			this.colCName.Visible = true;
 			this.colCName.VisibleIndex = 0;
-			// 
+			//
 			// gvProducts
-			// 
+			//
 			this.gvProducts.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colProperties});
 			this.gvProducts.GridControl = this.CatalogGridControl;
@@ -924,28 +924,28 @@ namespace UEEditor
 			this.gvProducts.OptionsView.ShowGroupPanel = false;
 			this.gvProducts.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
 			this.gvProducts.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvProducts_CustomColumnDisplayText);
-			// 
+			//
 			// colProperties
-			// 
+			//
 			this.colProperties.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
 			this.colProperties.AppearanceCell.Options.UseFont = true;
 			this.colProperties.AppearanceHeader.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
 			this.colProperties.AppearanceHeader.Options.UseFont = true;
-			this.colProperties.Caption = "Свойства";
+			this.colProperties.Caption = "РЎРІРѕР№СЃС‚РІР°";
 			this.colProperties.FieldName = "Properties";
 			this.colProperties.Name = "colProperties";
 			this.colProperties.OptionsColumn.ReadOnly = true;
 			this.colProperties.Visible = true;
 			this.colProperties.VisibleIndex = 0;
-			// 
+			//
 			// statusBarPanel1
-			// 
+			//
 			this.statusBarPanel1.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
 			this.statusBarPanel1.Name = "statusBarPanel1";
 			this.statusBarPanel1.Width = 234;
-			// 
+			//
 			// statusBar1
-			// 
+			//
 			this.statusBar1.Location = new System.Drawing.Point(0, 731);
 			this.statusBar1.Name = "statusBar1";
 			this.statusBar1.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
@@ -956,30 +956,30 @@ namespace UEEditor
 			this.statusBar1.Size = new System.Drawing.Size(720, 22);
 			this.statusBar1.TabIndex = 1;
 			this.statusBar1.Text = "statusBar1";
-			// 
+			//
 			// sbpAll
-			// 
+			//
 			this.sbpAll.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
 			this.sbpAll.Name = "sbpAll";
 			this.sbpAll.Width = 234;
-			// 
+			//
 			// sbpCurrent
-			// 
+			//
 			this.sbpCurrent.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
 			this.sbpCurrent.Name = "sbpCurrent";
 			this.sbpCurrent.Width = 234;
-			// 
+			//
 			// panel3
-			// 
+			//
 			this.panel3.Controls.Add(this.tcMain);
 			this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel3.Location = new System.Drawing.Point(0, 0);
 			this.panel3.Name = "panel3";
 			this.panel3.Size = new System.Drawing.Size(720, 731);
 			this.panel3.TabIndex = 2;
-			// 
+			//
 			// tcMain
-			// 
+			//
 			this.tcMain.Controls.Add(this.tpJobs);
 			this.tcMain.Controls.Add(this.tpUnrecExp);
 			this.tcMain.Controls.Add(this.tpZero);
@@ -991,18 +991,18 @@ namespace UEEditor
 			this.tcMain.Size = new System.Drawing.Size(720, 731);
 			this.tcMain.TabIndex = 0;
 			this.tcMain.SelectedIndexChanged += new System.EventHandler(this.tcMain_SelectedIndexChanged);
-			// 
+			//
 			// tpJobs
-			// 
+			//
 			this.tpJobs.Controls.Add(this.pnlCenter1);
 			this.tpJobs.Location = new System.Drawing.Point(4, 22);
 			this.tpJobs.Name = "tpJobs";
 			this.tpJobs.Size = new System.Drawing.Size(712, 705);
 			this.tpJobs.TabIndex = 0;
-			this.tpJobs.Text = "Задания";
-			// 
+			this.tpJobs.Text = "Р—Р°РґР°РЅРёСЏ";
+			//
 			// pnlCenter1
-			// 
+			//
 			this.pnlCenter1.Controls.Add(this.pnlTop1);
 			this.pnlCenter1.Controls.Add(this.pnlWithButton1);
 			this.pnlCenter1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1010,9 +1010,9 @@ namespace UEEditor
 			this.pnlCenter1.Name = "pnlCenter1";
 			this.pnlCenter1.Size = new System.Drawing.Size(712, 705);
 			this.pnlCenter1.TabIndex = 5;
-			// 
+			//
 			// pnlTop1
-			// 
+			//
 			this.pnlTop1.Controls.Add(this.JobsGridControl);
 			this.pnlTop1.Controls.Add(this.groupBox1);
 			this.pnlTop1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1021,9 +1021,9 @@ namespace UEEditor
 			this.pnlTop1.Size = new System.Drawing.Size(712, 681);
 			this.pnlTop1.TabIndex = 1;
 			this.pnlTop1.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlTop1_Paint);
-			// 
+			//
 			// JobsGridControl
-			// 
+			//
 			this.JobsGridControl.DataMember = "JobsGrid";
 			this.JobsGridControl.DataSource = this.dsMain;
 			this.JobsGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1042,9 +1042,9 @@ namespace UEEditor
             this.gvJobs});
 			this.JobsGridControl.DoubleClick += new System.EventHandler(this.JobsGridControl_DoubleClick);
 			this.JobsGridControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.JobsGridControl_KeyDown);
-			// 
+			//
 			// gvJobs
-			// 
+			//
 			this.gvJobs.Appearance.FocusedCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
 			this.gvJobs.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colJName,
@@ -1067,12 +1067,12 @@ namespace UEEditor
 			this.gvJobs.OptionsView.ShowGroupPanel = false;
 			this.gvJobs.CustomDrawRowIndicator += new DevExpress.XtraGrid.Views.Grid.RowIndicatorCustomDrawEventHandler(this.gvJobs_CustomDrawRowIndicator);
 			this.gvJobs.RowStyle += new DevExpress.XtraGrid.Views.Grid.RowStyleEventHandler(this.gvJobs_RowStyle);
-			// 
+			//
 			// colJName
-			// 
+			//
 			this.colJName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.colJName.AppearanceCell.Options.UseFont = true;
-			this.colJName.Caption = "Фирма (прайс-лист)";
+			this.colJName.Caption = "Р¤РёСЂРјР° (РїСЂР°Р№СЃ-Р»РёСЃС‚)";
 			this.colJName.FieldName = "JName";
 			this.colJName.Name = "colJName";
 			this.colJName.OptionsColumn.AllowEdit = false;
@@ -1080,10 +1080,10 @@ namespace UEEditor
 			this.colJName.Visible = true;
 			this.colJName.VisibleIndex = 0;
 			this.colJName.Width = 52;
-			// 
+			//
 			// colJParentName
-			// 
-			this.colJParentName.Caption = "Родитель";
+			//
+			this.colJParentName.Caption = "Р РѕРґРёС‚РµР»СЊ";
 			this.colJParentName.FieldName = "JParentName";
 			this.colJParentName.Name = "colJParentName";
 			this.colJParentName.OptionsColumn.AllowEdit = false;
@@ -1093,10 +1093,10 @@ namespace UEEditor
 			this.colJParentName.Visible = true;
 			this.colJParentName.VisibleIndex = 1;
 			this.colJParentName.Width = 52;
-			// 
+			//
 			// colJRegion
-			// 
-			this.colJRegion.Caption = "Регион";
+			//
+			this.colJRegion.Caption = "Р РµРіРёРѕРЅ";
 			this.colJRegion.FieldName = "JRegion";
 			this.colJRegion.Name = "colJRegion";
 			this.colJRegion.OptionsColumn.AllowEdit = false;
@@ -1106,10 +1106,10 @@ namespace UEEditor
 			this.colJRegion.Visible = true;
 			this.colJRegion.VisibleIndex = 2;
 			this.colJRegion.Width = 52;
-			// 
+			//
 			// colJPos
-			// 
-			this.colJPos.Caption = "Всего";
+			//
+			this.colJPos.Caption = "Р’СЃРµРіРѕ";
 			this.colJPos.FieldName = "JPos";
 			this.colJPos.Name = "colJPos";
 			this.colJPos.OptionsColumn.AllowEdit = false;
@@ -1119,10 +1119,10 @@ namespace UEEditor
 			this.colJPos.Visible = true;
 			this.colJPos.VisibleIndex = 3;
 			this.colJPos.Width = 56;
-			// 
+			//
 			// colJNamePos
-			// 
-			this.colJNamePos.Caption = "Строго";
+			//
+			this.colJNamePos.Caption = "РЎС‚СЂРѕРіРѕ";
 			this.colJNamePos.FieldName = "JNamePos";
 			this.colJNamePos.Name = "colJNamePos";
 			this.colJNamePos.OptionsColumn.AllowEdit = false;
@@ -1132,10 +1132,10 @@ namespace UEEditor
 			this.colJNamePos.Visible = true;
 			this.colJNamePos.VisibleIndex = 4;
 			this.colJNamePos.Width = 64;
-			// 
+			//
 			// colJJobDate
-			// 
-			this.colJJobDate.Caption = "Дата задания";
+			//
+			this.colJJobDate.Caption = "Р”Р°С‚Р° Р·Р°РґР°РЅРёСЏ";
 			this.colJJobDate.DisplayFormat.FormatString = "dd.MM.yyyy HH.mm.ss";
 			this.colJJobDate.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
 			this.colJJobDate.FieldName = "JJobDate";
@@ -1148,10 +1148,10 @@ namespace UEEditor
 			this.colJJobDate.Visible = true;
 			this.colJJobDate.VisibleIndex = 5;
 			this.colJJobDate.Width = 121;
-			// 
+			//
 			// colJBlockBy
-			// 
-			this.colJBlockBy.Caption = "Блокировано";
+			//
+			this.colJBlockBy.Caption = "Р‘Р»РѕРєРёСЂРѕРІР°РЅРѕ";
 			this.colJBlockBy.FieldName = "JBlockBy";
 			this.colJBlockBy.Name = "colJBlockBy";
 			this.colJBlockBy.OptionsColumn.AllowEdit = false;
@@ -1161,15 +1161,15 @@ namespace UEEditor
 			this.colJBlockBy.Visible = true;
 			this.colJBlockBy.VisibleIndex = 6;
 			this.colJBlockBy.Width = 38;
-			// 
+			//
 			// imageList1
-			// 
+			//
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this.imageList1.TransparentColor = System.Drawing.Color.Silver;
 			this.imageList1.Images.SetKeyName(0, "");
-			// 
+			//
 			// groupBox1
-			// 
+			//
 			this.groupBox1.Controls.Add(this.btnJobs50);
 			this.groupBox1.Controls.Add(this.btnJobsNamePos);
 			this.groupBox1.Controls.Add(this.btnJobsBlock);
@@ -1182,10 +1182,10 @@ namespace UEEditor
 			this.groupBox1.Size = new System.Drawing.Size(120, 681);
 			this.groupBox1.TabIndex = 3;
 			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Легенда";
-			// 
+			this.groupBox1.Text = "Р›РµРіРµРЅРґР°";
+			//
 			// btnJobs50
-			// 
+			//
 			this.btnJobs50.BackColor = System.Drawing.Color.NavajoWhite;
 			this.btnJobs50.Location = new System.Drawing.Point(8, 160);
 			this.btnJobs50.Name = "btnJobs50";
@@ -1193,9 +1193,9 @@ namespace UEEditor
 			this.btnJobs50.TabIndex = 19;
 			this.btnJobs50.UseVisualStyleBackColor = false;
 			this.btnJobs50.Click += new System.EventHandler(this.lbColorChange);
-			// 
+			//
 			// btnJobsNamePos
-			// 
+			//
 			this.btnJobsNamePos.BackColor = System.Drawing.Color.Coral;
 			this.btnJobsNamePos.Location = new System.Drawing.Point(8, 88);
 			this.btnJobsNamePos.Name = "btnJobsNamePos";
@@ -1203,9 +1203,9 @@ namespace UEEditor
 			this.btnJobsNamePos.TabIndex = 18;
 			this.btnJobsNamePos.UseVisualStyleBackColor = false;
 			this.btnJobsNamePos.Click += new System.EventHandler(this.lbColorChange);
-			// 
+			//
 			// btnJobsBlock
-			// 
+			//
 			this.btnJobsBlock.BackColor = System.Drawing.Color.OrangeRed;
 			this.btnJobsBlock.Location = new System.Drawing.Point(8, 24);
 			this.btnJobsBlock.Name = "btnJobsBlock";
@@ -1213,42 +1213,42 @@ namespace UEEditor
 			this.btnJobsBlock.TabIndex = 17;
 			this.btnJobsBlock.UseVisualStyleBackColor = false;
 			this.btnJobsBlock.Click += new System.EventHandler(this.lbColorChange);
-			// 
+			//
 			// lbJobs50Text
-			// 
+			//
 			this.lbJobs50Text.Location = new System.Drawing.Point(8, 176);
 			this.lbJobs50Text.Name = "lbJobs50Text";
 			this.lbJobs50Text.Size = new System.Drawing.Size(104, 56);
 			this.lbJobs50Text.TabIndex = 6;
-			this.lbJobs50Text.Text = "Процент позиций,  нераспознанных по наименованию меньше 50";
-			// 
+			this.lbJobs50Text.Text = "РџСЂРѕС†РµРЅС‚ РїРѕР·РёС†РёР№,  РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ РјРµРЅСЊС€Рµ 50";
+			//
 			// lbJobsNamePosText
-			// 
+			//
 			this.lbJobsNamePosText.Location = new System.Drawing.Point(8, 104);
 			this.lbJobsNamePosText.Name = "lbJobsNamePosText";
 			this.lbJobsNamePosText.Size = new System.Drawing.Size(104, 40);
 			this.lbJobsNamePosText.TabIndex = 5;
-			this.lbJobsNamePosText.Text = "Нет позиций нерапознанных по наименованию";
-			// 
+			this.lbJobsNamePosText.Text = "РќРµС‚ РїРѕР·РёС†РёР№ РЅРµСЂР°РїРѕР·РЅР°РЅРЅС‹С… РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ";
+			//
 			// lbJobsBlockText
-			// 
+			//
 			this.lbJobsBlockText.Location = new System.Drawing.Point(8, 40);
 			this.lbJobsBlockText.Name = "lbJobsBlockText";
 			this.lbJobsBlockText.Size = new System.Drawing.Size(80, 40);
 			this.lbJobsBlockText.TabIndex = 4;
-			this.lbJobsBlockText.Text = "Прайс-лист заблокирован оператором";
-			// 
+			this.lbJobsBlockText.Text = "РџСЂР°Р№СЃ-Р»РёСЃС‚ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ РѕРїРµСЂР°С‚РѕСЂРѕРј";
+			//
 			// pnlWithButton1
-			// 
+			//
 			this.pnlWithButton1.Controls.Add(this.btnDelJob);
 			this.pnlWithButton1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.pnlWithButton1.Location = new System.Drawing.Point(0, 681);
 			this.pnlWithButton1.Name = "pnlWithButton1";
 			this.pnlWithButton1.Size = new System.Drawing.Size(712, 24);
 			this.pnlWithButton1.TabIndex = 0;
-			// 
+			//
 			// btnDelJob
-			// 
+			//
 			this.btnDelJob.BackColor = System.Drawing.SystemColors.Control;
 			this.btnDelJob.Dock = System.Windows.Forms.DockStyle.Right;
 			this.btnDelJob.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1258,12 +1258,12 @@ namespace UEEditor
 			this.btnDelJob.Name = "btnDelJob";
 			this.btnDelJob.Size = new System.Drawing.Size(184, 24);
 			this.btnDelJob.TabIndex = 6;
-			this.btnDelJob.Text = "Удалить ЗАДАНИЕ";
+			this.btnDelJob.Text = "РЈРґР°Р»РёС‚СЊ Р—РђР”РђРќРР•";
 			this.btnDelJob.UseVisualStyleBackColor = false;
 			this.btnDelJob.Click += new System.EventHandler(this.btnDelJob_Click);
-			// 
+			//
 			// imageList2
-			// 
+			//
 			this.imageList2.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList2.ImageStream")));
 			this.imageList2.TransparentColor = System.Drawing.SystemColors.Control;
 			this.imageList2.Images.SetKeyName(0, "");
@@ -1271,9 +1271,9 @@ namespace UEEditor
 			this.imageList2.Images.SetKeyName(2, "");
 			this.imageList2.Images.SetKeyName(3, "");
 			this.imageList2.Images.SetKeyName(4, "");
-			// 
+			//
 			// tpUnrecExp
-			// 
+			//
 			this.tpUnrecExp.ContextMenu = this.cmUnrecExp;
 			this.tpUnrecExp.Controls.Add(this.pnlBottom2);
 			this.tpUnrecExp.Controls.Add(this.pnlCenter2);
@@ -1282,38 +1282,38 @@ namespace UEEditor
 			this.tpUnrecExp.Name = "tpUnrecExp";
 			this.tpUnrecExp.Size = new System.Drawing.Size(712, 705);
 			this.tpUnrecExp.TabIndex = 1;
-			this.tpUnrecExp.Text = "Нераспознанные";
+			this.tpUnrecExp.Text = "РќРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹Рµ";
 			this.tpUnrecExp.Visible = false;
-			// 
+			//
 			// cmUnrecExp
-			// 
+			//
 			this.cmUnrecExp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miSendAboutNames,
             this.miSendAboutFirmCr});
-			// 
+			//
 			// miSendAboutNames
-			// 
+			//
 			this.miSendAboutNames.Index = 0;
-			this.miSendAboutNames.Text = "Отправить письмо о наименованиях";
+			this.miSendAboutNames.Text = "РћС‚РїСЂР°РІРёС‚СЊ РїРёСЃСЊРјРѕ Рѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏС…";
 			this.miSendAboutNames.Click += new System.EventHandler(this.miSendAboutNames_Click);
-			// 
+			//
 			// miSendAboutFirmCr
-			// 
+			//
 			this.miSendAboutFirmCr.Index = 1;
-			this.miSendAboutFirmCr.Text = "Отправить письмо о производителях";
+			this.miSendAboutFirmCr.Text = "РћС‚РїСЂР°РІРёС‚СЊ РїРёСЃСЊРјРѕ Рѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏС…";
 			this.miSendAboutFirmCr.Click += new System.EventHandler(this.miSendAboutFirmCr_Click);
-			// 
+			//
 			// pnlBottom2
-			// 
+			//
 			this.pnlBottom2.Controls.Add(this.UnrecExpGridControl);
 			this.pnlBottom2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlBottom2.Location = new System.Drawing.Point(0, 280);
 			this.pnlBottom2.Name = "pnlBottom2";
 			this.pnlBottom2.Size = new System.Drawing.Size(712, 425);
 			this.pnlBottom2.TabIndex = 7;
-			// 
+			//
 			// UnrecExpGridControl
-			// 
+			//
 			this.UnrecExpGridControl.DataSource = this.dtUnrecExp;
 			this.UnrecExpGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			//
@@ -1331,9 +1331,9 @@ namespace UEEditor
             this.gvUnrecExp});
 			this.UnrecExpGridControl.Click += new System.EventHandler(this.UnrecExpGridControl_Click);
 			this.UnrecExpGridControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.UnrecExpGridControl_KeyDown);
-			// 
+			//
 			// gvUnrecExp
-			// 
+			//
 			this.gvUnrecExp.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colUEColumn1,
             this.colUEColumn2,
@@ -1363,9 +1363,9 @@ namespace UEEditor
 			this.gvUnrecExp.FocusedRowChanged += new DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventHandler(this.gvUnrecExp_FocusedRowChanged);
 			this.gvUnrecExp.CustomColumnSort += new DevExpress.XtraGrid.Views.Base.CustomColumnSortEventHandler(this.gvUnrecExp_CustomColumnSort);
 			this.gvUnrecExp.CustomColumnDisplayText += new DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventHandler(this.gvUnrecExp_CustomColumnDisplayText);
-			// 
+			//
 			// colUEColumn1
-			// 
+			//
 			this.colUEColumn1.Caption = "Name";
 			this.colUEColumn1.FieldName = "UEColumn1";
 			this.colUEColumn1.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Left;
@@ -1373,13 +1373,13 @@ namespace UEEditor
 			this.colUEColumn1.OptionsColumn.AllowEdit = false;
 			this.colUEColumn1.OptionsColumn.AllowSize = false;
 			this.colUEColumn1.OptionsColumn.FixedWidth = true;
-			this.colUEColumn1.ToolTip = "Признак того, что позиция распознана по наименованию";
+			this.colUEColumn1.ToolTip = "РџСЂРёР·РЅР°Рє С‚РѕРіРѕ, С‡С‚Рѕ РїРѕР·РёС†РёСЏ СЂР°СЃРїРѕР·РЅР°РЅР° РїРѕ РЅР°РёРјРµРЅРѕРІР°РЅРёСЋ";
 			this.colUEColumn1.Visible = true;
 			this.colUEColumn1.VisibleIndex = 0;
 			this.colUEColumn1.Width = 20;
-			// 
+			//
 			// colUEColumn2
-			// 
+			//
 			this.colUEColumn2.Caption = "FirmCr";
 			this.colUEColumn2.FieldName = "UEColumn2";
 			this.colUEColumn2.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Left;
@@ -1387,116 +1387,116 @@ namespace UEEditor
 			this.colUEColumn2.OptionsColumn.AllowEdit = false;
 			this.colUEColumn2.OptionsColumn.AllowSize = false;
 			this.colUEColumn2.OptionsColumn.FixedWidth = true;
-			this.colUEColumn2.ToolTip = "Признак того, что позиция распознана по производителю";
+			this.colUEColumn2.ToolTip = "РџСЂРёР·РЅР°Рє С‚РѕРіРѕ, С‡С‚Рѕ РїРѕР·РёС†РёСЏ СЂР°СЃРїРѕР·РЅР°РЅР° РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЋ";
 			this.colUEColumn2.Visible = true;
 			this.colUEColumn2.VisibleIndex = 1;
 			this.colUEColumn2.Width = 20;
-			// 
+			//
 			// colUECode
-			// 
-			this.colUECode.Caption = "Код";
+			//
+			this.colUECode.Caption = "РљРѕРґ";
 			this.colUECode.FieldName = "UECode";
 			this.colUECode.Name = "colUECode";
 			this.colUECode.OptionsColumn.AllowEdit = false;
 			this.colUECode.Visible = true;
 			this.colUECode.VisibleIndex = 2;
 			this.colUECode.Width = 55;
-			// 
+			//
 			// colUECodeCr
-			// 
-			this.colUECodeCr.Caption = "Код производителя";
+			//
+			this.colUECodeCr.Caption = "РљРѕРґ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ";
 			this.colUECodeCr.FieldName = "UECodeCr";
 			this.colUECodeCr.Name = "colUECodeCr";
 			this.colUECodeCr.OptionsColumn.AllowEdit = false;
 			this.colUECodeCr.Visible = true;
 			this.colUECodeCr.VisibleIndex = 3;
 			this.colUECodeCr.Width = 55;
-			// 
+			//
 			// colUEName1
-			// 
-			this.colUEName1.Caption = "Наименование";
+			//
+			this.colUEName1.Caption = "РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			this.colUEName1.FieldName = "UEName1";
 			this.colUEName1.Name = "colUEName1";
 			this.colUEName1.OptionsColumn.AllowEdit = false;
 			this.colUEName1.Visible = true;
 			this.colUEName1.VisibleIndex = 4;
 			this.colUEName1.Width = 55;
-			// 
+			//
 			// colUEFirmCr
-			// 
-			this.colUEFirmCr.Caption = "Производитель";
+			//
+			this.colUEFirmCr.Caption = "РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ";
 			this.colUEFirmCr.FieldName = "UEFirmCr";
 			this.colUEFirmCr.Name = "colUEFirmCr";
 			this.colUEFirmCr.OptionsColumn.AllowEdit = false;
 			this.colUEFirmCr.Visible = true;
 			this.colUEFirmCr.VisibleIndex = 5;
 			this.colUEFirmCr.Width = 55;
-			// 
+			//
 			// colUEUnit
-			// 
-			this.colUEUnit.Caption = "Ед. измерения";
+			//
+			this.colUEUnit.Caption = "Р•Рґ. РёР·РјРµСЂРµРЅРёСЏ";
 			this.colUEUnit.FieldName = "UEUnit";
 			this.colUEUnit.Name = "colUEUnit";
 			this.colUEUnit.OptionsColumn.AllowEdit = false;
 			this.colUEUnit.Visible = true;
 			this.colUEUnit.VisibleIndex = 6;
 			this.colUEUnit.Width = 55;
-			// 
+			//
 			// colUEVolume
-			// 
-			this.colUEVolume.Caption = "Цех. уп.";
+			//
+			this.colUEVolume.Caption = "Р¦РµС…. СѓРї.";
 			this.colUEVolume.FieldName = "UEVolume";
 			this.colUEVolume.Name = "colUEVolume";
 			this.colUEVolume.OptionsColumn.AllowEdit = false;
 			this.colUEVolume.Visible = true;
 			this.colUEVolume.VisibleIndex = 7;
 			this.colUEVolume.Width = 55;
-			// 
+			//
 			// colUEQuantity
-			// 
-			this.colUEQuantity.Caption = "Количество";
+			//
+			this.colUEQuantity.Caption = "РљРѕР»РёС‡РµСЃС‚РІРѕ";
 			this.colUEQuantity.FieldName = "UEQuantity";
 			this.colUEQuantity.Name = "colUEQuantity";
 			this.colUEQuantity.OptionsColumn.AllowEdit = false;
 			this.colUEQuantity.Visible = true;
 			this.colUEQuantity.VisibleIndex = 8;
 			this.colUEQuantity.Width = 55;
-			// 
+			//
 			// colUEPeriod
-			// 
-			this.colUEPeriod.Caption = "Срок годности";
+			//
+			this.colUEPeriod.Caption = "РЎСЂРѕРє РіРѕРґРЅРѕСЃС‚Рё";
 			this.colUEPeriod.FieldName = "UEPeriod";
 			this.colUEPeriod.Name = "colUEPeriod";
 			this.colUEPeriod.OptionsColumn.AllowEdit = false;
 			this.colUEPeriod.Visible = true;
 			this.colUEPeriod.VisibleIndex = 9;
 			this.colUEPeriod.Width = 55;
-			// 
+			//
 			// colUEJunk
-			// 
-			this.colUEJunk.Caption = "Просроченный";
+			//
+			this.colUEJunk.Caption = "РџСЂРѕСЃСЂРѕС‡РµРЅРЅС‹Р№";
 			this.colUEJunk.FieldName = "UEJunk";
 			this.colUEJunk.Name = "colUEJunk";
 			this.colUEJunk.OptionsColumn.AllowEdit = false;
 			this.colUEJunk.Visible = true;
 			this.colUEJunk.VisibleIndex = 10;
 			this.colUEJunk.Width = 55;
-			// 
+			//
 			// colUEStatus
-			// 
+			//
 			this.colUEStatus.Caption = "UEStatus";
 			this.colUEStatus.FieldName = "UEStatus";
 			this.colUEStatus.Name = "colUEStatus";
-			// 
+			//
 			// colUEAlready
-			// 
+			//
 			this.colUEAlready.Caption = "UEAlready";
 			this.colUEAlready.FieldName = "UEAlready";
 			this.colUEAlready.Name = "colUEAlready";
 			this.colUEAlready.SortMode = DevExpress.XtraGrid.ColumnSortMode.Custom;
-			// 
+			//
 			// pnlCenter2
-			// 
+			//
 			this.pnlCenter2.Controls.Add(this.pnlLeft2);
 			this.pnlCenter2.Controls.Add(this.btnHideUnformFirmCr);
 			this.pnlCenter2.Dock = System.Windows.Forms.DockStyle.Top;
@@ -1504,18 +1504,18 @@ namespace UEEditor
 			this.pnlCenter2.Name = "pnlCenter2";
 			this.pnlCenter2.Size = new System.Drawing.Size(712, 256);
 			this.pnlCenter2.TabIndex = 6;
-			// 
+			//
 			// pnlLeft2
-			// 
+			//
 			this.pnlLeft2.Controls.Add(this.grpBoxCatalog2);
 			this.pnlLeft2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlLeft2.Location = new System.Drawing.Point(0, 0);
 			this.pnlLeft2.Name = "pnlLeft2";
 			this.pnlLeft2.Size = new System.Drawing.Size(712, 233);
 			this.pnlLeft2.TabIndex = 1;
-			// 
+			//
 			// grpBoxCatalog2
-			// 
+			//
 			this.grpBoxCatalog2.Controls.Add(this.pFirmCr);
 			this.grpBoxCatalog2.Controls.Add(this.CatalogGridControl);
 			this.grpBoxCatalog2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1524,10 +1524,10 @@ namespace UEEditor
 			this.grpBoxCatalog2.Size = new System.Drawing.Size(712, 233);
 			this.grpBoxCatalog2.TabIndex = 0;
 			this.grpBoxCatalog2.TabStop = false;
-			this.grpBoxCatalog2.Text = "Каталог";
-			// 
+			this.grpBoxCatalog2.Text = "РљР°С‚Р°Р»РѕРі";
+			//
 			// pFirmCr
-			// 
+			//
 			this.pFirmCr.Controls.Add(this.gcFirmCr);
 			this.pFirmCr.Controls.Add(this.tbProducerSearch);
 			this.pFirmCr.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1535,9 +1535,9 @@ namespace UEEditor
 			this.pFirmCr.Name = "pFirmCr";
 			this.pFirmCr.Size = new System.Drawing.Size(706, 214);
 			this.pFirmCr.TabIndex = 2;
-			// 
+			//
 			// gcFirmCr
-			// 
+			//
 			this.gcFirmCr.DataMember = "CatalogFirmCrGrid";
 			this.gcFirmCr.DataSource = this.dsMain;
 			this.gcFirmCr.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1557,9 +1557,9 @@ namespace UEEditor
             this.gvFirmCr});
 			this.gcFirmCr.KeyDown += new System.Windows.Forms.KeyEventHandler(this.gcFirmCr_KeyDown);
 			this.gcFirmCr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.gcFirmCr_KeyPress);
-			// 
+			//
 			// gvFirmCr
-			// 
+			//
 			this.gvFirmCr.Appearance.HideSelectionRow.Options.UseBackColor = true;
 			this.gvFirmCr.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colFirmCrName});
@@ -1575,21 +1575,21 @@ namespace UEEditor
 			this.gvFirmCr.OptionsView.ShowGroupPanel = false;
 			this.gvFirmCr.CustomDrawCell += new DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventHandler(this.gvFirmCr_CustomDrawCell);
 			this.gvFirmCr.CalcRowHeight += new DevExpress.XtraGrid.Views.Grid.RowHeightEventHandler(this.gvCatalog_CalcRowHeight);
-			// 
+			//
 			// colFirmCrName
-			// 
+			//
 			this.colFirmCrName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.colFirmCrName.AppearanceCell.Options.UseFont = true;
-			this.colFirmCrName.Caption = "Наименование";
+			this.colFirmCrName.Caption = "РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			this.colFirmCrName.FieldName = "CName";
 			this.colFirmCrName.Name = "colFirmCrName";
 			this.colFirmCrName.OptionsColumn.AllowEdit = false;
 			this.colFirmCrName.OptionsColumn.ReadOnly = true;
 			this.colFirmCrName.Visible = true;
 			this.colFirmCrName.VisibleIndex = 0;
-			// 
+			//
 			// tbProducerSearch
-			// 
+			//
 			this.tbProducerSearch.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tbProducerSearch.Location = new System.Drawing.Point(0, 0);
 			this.tbProducerSearch.Name = "tbProducerSearch";
@@ -1597,9 +1597,9 @@ namespace UEEditor
 			this.tbProducerSearch.TabIndex = 1;
 			this.tbProducerSearch.TextChanged += new System.EventHandler(this.tbProducerSearch_TextChanged);
 			this.tbProducerSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProducerSearch_KeyDown);
-			// 
+			//
 			// btnHideUnformFirmCr
-			// 
+			//
 			this.btnHideUnformFirmCr.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.btnHideUnformFirmCr.Location = new System.Drawing.Point(0, 233);
 			this.btnHideUnformFirmCr.Name = "btnHideUnformFirmCr";
@@ -1608,18 +1608,18 @@ namespace UEEditor
 			this.btnHideUnformFirmCr.Text = "btnHideUnformFirmCr";
 			this.btnHideUnformFirmCr.UseVisualStyleBackColor = true;
 			this.btnHideUnformFirmCr.Click += new System.EventHandler(this.btnHideUnformFirmCr_Click);
-			// 
+			//
 			// pnlTop2
-			// 
+			//
 			this.pnlTop2.Controls.Add(this.BigNameLabel2);
 			this.pnlTop2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.pnlTop2.Location = new System.Drawing.Point(0, 0);
 			this.pnlTop2.Name = "pnlTop2";
 			this.pnlTop2.Size = new System.Drawing.Size(712, 24);
 			this.pnlTop2.TabIndex = 0;
-			// 
+			//
 			// BigNameLabel2
-			// 
+			//
 			this.BigNameLabel2.BackColor = System.Drawing.SystemColors.Info;
 			this.BigNameLabel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.BigNameLabel2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1630,19 +1630,19 @@ namespace UEEditor
 			this.BigNameLabel2.TabIndex = 0;
 			this.BigNameLabel2.Text = "BigNameLabel";
 			this.BigNameLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
+			//
 			// tpZero
-			// 
+			//
 			this.tpZero.Controls.Add(this.ZeroGridControl);
 			this.tpZero.Location = new System.Drawing.Point(4, 22);
 			this.tpZero.Name = "tpZero";
 			this.tpZero.Size = new System.Drawing.Size(712, 705);
 			this.tpZero.TabIndex = 2;
-			this.tpZero.Text = "Цена 0";
+			this.tpZero.Text = "Р¦РµРЅР° 0";
 			this.tpZero.Visible = false;
-			// 
+			//
 			// ZeroGridControl
-			// 
+			//
 			this.ZeroGridControl.DataSource = this.dtZero;
 			this.ZeroGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			//
@@ -1658,9 +1658,9 @@ namespace UEEditor
 			this.ZeroGridControl.TabIndex = 0;
 			this.ZeroGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvZero});
-			// 
+			//
 			// gvZero
-			// 
+			//
 			this.gvZero.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colZCode,
             this.colZCodeCr,
@@ -1676,91 +1676,91 @@ namespace UEEditor
 			this.gvZero.OptionsMenu.EnableFooterMenu = false;
 			this.gvZero.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvZero.OptionsView.ShowGroupPanel = false;
-			// 
+			//
 			// colZCode
-			// 
-			this.colZCode.Caption = "Код";
+			//
+			this.colZCode.Caption = "РљРѕРґ";
 			this.colZCode.FieldName = "ZCode";
 			this.colZCode.Name = "colZCode";
 			this.colZCode.OptionsColumn.AllowEdit = false;
 			this.colZCode.Visible = true;
 			this.colZCode.VisibleIndex = 0;
-			// 
+			//
 			// colZCodeCr
-			// 
-			this.colZCodeCr.Caption = "Код производителя";
+			//
+			this.colZCodeCr.Caption = "РљРѕРґ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ";
 			this.colZCodeCr.FieldName = "ZCodeCr";
 			this.colZCodeCr.Name = "colZCodeCr";
 			this.colZCodeCr.OptionsColumn.AllowEdit = false;
 			this.colZCodeCr.Visible = true;
 			this.colZCodeCr.VisibleIndex = 1;
-			// 
+			//
 			// colZName
-			// 
-			this.colZName.Caption = "Наименование";
+			//
+			this.colZName.Caption = "РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			this.colZName.FieldName = "ZName";
 			this.colZName.Name = "colZName";
 			this.colZName.OptionsColumn.AllowEdit = false;
 			this.colZName.Visible = true;
 			this.colZName.VisibleIndex = 2;
-			// 
+			//
 			// colZFirmCr
-			// 
-			this.colZFirmCr.Caption = "Производитель";
+			//
+			this.colZFirmCr.Caption = "РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ";
 			this.colZFirmCr.FieldName = "ZFirmCr";
 			this.colZFirmCr.Name = "colZFirmCr";
 			this.colZFirmCr.OptionsColumn.AllowEdit = false;
 			this.colZFirmCr.Visible = true;
 			this.colZFirmCr.VisibleIndex = 3;
-			// 
+			//
 			// colZUnit
-			// 
-			this.colZUnit.Caption = "Ед. измерения";
+			//
+			this.colZUnit.Caption = "Р•Рґ. РёР·РјРµСЂРµРЅРёСЏ";
 			this.colZUnit.FieldName = "ZUnit";
 			this.colZUnit.Name = "colZUnit";
 			this.colZUnit.OptionsColumn.AllowEdit = false;
 			this.colZUnit.Visible = true;
 			this.colZUnit.VisibleIndex = 4;
-			// 
+			//
 			// colZVolume
-			// 
-			this.colZVolume.Caption = "Цех. уп.";
+			//
+			this.colZVolume.Caption = "Р¦РµС…. СѓРї.";
 			this.colZVolume.FieldName = "ZVolume";
 			this.colZVolume.Name = "colZVolume";
 			this.colZVolume.OptionsColumn.AllowEdit = false;
 			this.colZVolume.Visible = true;
 			this.colZVolume.VisibleIndex = 5;
-			// 
+			//
 			// colZQuantity
-			// 
-			this.colZQuantity.Caption = "Количество";
+			//
+			this.colZQuantity.Caption = "РљРѕР»РёС‡РµСЃС‚РІРѕ";
 			this.colZQuantity.FieldName = "ZQuantity";
 			this.colZQuantity.Name = "colZQuantity";
 			this.colZQuantity.OptionsColumn.AllowEdit = false;
 			this.colZQuantity.Visible = true;
 			this.colZQuantity.VisibleIndex = 6;
-			// 
+			//
 			// colZPeriod
-			// 
-			this.colZPeriod.Caption = "Срок годности";
+			//
+			this.colZPeriod.Caption = "РЎСЂРѕРє РіРѕРґРЅРѕСЃС‚Рё";
 			this.colZPeriod.FieldName = "ZPeriod";
 			this.colZPeriod.Name = "colZPeriod";
 			this.colZPeriod.OptionsColumn.AllowEdit = false;
 			this.colZPeriod.Visible = true;
 			this.colZPeriod.VisibleIndex = 7;
-			// 
+			//
 			// tpForb
-			// 
+			//
 			this.tpForb.Controls.Add(this.ForbGridControl);
 			this.tpForb.Location = new System.Drawing.Point(4, 22);
 			this.tpForb.Name = "tpForb";
 			this.tpForb.Size = new System.Drawing.Size(712, 705);
 			this.tpForb.TabIndex = 3;
-			this.tpForb.Text = "Запрещенные";
+			this.tpForb.Text = "Р—Р°РїСЂРµС‰РµРЅРЅС‹Рµ";
 			this.tpForb.Visible = false;
-			// 
+			//
 			// ForbGridControl
-			// 
+			//
 			this.ForbGridControl.DataSource = this.dtForb;
 			this.ForbGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			//
@@ -1776,9 +1776,9 @@ namespace UEEditor
 			this.ForbGridControl.TabIndex = 0;
 			this.ForbGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvForb});
-			// 
+			//
 			// gvForb
-			// 
+			//
 			this.gvForb.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colFForb});
 			this.gvForb.GridControl = this.ForbGridControl;
@@ -1787,50 +1787,50 @@ namespace UEEditor
 			this.gvForb.OptionsMenu.EnableFooterMenu = false;
 			this.gvForb.OptionsMenu.EnableGroupPanelMenu = false;
 			this.gvForb.OptionsView.ShowGroupPanel = false;
-			// 
+			//
 			// colFForb
-			// 
-			this.colFForb.Caption = "Запрещенные";
+			//
+			this.colFForb.Caption = "Р—Р°РїСЂРµС‰РµРЅРЅС‹Рµ";
 			this.colFForb.FieldName = "FForb";
 			this.colFForb.Name = "colFForb";
 			this.colFForb.OptionsColumn.AllowEdit = false;
 			this.colFForb.Visible = true;
 			this.colFForb.VisibleIndex = 0;
-			// 
+			//
 			// menuItem1
-			// 
+			//
 			this.menuItem1.Checked = true;
 			this.menuItem1.Index = -1;
-			this.menuItem1.Text = "Упреждающий поиск";
-			// 
+			this.menuItem1.Text = "РЈРїСЂРµР¶РґР°СЋС‰РёР№ РїРѕРёСЃРє";
+			//
 			// menuItem2
-			// 
+			//
 			this.menuItem2.Index = -1;
-			this.menuItem2.Text = "Показывать сопоставление";
-			// 
+			this.menuItem2.Text = "РџРѕРєР°Р·С‹РІР°С‚СЊ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ";
+			//
 			// menuItem3
-			// 
+			//
 			this.menuItem3.Index = -1;
-			this.menuItem3.Text = "Отослать письмо о товаре";
-			// 
+			this.menuItem3.Text = "РћС‚РѕСЃР»Р°С‚СЊ РїРёСЃСЊРјРѕ Рѕ С‚РѕРІР°СЂРµ";
+			//
 			// menuItem4
-			// 
+			//
 			this.menuItem4.Index = -1;
-			this.menuItem4.Text = "Отослать письмо о изготовителях";
-			// 
+			this.menuItem4.Text = "РћС‚РѕСЃР»Р°С‚СЊ РїРёСЃСЊРјРѕ Рѕ РёР·РіРѕС‚РѕРІРёС‚РµР»СЏС…";
+			//
 			// MainTimer
-			// 
+			//
 			this.MainTimer.Enabled = true;
 			this.MainTimer.Interval = 20000;
 			this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
-			// 
+			//
 			// ProducerSearchTimer
-			// 
+			//
 			this.ProducerSearchTimer.Interval = 2500;
 			this.ProducerSearchTimer.Tick += new System.EventHandler(this.ProducerSearchTimer_Tick);
-			// 
+			//
 			// frmUEEMain
-			// 
+			//
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(720, 753);
 			this.Controls.Add(this.panel3);
@@ -1840,7 +1840,7 @@ namespace UEEditor
 			this.KeyPreview = true;
 			this.Name = "frmUEEMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Редактор нераспознанных выражений";
+			this.Text = "Р РµРґР°РєС‚РѕСЂ РЅРµСЂР°СЃРїРѕР·РЅР°РЅРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.frmUEEMain_Closing);
 			this.Load += new System.EventHandler(this.frmUEEMain_Load);

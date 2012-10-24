@@ -67,9 +67,9 @@ namespace UEEditor
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.timerProgress)).BeginInit();
 			this.SuspendLayout();
-			// 
+			//
 			// btnCancel
-			// 
+			//
 			this.btnCancel.BackColor = System.Drawing.SystemColors.Control;
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -80,46 +80,46 @@ namespace UEEditor
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(144, 32);
 			this.btnCancel.TabIndex = 0;
-			this.btnCancel.Text = "Отмена";
+			this.btnCancel.Text = "РћС‚РјРµРЅР°";
 			this.btnCancel.UseVisualStyleBackColor = false;
-			// 
+			//
 			// imgList
-			// 
+			//
 			this.imgList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imgList.ImageStream")));
 			this.imgList.TransparentColor = System.Drawing.Color.Transparent;
 			this.imgList.Images.SetKeyName(0, "");
-			// 
+			//
 			// Progress
-			// 
+			//
 			this.Progress.Location = new System.Drawing.Point(61, 168);
 			this.Progress.Name = "Progress";
 			this.Progress.Size = new System.Drawing.Size(304, 23);
 			this.Progress.TabIndex = 1;
-			// 
+			//
 			// lblWait
-			// 
+			//
 			this.lblWait.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.lblWait.Location = new System.Drawing.Point(69, 24);
 			this.lblWait.Name = "lblWait";
 			this.lblWait.Size = new System.Drawing.Size(288, 23);
 			this.lblWait.TabIndex = 2;
-			this.lblWait.Text = "Подождите, идёт применение изменений...";
-			// 
+			this.lblWait.Text = "РџРѕРґРѕР¶РґРёС‚Рµ, РёРґС‘С‚ РїСЂРёРјРµРЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№...";
+			//
 			// timerProgress
-			// 
+			//
 			this.timerProgress.Enabled = true;
 			this.timerProgress.SynchronizingObject = this;
 			this.timerProgress.Elapsed += new System.Timers.ElapsedEventHandler(this.timerProgress_Elapsed);
-			// 
+			//
 			// label1
-			// 
+			//
 			this.label1.Location = new System.Drawing.Point(56, 56);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(312, 23);
 			this.label1.TabIndex = 3;
-			// 
+			//
 			// textBox1
-			// 
+			//
 			this.textBox1.Location = new System.Drawing.Point(48, 88);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
@@ -127,9 +127,9 @@ namespace UEEditor
 			this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBox1.Size = new System.Drawing.Size(336, 64);
 			this.textBox1.TabIndex = 4;
-			// 
+			//
 			// frmProgress
-			// 
+			//
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.CancelButton = this.btnCancel;
