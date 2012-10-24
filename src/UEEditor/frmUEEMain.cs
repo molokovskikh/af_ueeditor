@@ -92,7 +92,7 @@ namespace UEEditor
 				Visible = false
 			};
 			createForbiddenProducer.Click += (sender, args) => {
-				ProducerSynonymResolver.Resolver.ExcludeProducer(GetCurrentItem(), ProducerSynonymState.Forbidden);
+				ProducerSynonymResolver.Resolver.ForbidProducer(GetCurrentItem());
 				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 			};
 			pnlCenter2.Controls.Add(createForbiddenProducer);
@@ -1845,8 +1845,15 @@ WHERE PriceItemId= ?PriceItemId",
 				// Если не сопоставлено по производителю
 				if ((((FormMask) Convert.ToByte(current[UEStatus.ColumnName]) & FormMask.FirmForm) != FormMask.FirmForm))
 				{
-					DoSynonymFirmCr();
-					ChangeBigName(gvUnrecExp.FocusedRowHandle);
+					// Разрешаем сопоставлять с "производитель не известен" только если фармацевтика
+					if(Convert.ToBoolean(current["Pharmacie"])
+						&& Convert.ToUInt32(gvFirmCr.GetDataRow(gvFirmCr.FocusedRowHandle)["CCode"]) == 0) {
+						MessageBox.Show("Для фармацевтики недопустимо сопоставление с \"производитель не известен\".", "Сопоставление невозможно", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					}
+					else {
+						DoSynonymFirmCr();
+						ChangeBigName(gvUnrecExp.FocusedRowHandle);
+					}
 				}
 			}
 
@@ -1867,7 +1874,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 			if (e.KeyCode == Keys.F4)
 			{
-				ProducerSynonymResolver.Resolver.ExcludeProducer(GetCurrentItem(), ProducerSynonymState.Forbidden);
+				ProducerSynonymResolver.Resolver.ForbidProducer(GetCurrentItem());
 				GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 			}
 		}

@@ -151,7 +151,7 @@ namespace UEEditor.Tests
 				expression.Save();
 			}
 			Load();
-			resolver.ExcludeProducer(GetRow(expression), ProducerSynonymState.Forbidden);
+			resolver.ForbidProducer(GetRow(expression));
 			Save();
 			var sessionHolder = ActiveRecordMediator.GetSessionFactoryHolder();
 			using(var session = sessionHolder.CreateSession(typeof(ActiveRecordBase))) {

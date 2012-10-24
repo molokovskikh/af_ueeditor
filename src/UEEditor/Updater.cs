@@ -73,11 +73,11 @@ namespace UEEditor
 			resolver = _resolver;
 		}
 
-		public void UpdateProducerSynonym(List<Unrecexp> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr, List<DbExclude> forbiddenProducers)
+		public void UpdateProducerSynonym(List<Unrecexp> rows, List<DbExclude> excludes, DataTable dtSynonymFirmCr, List<ForbiddenProducerSynonym> forbiddenProducers)
 		{
 			//priceprocessor создает на одно наименование один синоним, но в результате сопоставления мы можем получить два разных синонима
 			var synonyms = rows.Select(e => e.Row).Where(r => !(r["SynonymObject"] is DBNull)).Select(r => (ProducerSynonym) r["SynonymObject"]);
-			var groups = synonyms.Where(s => !(s is Exclude)).GroupBy(s => new {s.ProducerId, s.Name});
+			var groups = synonyms.Where(s => !(s is Exclude) && !(s is ForbiddenProducerSynonym)).GroupBy(s => new {s.ProducerId, s.Name});
 			foreach (var synonymGroup in groups)
 			{
 				var synonym = synonymGroup.First();
@@ -104,22 +104,27 @@ namespace UEEditor
 					CreateSynonym(dtSynonymFirmCr, exclude);
 				else
 					UpdateSynonym(synonymRow[0], exclude);
-				if (exclude.State == ProducerSynonymState.Exclude) {
-					CreateExclude(exclude, excludes, rows.First(r => r.Row["SynonymObject"] == exclude));
-				}
-				else if(exclude.State == ProducerSynonymState.Forbidden) {
-					CreateForbiddenProducer(exclude, forbiddenProducers);
-				}
+
+				CreateExclude(exclude, excludes, rows.First(r => r.Row["SynonymObject"] == exclude));
+			}
+			foreach (var forbiddenGroups in synonyms.OfType<ForbiddenProducerSynonym>().GroupBy(e => new {e.Name})) {
+				var forbiddenProducer = forbiddenGroups.First();
+				var synonymRow = dtSynonymFirmCr.Select(String.Format("Synonym = '{0}' and CodeFirmCr is null", forbiddenProducer.Name.Replace("'", "''")));
+				if (synonymRow.Length == 0)
+					CreateSynonym(dtSynonymFirmCr, forbiddenProducer);
+				else
+					UpdateSynonym(synonymRow[0], forbiddenProducer);
+				CreateForbiddenProducer(forbiddenProducer, forbiddenProducers);
 			}
 		}
 
-		private void CreateForbiddenProducer(Exclude exclude, List<DbExclude> forbiddenProducers)
+		private void CreateForbiddenProducer(ForbiddenProducerSynonym exclude, List<ForbiddenProducerSynonym> forbiddenProducers)
 		{
-			if (forbiddenProducers.Any(e => e.ProducerSynonym.Equals(exclude.Name, StringComparison.CurrentCultureIgnoreCase)))
+			if (forbiddenProducers.Any(e => e.Name.Equals(exclude.Name, StringComparison.CurrentCultureIgnoreCase)))
 				return;
 
-			forbiddenProducers.Add(new DbExclude {
-				ProducerSynonym = exclude.Name
+			forbiddenProducers.Add(new ForbiddenProducerSynonym {
+				Name = exclude.Name
 			});
 		}
 
@@ -243,7 +248,7 @@ namespace UEEditor
 		MySqlDataAdapter daSynonymFirmCr;
 		DataTable dtForbiddenProducers;
 		MySqlDataAdapter daForbiddenProducers;
-		public List<DbExclude> ForbiddenProducers;
+		public List<ForbiddenProducerSynonym> ForbiddenProducers;
 
 		string operatorName;
 
@@ -383,7 +388,7 @@ value (?Name);", c);
 					debugString.Append("13-->");
 					foreach (var producer in ForbiddenProducers.Where(e => e.Id == 0))
 					{
-						insertForbiddenProducer.Parameters["?Name"].Value = producer.ProducerSynonym;
+						insertForbiddenProducer.Parameters["?Name"].Value = producer.Name;
 						_logger.Debug("13.1-->");
 						debugString.Append("13.1-->");
 						insertForbiddenProducer.ExecuteScalar();
@@ -605,9 +610,9 @@ where pricecode = ?PriceCode",
 				masterConnection);
 			using (var reader = selectForbiddenProducers.ExecuteReader())
 			{
-				ForbiddenProducers = reader.Cast<DbDataRecord>().Select(r => new DbExclude {
+				ForbiddenProducers = reader.Cast<DbDataRecord>().Select(r => new ForbiddenProducerSynonym {
 					Id = Convert.ToUInt32(r["Id"]),
-					ProducerSynonym = r["Name"].ToString()
+					Name = r["Name"].ToString()
 				}).ToList();
 			}
 
