@@ -163,12 +163,11 @@ namespace UEEditor
 #if DEBUG
 			return new string[0];
 #else
-			try
-			{
+			try {
 				return _priceProcessor.InboundPriceItemIds();
 			}
-			catch (Exception)
-			{}
+			catch (Exception) {
+			}
 			return new string[0];
 #endif
 		}
