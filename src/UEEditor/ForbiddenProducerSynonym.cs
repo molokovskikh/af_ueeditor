@@ -8,16 +8,6 @@ namespace UEEditor
 {
 	public class ForbiddenProducerSynonym : ProducerSynonym
 	{
-		public override void Apply(DataRow row)
-		{
-			if (row["UEProducerSynonymId"] is DBNull)
-				row["UEProducerSynonymId"] = Id;
-
-			row["UEStatus"] = (int)(ProducerSynonymResolver.GetStatus(row) | FormMask.FirmForm);
-			row["UEPriorProducerId"] = DBNull.Value;
-			row["SynonymObject"] = this;
-		}
-
 		public override bool IsApplicable(DataRow destination, DataTable assortment)
 		{
 			var status = ProducerSynonymResolver.GetStatus(destination);
