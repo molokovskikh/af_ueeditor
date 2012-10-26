@@ -132,6 +132,7 @@ namespace UEEditor.Tests
 		[Test]
 		public void CreateForbiddenProducerName()
 		{
+			var producerName = "testTest";
 			TestUnrecExp expression;
 			using (new SessionScope()) {
 				var product = new TestProduct("Тестовый Продукт");
@@ -140,21 +141,27 @@ namespace UEEditor.Tests
 				product.Save();
 				var synonym = new TestProductSynonym("test", product, price);
 				synonym.Save();
-				var producerSynonym = new TestProducerSynonym("testTest", null, price);
+				var producerSynonym = new TestProducerSynonym(producerName, null, price);
 				producerSynonym.Save();
 				expression = new TestUnrecExp(synonym, producerSynonym);
 				expression.Save();
+				var notFormExpression = new TestUnrecExp("newTest", producerName, price);
+				notFormExpression.Save();
 			}
 			Load();
 			resolver.ForbidProducer(GetRow(expression));
 			Save();
 			var sessionHolder = ActiveRecordMediator.GetSessionFactoryHolder();
 			using (var session = sessionHolder.CreateSession(typeof(ActiveRecordBase))) {
-				var query = session.CreateSQLQuery(String.Format("SELECT count(*) FROM farm.ForbiddenProducers F where F.Name='{0}'", "testTest"));
+				var query = session.CreateSQLQuery(String.Format("SELECT count(*) FROM farm.ForbiddenProducers F where F.Name='{0}'", producerName));
 				var count = query.UniqueResult();
 				Assert.That(count, Is.GreaterThan(0));
 				var exclude = session.Query<TestExclude>().Where(e => e.Price == price);
 				Assert.That(exclude.Count(), Is.EqualTo(0));
+				var unrec = session.Query<TestUnrecExp>().Where(e => e.FirmCr.ToLower() == producerName && e.Status == 1);
+				Assert.That(unrec.Count(), Is.EqualTo(0));
+				unrec = session.Query<TestUnrecExp>().Where(e => e.FirmCr.ToLower() == producerName);
+				Assert.That(unrec.Count(), Is.GreaterThan(0));
 			}
 		}
 

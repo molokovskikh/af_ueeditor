@@ -367,6 +367,8 @@ and priceitems.Id = pricescosts.PriceItemId",
 					formProgress.ApplyProgress += 10;
 
 					// Сохраняем запрещенные имена производителей
+					var deleteUnrec = new MySqlCommand("delete from farm.UnrecExp where LOWER(FirmCr) = ?FirmName and Status = 1", c);
+
 					var insertForbiddenProducer = new MySqlCommand(@"
 insert into Farm.Forbiddenproducers(Name)
 value (?Name);", c);
@@ -375,9 +377,12 @@ value (?Name);", c);
 					debugString.Append("13-->");
 					foreach (var producer in ForbiddenProducers.Where(e => e.Id == 0)) {
 						insertForbiddenProducer.Parameters["?Name"].Value = producer.Name;
-						_logger.Debug("13.1-->");
-						debugString.Append("13.1-->");
 						insertForbiddenProducer.ExecuteScalar();
+
+						// удаляем нераспознанные выражения с таким же наименованием производителя
+						deleteUnrec.Parameters.Clear();
+						deleteUnrec.Parameters.AddWithValue("?FirmName", producer.Name.ToLower());
+						deleteUnrec.ExecuteScalar();
 					}
 				});
 			}
