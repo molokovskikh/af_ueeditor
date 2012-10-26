@@ -4,7 +4,8 @@ import file from Db.bake
 
 Global(
 	Project : "UEEditor",
-	HumanReadableName : "Редактор нераспознанных выражений"
+	HumanReadableName : "Редактор нераспознанных выражений",
+	Profile : @catalog
 )
 
 task @default, [@ClickOnceBuild]

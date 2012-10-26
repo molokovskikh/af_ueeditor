@@ -382,7 +382,7 @@ value (?Name);", c);
 						// удаляем нераспознанные выражения с таким же наименованием производителя
 						deleteUnrec.Parameters.Clear();
 						deleteUnrec.Parameters.AddWithValue("?FirmName", producer.Name.ToLower());
-						deleteUnrec.ExecuteScalar();
+						deleteUnrec.ExecuteNonQuery();
 					}
 				});
 			}

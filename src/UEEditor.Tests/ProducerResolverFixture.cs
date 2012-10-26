@@ -132,7 +132,8 @@ namespace UEEditor.Tests
 		[Test]
 		public void CreateForbiddenProducerName()
 		{
-			var producerName = "testTest";
+			var rnd = new Random();
+			var producerName = "testTest" + rnd.Next();
 			TestUnrecExp expression;
 			using (new SessionScope()) {
 				var product = new TestProduct("Тестовый Продукт");
