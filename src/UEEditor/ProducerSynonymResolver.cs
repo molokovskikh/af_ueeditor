@@ -213,10 +213,7 @@ where a.ProducerId = ?ProducerId", c);
 
 		public void ForbidProducer(DataRow source)
 		{
-			if (!Convert.ToBoolean(source["Pharmacie"]))
-				return;
-
-			var forbiddenProducer = new ForbiddenProducerSynonym() {
+			var forbiddenProducer = new ForbiddenProducerSynonym {
 				Name = source["UEFirmCr"].ToString()
 			};
 			synonyms.Add(forbiddenProducer);

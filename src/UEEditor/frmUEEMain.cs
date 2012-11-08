@@ -1349,11 +1349,9 @@ WHERE PriceItemId= ?PriceItemId",
 						&& Convert.ToBoolean(gvUnrecExp.GetDataRow(handle)["Pharmacie"])) {
 						BigNameLabel2.Text = BigNameLabel2.Text + " (фармацевтика)";
 						createExclude.Visible = true;
-						createForbiddenProducer.Visible = true;
 					}
 					else {
 						createExclude.Visible = false;
-						createForbiddenProducer.Visible = false;
 					}
 				}
 				else
