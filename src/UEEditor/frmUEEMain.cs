@@ -204,7 +204,7 @@ namespace UEEditor
 				var commandHelper =
 					new CommandHelper(
 						new MySqlCommand(@"
-SELECT
+SELECT distinct
 		PD.FirmCode as JFirmCode,
 		s.Name as FirmShortName,
 		pim.Id as JPriceItemId,
@@ -247,7 +247,7 @@ WHERE
 and pc.PriceItemId = pim.Id" +
 							listPriceItemIds + @"
 and pc.PriceCode = pd.PriceCode
-and ((pd.CostType = 1) or (pc.BaseCost = 1))
+and ((pd.CostType = 1) or (exists(select * from userSettings.pricesregionaldata prd where prd.PriceCode = pd.PriceCode and prd.BaseCost=pc.CostCode limit 1)))
 and pd.agencyenabled = 1
 and pd.FirmCode = s.Id
 and regions.regioncode = s.HomeRegion
@@ -255,7 +255,7 @@ and FormRules.id = pim.FormRuleId
 and pfmt.Id = FormRules.PriceFormatId
 and synonympd.PriceCode = ifnull(pd.ParentSynonym, PD.pricecode)
 and synonympc.PriceCode = synonympd.PriceCode
-and synonympc.BaseCost = 1
+and exists(select * from userSettings.pricesregionaldata prd where prd.PriceCode = synonympd.PriceCode and prd.BaseCost=synonympc.CostCode limit 1)
 and synonympim.Id = synonympc.PriceItemId
 and synonyms.Id = synonympd.FirmCode",
 							slaveConnection));
@@ -1349,9 +1349,11 @@ WHERE PriceItemId= ?PriceItemId",
 						&& Convert.ToBoolean(gvUnrecExp.GetDataRow(handle)["Pharmacie"])) {
 						BigNameLabel2.Text = BigNameLabel2.Text + " (фармацевтика)";
 						createExclude.Visible = true;
+						createForbiddenProducer.Visible = true;
 					}
 					else {
 						createExclude.Visible = false;
+						createForbiddenProducer.Visible = false;
 					}
 				}
 				else
