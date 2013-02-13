@@ -164,7 +164,7 @@ namespace UEEditor
 			return new string[0];
 #else
 			try {
-				return _priceProcessor.InboundPriceItemIds();
+				return _priceProcessor.GetPriceItemList().Select(i => i.PriceItemId.ToString()).ToArray();
 			}
 			catch (Exception) {
 			}
