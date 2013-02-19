@@ -35,12 +35,12 @@ namespace UEEditor.Tests
 		public void Email_info_test()
 		{
 			With.Connection(c => {
-				var command = new CommandHelper(new MySqlCommand(@"
+				var command = new CommandHelper(new MySqlCommand(string.Format(@"
 				delete from usersettings.defaults;
-				insert into usersettings.defaults (ProcessingAboutFirmBody, ProcessingAboutFirmSubject, ProcessingAboutNamesSubject, ProcessingAboutNamesBody, senderId, formaterId)
+				insert into usersettings.defaults (ProcessingAboutFirmBody, ProcessingAboutFirmSubject, ProcessingAboutNamesSubject, ProcessingAboutNamesBody, senderId, formaterId, EmailFooter)
 				value
-				('testFirmBody','testFirmSubject','testNameSubject','testNameBody', 1, 12);
-", c));
+				('testFirmBody','testFirmSubject','testNameSubject','testNameBody', 1, 12, {0});
+", "'С уважением,\r\nАналитическая компания \"Инфорум\" г.Воронеж\r\nМосква +7 499 7097350\r\nС.-Петербург +7 812 3090521\r\nВоронеж +7 473 2606000\r\nЧелябинск +7 351 7501892\r\nОрел +7 4862 632334\r\nСмоленск +7 4812 330364\r\nБрянск +7 4832 300631\r\nКурск +7 4712 745447\r\nКазань +7 843 2495786\r\nE-mail: pharm@analit.net\r\nhttp://www.analit.net'"), c));
 				command.Execute();
 			});
 			var mailParams = MailsText.GetMailsInfo();
