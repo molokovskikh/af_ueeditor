@@ -15,6 +15,7 @@ using System.Threading;
 using System.Security.Permissions;
 using Microsoft.Win32;
 using RemotePriceProcessor;
+using UEEditor.Helpers;
 using UEEditor.Properties;
 using log4net;
 using DevExpress.Utils.Paint;
@@ -1475,7 +1476,8 @@ WHERE PriceItemId= ?PriceItemId",
 
 		private void miSendAboutNames_Click(object sender, System.EventArgs e)
 		{
-			ShowMail(Settings.Default.AboutNamesSubject, Settings.Default.AboutNamesBody, GetForbiddenNames());
+			var mailParams = MailsText.GetMailsInfo();
+			ShowMail(mailParams.ProcessingAboutNamesSubject, mailParams.ProcessingAboutNamesBody, GetForbiddenNames());
 		}
 
 		private string[] GetForbiddenNames()
@@ -1497,7 +1499,8 @@ WHERE PriceItemId= ?PriceItemId",
 		private void miSendAboutFirmCr_Click(object sender, System.EventArgs e)
 		{
 			var unknownProducers = GetUnknownProducers();
-			ShowMail(Settings.Default.AboutFirmSubject, Settings.Default.AboutFirmBody, unknownProducers);
+			var mailParams = MailsText.GetMailsInfo();
+			ShowMail(mailParams.ProcessingAboutFirmSubject, mailParams.ProcessingAboutFirmBody, unknownProducers);
 		}
 
 		private void ShowMail(string subject, string body, IEnumerable<string> bodyLines)
@@ -1519,7 +1522,7 @@ WHERE PriceItemId= ?PriceItemId",
 
 				var mailUrl = String.Format("mailto:{0}?cc={1}&Subject={2}&Body={3}",
 					GetToForSupplierMail((long)dr[JFirmCode.ColumnName]),
-					"pharm@analit.net", subject, MailHelper.FakeEscape(body));
+					"pharm@analit.net", MailHelper.FakeEscape(subject), MailHelper.FakeEscape(body));
 				Process.Start(mailUrl);
 			}
 		}
