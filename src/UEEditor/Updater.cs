@@ -440,9 +440,7 @@ select @LastSynonymID as SynonymCode;",
 			dtSynonymFirmCr.Columns.Add("Processed", typeof(bool));
 			daSynonymFirmCr.InsertCommand = new MySqlCommand(
 				@"
-insert into farm.synonymFirmCr (PriceCode, CodeFirmCr, Synonym, SupplierCode) values (?PriceCode, ?CodeFirmCr, ?Synonym, ?SupplierCode);
-set @LastSynonymFirmCrID = last_insert_id();
-insert into farm.UsedSynonymFirmCrLogs (SynonymFirmCrCode) values (@LastSynonymFirmCrID); 
+select farm.CreateProducerSynonym(?PriceCode, ?CodeFirmCr, ?Synonym, false);
 ",
 				masterConnection);
 			daSynonymFirmCr.InsertCommand.Parameters.AddWithValue("?OperatorName", operatorName);

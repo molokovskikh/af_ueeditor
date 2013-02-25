@@ -283,8 +283,6 @@ namespace UEEditor.Tests
 				var synonymFirmCr = TestProducerSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
 				Assert.That(synonym, Is.Not.Null);
 				Assert.That(synonymFirmCr, Is.Not.Null);
-				Assert.That(synonym.SupplierCode, Is.EqualTo(expression.Code));
-				Assert.That(synonymFirmCr.SupplierCode, Is.EqualTo(expression.Code));
 			}
 		}
 
@@ -308,8 +306,6 @@ namespace UEEditor.Tests
 				var synonymFirmCr = TestProducerSynonym.Queryable.Where(s => s.Price == price).FirstOrDefault();
 				Assert.That(synonym, Is.Not.Null);
 				Assert.That(synonymFirmCr, Is.Not.Null);
-				Assert.That(synonym.SupplierCode, Is.EqualTo(expression.Code));
-				Assert.That(synonymFirmCr.SupplierCode, Is.EqualTo(expression.Code));
 				var exlcudes = TestExclude.Queryable.Where(e => e.Price == price).ToList();
 				Assert.That(exlcudes.Count, Is.EqualTo(1), "не создали исключение");
 			}
