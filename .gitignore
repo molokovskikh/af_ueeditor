@@ -9,3 +9,5 @@ _ReSharper.*
 *.resharper
 *.suo
 *.cache
+
+src/*.properties
