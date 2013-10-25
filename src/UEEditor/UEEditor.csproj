@@ -109,40 +109,40 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.Data.v7.3, Version=7.3.7.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Data.v7.3">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DevExpress7\DevExpress.Data.v7.3.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Utils.v7.3, Version=7.3.7.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Utils.v7.3">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DevExpress7\DevExpress.Utils.v7.3.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraEditors.v7.3, Version=7.3.7.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraEditors.v7.3">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DevExpress7\DevExpress.XtraEditors.v7.3.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraGrid.v7.3, Version=7.3.7.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraGrid.v7.3">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DevExpress7\DevExpress.XtraGrid.v7.3.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraLayout.v7.3, Version=7.3.7.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraLayout.v7.3">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DevExpress7\DevExpress.XtraLayout.v7.3.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+    <Reference Include="log4net">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.1.2.0, Culture=neutral, PublicKeyToken=b87fa865681cc1c6, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="RemotePriceProcessor, Version=1.0.1.1, Culture=neutral, PublicKeyToken=b87fa865681cc1c6, processorArchitecture=MSIL">
+    <Reference Include="RemotePriceProcessor">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\RemotePriceProcessor.dll</HintPath>
     </Reference>
@@ -274,13 +274,13 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\packages\StyleCop.MSBuild.4.7.35.0\tools\StyleCop.Targets" />
+  <Import Project="$(StylecopPath)\tools\StyleCop.Targets" />
   <PropertyGroup>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
-    <StyleCopOverrideSettingsFile>..\..\packages\StyleCopAddOn.1.0.4\Settings.StyleCop</StyleCopOverrideSettingsFile>
+    <StyleCopOverrideSettingsFile>$(StylecopAddonPath)\Settings.StyleCop</StyleCopOverrideSettingsFile>
   </PropertyGroup>
   <ItemGroup>
-    <StyleCopAdditionalAddinPaths Include="..\..\packages\StyleCopAddOn.1.0.4\lib\4.0">
+    <StyleCopAdditionalAddinPaths Include="$(StylecopAddonPath)\lib\4.0">
       <InProject>false</InProject>
     </StyleCopAdditionalAddinPaths>
   </ItemGroup>
