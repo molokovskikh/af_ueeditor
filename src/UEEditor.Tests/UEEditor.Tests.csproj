@@ -86,9 +86,7 @@
     <Compile Include="IntegrationSetup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\UEEditor\app.config">
-      <Link>app.config</Link>
-    </None>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common.MySql\Common.MySql\Common.MySql.csproj">
