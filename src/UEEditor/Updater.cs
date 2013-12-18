@@ -200,24 +200,6 @@ namespace UEEditor
 				stat.DuplicateSynonymCount++;
 			}
 
-/*
-			Запрос не работает тк теперь могут быть одинаковые синонимы но разные производители
-			if ((((FormMask)Convert.ToByte(drUpdated["UEAlready"]) & FormMask.FirmForm) != FormMask.FirmForm)
-				&& (((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & FormMask.FirmForm) == FormMask.FirmForm) 
-					&& Convert.IsDBNull(drUpdated["UEProducerSynonymId"])
-					&& CatalogHelper.IsProducerSynonymExists(masterConnection, 
-						priceId,
-						drUpdated["UEFirmCr"].ToString(),
-						drUpdated["UEPriorProducerId"]))
-			{
-				//Производим проверку того, что синоним может быть уже вставлен в таблицу синонимов
-				//Если в процессе распознования синоним уже кто-то добавил, то сбрасываем распознавание
-				drUpdated["UEPriorProducerId"] = DBNull.Value;
-				drUpdated["UEStatus"] = (int)((FormMask)Convert.ToByte(drUpdated["UEStatus"]) & (~FormMask.FirmForm));
-				stat.DuplicateProducerSynonymCount++;
-			}
-*/
-
 			var drNew = dtUnrecExpUpdate.Rows.Find(Convert.ToUInt32(drUpdated["UERowID"]));
 
 			if (drNew != null) {
@@ -263,7 +245,7 @@ namespace UEEditor
 				With.DeadlockWraper(c => {
 					var humanName = GetHumanName(c, operatorName);
 
-					var helper = new Common.MySql.MySqlHelper(/*masterConnection*/c, null);
+					var helper = new Common.MySql.MySqlHelper(c, null);
 					var commandHelper = helper.Command("set @inHost = ?Host; set @inUser = ?UserName;");
 					commandHelper.AddParameter("?Host", Environment.MachineName);
 					commandHelper.AddParameter("?UserName", operatorName);
@@ -277,7 +259,7 @@ namespace UEEditor
 
 					var insertExclude = new MySqlCommand(@"
 insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator, OriginalSynonymId) 
-value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?OriginalSynonymId);", /*masterConnection*/c);
+value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?OriginalSynonymId);", c);
 					insertExclude.Parameters.AddWithValue("?PriceCode", priceId);
 					insertExclude.Parameters.AddWithValue("?Operator", humanName);
 					insertExclude.Parameters.Add("?ProducerSynonym", MySqlDbType.VarChar);
@@ -297,6 +279,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Connection = c;
+					daSynonymFirmCr.UpdateCommand.Connection = c;
 					var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
 					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows) {
 						lastUpdateSynonym = drInsertProducerSynonym;
@@ -307,7 +290,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 						daSynonymFirmCr.Update(new[] { drInsertProducerSynonym });
 					}
 
-					MySqlHelper.ExecuteNonQuery(/*masterConnection*/c,
+					MySqlHelper.ExecuteNonQuery(c,
 						@"
 update 
 usersettings.pricescosts,

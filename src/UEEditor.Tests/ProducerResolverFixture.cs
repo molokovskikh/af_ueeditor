@@ -22,7 +22,7 @@ namespace UEEditor.Tests
 	}
 
 	[TestFixture]
-	public class ProducerResolverFixture
+	public class ProducerResolverFixture : IntegrationFixture
 	{
 		private TestPrice price;
 		private DataTable data;
@@ -108,6 +108,12 @@ namespace UEEditor.Tests
 				Assert.That(synonyms[0].Producer.Id, Is.EqualTo(producer2.Id));
 				Assert.That(synonyms[1].Name, Is.EqualTo(producerSynonym.Name));
 				Assert.That(synonyms[1].Producer.Id, Is.EqualTo(producer1.Id));
+				var logs = session.CreateSQLQuery("select OperatorName, OperatorHost" +
+					" from Logs.SynonymFirmCrLogs where SynonymFirmCrCode = :id and Operation = 1")
+					.SetParameter("id", synonyms[0].Id)
+					.List<object[]>();
+				Assert.AreEqual(Environment.UserName, logs[0][0]);
+				Assert.AreEqual(Environment.MachineName, logs[0][1]);
 			}
 		}
 
