@@ -280,6 +280,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 					//Заполнили таблицу логов для синонимов производителей
 					daSynonymFirmCr.SelectCommand.Connection = c;
 					daSynonymFirmCr.UpdateCommand.Connection = c;
+					daSynonymFirmCr.InsertCommand.Connection = c;
 					var dtSynonymFirmCrCopy = dtSynonymFirmCr.Copy();
 					foreach (DataRow drInsertProducerSynonym in dtSynonymFirmCrCopy.Rows) {
 						lastUpdateSynonym = drInsertProducerSynonym;
