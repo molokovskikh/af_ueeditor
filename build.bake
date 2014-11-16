@@ -1,6 +1,3 @@
-﻿import file from ClickOnce.bake
-import file from Test.bake
-import file from Db.bake
 
 Global(
 	Project : "UEEditor",
