@@ -324,7 +324,8 @@ namespace UEEditor.Tests
 
 		private IQueryable<TestProduct> Pharmacie()
 		{
-			return session.Query<TestProduct>().Where(p => p.CatalogProduct.Pharmacie && !p.CatalogProduct.Hidden);
+			return session.Query<TestProduct>().Where(p => p.CatalogProduct.Pharmacie
+				&& !p.CatalogProduct.Hidden && !p.CatalogProduct.Monobrend);
 		}
 
 		private void Load()
