@@ -408,38 +408,49 @@ order by Form",
 			});
 		}
 
-		private void ProductsFill(ulong CatalogId)
+		public static void ProductsFill(ulong catalogId, DataSet data, string tableName)
 		{
-			With.Connection((slaveConnection) => {
+			With.Connection(connection => {
 				var commandHelper = new CommandHelper(new MySqlCommand(@"
 SELECT
-  Products.Id,
-  Catalog.Id as CatalogId,
-  Catalog.Pharmacie,
-  GROUP_CONCAT(PropertyValues.Value
-	order by Properties.PropertyName, PropertyValues.Value
-	SEPARATOR ', '
-  ) as Properties
+	Products.Id,
+	Catalog.Id as CatalogId,
+	Catalog.Pharmacie,
+	Catalog.Monobrend,
+	null as MonobrendProducerId,
+	GROUP_CONCAT(PropertyValues.Value
+		order by Properties.PropertyName, PropertyValues.Value
+		SEPARATOR ', '
+	) as Properties
 FROM
-(
-catalogs.Products,
-catalogs.Catalog
-)
-left join catalogs.ProductProperties on ProductProperties.ProductId = Products.Id
-left join catalogs.PropertyValues on PropertyValues.Id = ProductProperties.PropertyValueId
-left join catalogs.Properties on Properties.Id = PropertyValues.PropertyId
+	(
+		catalogs.Products,
+		catalogs.Catalog
+	)
+	left join catalogs.ProductProperties on ProductProperties.ProductId = Products.Id
+	left join catalogs.PropertyValues on PropertyValues.Id = ProductProperties.PropertyValueId
+	left join catalogs.Properties on Properties.Id = PropertyValues.PropertyId
 where
 	Catalog.Id = Products.CatalogID
-and Catalog.Id = ?CatalogId
-and Products.Hidden = 0
+	and Catalog.Id = ?CatalogId
+	and Products.Hidden = 0
 group by Products.Id
 order by Properties
-",
-					slaveConnection));
+", connection));
 
-				commandHelper.AddParameter("?CatalogId", CatalogId);
+				commandHelper.AddParameter("?CatalogId", catalogId);
+				commandHelper.Fill(data, tableName);
 
-				commandHelper.Fill(dsMain, dtProducts.TableName);
+				var rows = data.Tables[tableName].AsEnumerable();
+				var row = rows.First();
+				if (row != null && Convert.ToBoolean(row["Monobrend"])) {
+					var assortment = connection.Fill("select * from Catalogs.Assortment where CatalogId = ?catalogId", new { catalogId });
+					if (assortment.Rows.Count == 1
+						&& assortment.AsEnumerable().Count(r => Convert.ToBoolean(r["Checked"])) == 1)
+					foreach (var dataRow in rows) {
+						dataRow["MonobrendProducerId"] = assortment.Rows[0]["ProducerId"];
+					}
+				}
 			});
 		}
 
@@ -995,7 +1006,7 @@ WHERE PriceItemId= ?PriceItemId",
 					if (FocusedView.FocusedRowHandle != GridControl.InvalidRowHandle) {
 						DataRow drCatalog = FocusedView.GetDataRow(FocusedView.FocusedRowHandle);
 						dtProducts.Clear();
-						ProductsFill((ulong)drCatalog[colCatalogID]);
+						ProductsFill((ulong)drCatalog[colCatalogID], dsMain, dtProducts.TableName);
 
 						FocusedView.ExpandMasterRow(FocusedView.FocusedRowHandle);
 						GridView bv = (GridView)FocusedView.GetDetailView(FocusedView.FocusedRowHandle, 0);
@@ -1064,15 +1075,7 @@ WHERE PriceItemId= ?PriceItemId",
 		{
 			var bv = (GridView)CatalogGridControl.FocusedView;
 			var catalog = bv.GetDataRow(bv.FocusedRowHandle);
-			var productId = Convert.ToUInt32(catalog["Id"]);
-			var catalogId = Convert.ToUInt32(catalog["CatalogId"]);
-			var pharmacie = Convert.ToBoolean(catalog["Pharmacie"]);
-
-			ProducerSynonymResolver.Resolver.ResolveProduct(GetCurrentItem(),
-				productId,
-				catalogId,
-				pharmacie,
-				markAsJunk);
+			ProducerSynonymResolver.Resolver.ResolveProduct(GetCurrentItem(), catalog, markAsJunk);
 			GoToNextUnrecExp(gvUnrecExp.FocusedRowHandle);
 		}
 

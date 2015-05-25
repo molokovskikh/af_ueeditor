@@ -32,14 +32,22 @@ namespace UEEditor
 				.Where("sfc.PriceCode = ?PriceId", new { priceId });
 		}
 
-		public void ResolveProduct(DataRow item, uint productId, uint catalogId, bool pharmacie, bool markAsJunk)
+		public void ResolveProduct(DataRow item, DataRow product, bool markAsJunk)
 		{
+			var productId = Convert.ToUInt32(product["Id"]);
+			var catalogId = Convert.ToUInt32(product["CatalogId"]);
+			var pharmacie = Convert.ToBoolean(product["Pharmacie"]);
+			uint? monobrendProducerId = null;
+			if (!(product["MonobrendProducerId"] is DBNull))
+				monobrendProducerId = Convert.ToUInt32(product["MonobrendProducerId"]);
+
 			var table = item.Table;
 			var name = item["UEName1"].ToString().Trim();
 
 			var producer = item["UEFirmCr"].ToString();
-			var synonyms = GetSynonyms(producer);
-			synonyms = synonyms.Concat(synonyms.Where(s => s.Name == producer)).ToList();
+			var applicableSynonyms = GetSynonyms(producer)
+				.Concat(synonyms.Where(s => String.Equals(s.Name, producer, StringComparison.CurrentCultureIgnoreCase)))
+				.ToList();
 
 			for (int i = 0; i < table.Rows.Count; i++) {
 				var row = table.Rows[i];
@@ -52,7 +60,15 @@ namespace UEEditor
 						row["UEPriorCatalogId"] = catalogId;
 						row["Pharmacie"] = pharmacie;
 
-						TryToPickProducerSynonym(row, synonyms);
+						TryToPickProducerSynonym(row, applicableSynonyms);
+
+						if (monobrendProducerId != null
+							&& ((FormMask)Convert.ToByte(row["UEStatus"]) & FormMask.FirmForm) != FormMask.FirmForm) {
+							var synonym = ProducerSynonym.CreateSynonym(item, monobrendProducerId.Value);
+							applicableSynonyms.Add(synonym);
+							synonyms.Add(synonym);
+							synonym.Apply(item);
+						}
 					}
 				}
 			}
