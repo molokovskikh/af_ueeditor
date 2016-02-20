@@ -11,7 +11,7 @@ namespace UEEditor.Tests
 	[SetUpFixture]
 	public class IntegrationSetup
 	{
-		[SetUp]
+		[OneTimeSetUp]
 		public void SetUp()
 		{
 			Setup.Initialize();

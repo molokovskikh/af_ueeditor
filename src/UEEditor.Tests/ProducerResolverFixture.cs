@@ -32,6 +32,7 @@ namespace UEEditor.Tests
 		public void SetUp()
 		{
 			var supplier = TestSupplier.CreateNaked(session);
+			supplier.Prices[0].Costs[0].PriceItem.Format.PriceFormat = PriceFormatType.NativeDbf;
 			price = supplier.Prices[0];
 
 			resolver = new ProducerSynonymResolver(price.Id);

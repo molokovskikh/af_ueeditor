@@ -10,36 +10,47 @@ namespace UEEditor
 		public Query Producers;
 		public Query Equivalents;
 
-		public static ProducerQuery Query(bool pharmacie, uint catalogId, Action<ProducerQuery> action)
+		public static ProducerQuery Query(bool pharmacie, uint catalogId, Action<ProducerQuery> action = null)
 		{
 			var query = new ProducerQuery();
 			query.Producers = new Query()
 				.Select(@"
 p.Id As CCode,
-p.Name As CName")
-				.From("catalogs.Producers P");
+p.Name As CName,
+s.Id is not null as HaveOffers")
+				.From(@"(catalogs.Producers P, Catalogs.Products pr)
+left join OffersStat s on s.ProducerId = p.id and s.ProductId = pr.Id")
+				.Where("pr.CatalogId = ?CatalogId", new { catalogId });
 
 			query.Equivalents = new Query()
 				.Select(@"
 p.Id As CCode,
-concat(pe.Name, ' [', p.Name, ']') As CName")
+concat(pe.Name, ' [', p.Name, ']') As CName,
+s.Id is not null as HaveOffers")
 				.From(@"
-catalogs.Producers P
-  join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id");
+(catalogs.Producers P, Catalogs.Products pr)
+	join catalogs.ProducerEquivalents PE on pe.ProducerId = p.Id
+	left join OffersStat s on s.ProducerId = p.id and s.ProductId = pr.Id")
+				.Where("pr.CatalogId = ?CatalogId", new { catalogId });
 
 			if (pharmacie) {
 				query.Producers
-					.Join("join catalogs.assortment a on a.ProducerId = p.Id")
-					.Where("a.CatalogId = ?CatalogId", new { catalogId })
+					.Join("join catalogs.assortment a on a.ProducerId = p.Id and pr.CatalogId = a.CatalogId")
 					.Where("a.Checked = 1");
 				query.Equivalents
-					.Join("join catalogs.assortment a on a.ProducerId = p.Id")
-					.Where("a.CatalogId = ?CatalogId", new { catalogId })
+					.Join("join catalogs.assortment a on a.ProducerId = p.Id and pr.CatalogId = a.CatalogId")
 					.Where("a.Checked = 1");
 			}
 
-			action(query);
+			action?.Invoke(query);
 			return query;
+		}
+
+		public DataTable Load()
+		{
+			var table = new DataTable("data");
+			Load(table);
+			return table;
 		}
 
 		public void Load(DataTable table)
