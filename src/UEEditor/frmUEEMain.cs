@@ -106,8 +106,8 @@ namespace UEEditor
 			exit.Click += (sender, args) => {
 				frmUEEMain_KeyDown(null, new KeyEventArgs(Keys.F12));
 			};
-#endif
 			pnlCenter2.Controls.Add(exit);
+#endif
 		}
 
 		private void frmUEEMain_Load(object sender, EventArgs e)
