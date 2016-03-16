@@ -1578,7 +1578,7 @@ namespace UEEditor
 			//
 			// colFirmCrName
 			//
-			this.colFirmCrName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.colFirmCrName.AppearanceCell.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.colFirmCrName.AppearanceCell.Options.UseFont = true;
 			this.colFirmCrName.Caption = "Наименование";
 			this.colFirmCrName.FieldName = "CName";
@@ -1900,6 +1900,7 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colFirmCrName;
 		private System.Data.DataColumn colCatalogProductsCount;
 		private System.Windows.Forms.Button btnHideUnformFirmCr;
+		//private System.Data.DataColumn JPriceItemId;
 		private System.Data.DataColumn UEProductSynonymId;
 		private System.Data.DataColumn UEProducerSynonymId;
 		private System.Windows.Forms.Panel pFirmCr;

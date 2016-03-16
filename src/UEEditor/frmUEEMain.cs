@@ -23,7 +23,6 @@ using System.Configuration;
 using Common.MySql;
 using GlobalMySql = MySql.Data.MySqlClient;
 using DevExpress.XtraGrid.Views.Base;
-using DevExpress.XtraGrid.Views.Grid.ViewInfo;
 
 namespace UEEditor
 {
@@ -1778,12 +1777,6 @@ WHERE PriceItemId= ?PriceItemId",
 
 		private void gvFirmCr_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
 		{
-			var row = gvFirmCr.GetDataRow(e.RowHandle);
-			if (row != null && row["HaveOffers"] != DBNull.Value && Convert.ToBoolean(row["HaveOffers"])) {
-				var info = (GridCellInfo)e.Cell;
-				info.Appearance.Font = new Font(info.Appearance.Font.FontFamily, info.Appearance.Font.Size, info.Appearance.Font.Style | FontStyle.Bold);
-			}
-
 			if (!String.IsNullOrEmpty(producerSeachText) &&
 				!String.IsNullOrEmpty(e.DisplayText) &&
 				(e.DisplayText != unknownProducer)) {
@@ -1799,7 +1792,7 @@ WHERE PriceItemId= ?PriceItemId",
 					//если найденный текст в конце строки
 					//должен работать вызов этого метода, но он почему-то не работает, поэтому переписано ниже
 					//e.Cache.Paint.DrawMultiColorString(e.Cache, e.Bounds, displayText, displayText.Substring(0, index), e.Appearance, Color.Black, Color.Yellow, true);
-					var param = new MultiColorDrawStringParams(e.Appearance);
+					MultiColorDrawStringParams param = new MultiColorDrawStringParams(e.Appearance);
 					param.Text = displayText;
 					param.Bounds = e.Bounds;
 					param.Ranges = new CharacterRangeWithFormat[] {
@@ -1812,10 +1805,10 @@ WHERE PriceItemId= ?PriceItemId",
 				}
 				else {
 					//если найденный текст в середине строки
-					var param = new MultiColorDrawStringParams(e.Appearance);
+					MultiColorDrawStringParams param = new MultiColorDrawStringParams(e.Appearance);
 					param.Text = displayText;
 					param.Bounds = e.Bounds;
-					param.Ranges = new[] {
+					param.Ranges = new CharacterRangeWithFormat[] {
 						new CharacterRangeWithFormat(0, index, e.Appearance.GetForeColor(),
 							e.Appearance.GetBackColor()),
 						new CharacterRangeWithFormat(index, producerSeachText.Length,
