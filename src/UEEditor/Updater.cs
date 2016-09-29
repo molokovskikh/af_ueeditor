@@ -258,7 +258,7 @@ namespace UEEditor
 					formProgress.ApplyProgress += 10;
 
 					var insertExclude = new MySqlCommand(@"
-insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator, OriginalSynonymId) 
+insert into Farm.Excludes(CatalogId, PriceCode, ProducerSynonym, DoNotShow, Operator, OriginalSynonymId)
 value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?OriginalSynonymId);", c);
 					insertExclude.Parameters.AddWithValue("?PriceCode", priceId);
 					insertExclude.Parameters.AddWithValue("?Operator", humanName);
@@ -293,7 +293,7 @@ value (?CatalogId, ?PriceCode, ?ProducerSynonym, ?DoNotShow, ?Operator, ?Origina
 
 					MySqlHelper.ExecuteNonQuery(c,
 						@"
-update 
+update
 usersettings.pricescosts,
 usersettings.priceitems
 set
@@ -393,7 +393,7 @@ value (?Name);", c);
 			dtSynonym.Columns.Add("ChildPriceCode", typeof(long));
 			daSynonym.InsertCommand = new MySqlCommand(
 				@"
-insert into farm.synonym (PriceCode, Synonym, Junk, ProductId, SupplierCode) values (?PriceCode, ?Synonym, ?Junk, ?ProductId, ?SupplierCode);
+replace into farm.synonym (PriceCode, Synonym, Junk, ProductId, SupplierCode) values (?PriceCode, ?Synonym, ?Junk, ?ProductId, ?SupplierCode);
 set @LastSynonymID = last_insert_id();
 insert into farm.UsedSynonymLogs (SynonymCode) values (@LastSynonymID);
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
@@ -459,7 +459,7 @@ delete from farm.AutomaticProducerSynonyms where ProducerSynonymId = ?SynonymFir
 			daForbidden.InsertCommand = new MySqlCommand(
 				@"
 insert into farm.Forbidden (PriceCode, Forbidden) values (?PriceCode, ?Forbidden);
-insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, ForbiddenRowID, PriceCode, Forbidden) 
+insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, ForbiddenRowID, PriceCode, Forbidden)
   values (now(), ?OperatorName, ?OperatorHost, 0, last_insert_id(), ?PriceCode, ?Forbidden);",
 				masterConnection);
 
