@@ -14,6 +14,7 @@ namespace UEEditor.Tests
 		[OneTimeSetUp]
 		public void SetUp()
 		{
+			ConnectionHelper.DefaultConnectionStringName = "Main";
 			Setup.Initialize();
 		}
 	}

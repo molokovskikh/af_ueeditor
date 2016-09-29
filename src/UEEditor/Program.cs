@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using log4net;
 using System.Windows.Forms;
+using Common.MySql;
 using Subway.Helpers;
 using log4net.Config;
 
@@ -17,6 +18,7 @@ namespace UEEditor
 		private static void Main()
 		{
 			XmlConfigurator.Configure();
+			ConnectionHelper.DefaultConnectionStringName = "Main";
 
 			if (!Debugger.IsAttached)
 				AppDomain.CurrentDomain.UnhandledException += (sender, args) => {
@@ -31,11 +33,6 @@ namespace UEEditor
 				};
 
 			GlobalContext.Properties["Version"] = Assembly.GetExecutingAssembly().GetName().Version;
-			//Эти две строчки есть в StatViewer'е, возможно, из-за одной из них не работает "корректное" отображение 
-			//значений столбца "Сегмент" в фильтрах компонентов DevExpress
-			//Application.EnableVisualStyles();
-			//Application.SetCompatibleTextRenderingDefault(false);
-
 			InputLanguageHelper.SetToRussian();
 			Application.Run(new frmUEEMain());
 		}
