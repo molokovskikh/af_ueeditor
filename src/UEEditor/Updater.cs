@@ -219,8 +219,6 @@ namespace UEEditor
 		private MySqlDataAdapter daSynonym;
 		private DataTable dtSynonym;
 		private MySqlDataAdapter daSynonymFirmCr;
-		private DataTable dtForbiddenProducers;
-		private MySqlDataAdapter daForbiddenProducers;
 		public List<ForbiddenProducerSynonym> ForbiddenProducers;
 
 		private string operatorName;
