@@ -15,9 +15,6 @@ namespace UEEditor.Tests
 		public void SetUp()
 		{
 			Setup.Initialize();
-			if (Setup.IsIntegration()) {
-				With.DefaultConnectionStringName = "integration";
-			}
 		}
 	}
 
