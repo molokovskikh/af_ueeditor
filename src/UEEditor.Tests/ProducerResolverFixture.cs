@@ -69,7 +69,7 @@ namespace UEEditor.Tests
 
 			var productsWithAssortment = Pharmacie().Take(30).ToList().Where(p => p.CatalogProduct.Producers.Count > 0);
 			var first = productsWithAssortment.First();
-			var products = productsWithAssortment.Where(p => !p.CatalogProduct.Producers.Any(pr => pr.Id == first.CatalogProduct.Producers[0].Id)).Take(1).ToList();
+			var products = productsWithAssortment.Where(p => p.CatalogProduct.Producers.All(pr => pr.Id != first.CatalogProduct.Producers[0].Id)).Take(1).ToList();
 			products.Add(first);
 
 			var synonym1 = new TestProductSynonym(products[0].CatalogProduct.Name, products[0], price);
@@ -102,7 +102,7 @@ namespace UEEditor.Tests
 				" from Logs.SynonymFirmCrLogs where SynonymFirmCrCode = :id and Operation = 1")
 				.SetParameter("id", producerSynonym2.Id)
 				.List<object[]>();
-			Assert.AreEqual(Environment.UserName, logs[0][0]);
+			Assert.AreEqual(Environment.UserName.ToLower(), logs[0][0].ToString().ToLower());
 			Assert.AreEqual(Environment.MachineName, logs[0][1]);
 		}
 
