@@ -28,16 +28,6 @@ namespace UEEditor.Tests
 		}
 
 		[Test]
-		public void t()
-		{
-			table = new DataTable();
-			table.Columns.Add(new DataColumn("UEFirmCr"));
-			table.Constraints.Add("UnicNameCode", table.Columns["UEFirmCr"], false);
-			table.Rows.Add("Цефепим пор. д/приг. р-ра д/в/в и в/м введ. фл. 1г пач.карт. ");
-			table.Rows.Add("Цефепим пор. д/приг. р-ра д/в/в и в/м введ. фл. 1г пач.карт.");
-		}
-
-		[Test]
 		public void IsApplicableTest()
 		{
 			var forbidden = new ForbiddenProducerSynonym() {
