@@ -323,6 +323,20 @@ namespace UEEditor.Tests
 			Assert.AreEqual(synonyms[0].Name, exp.FirmCr);
 		}
 
+		[Test]
+		public void Trim_values()
+		{
+			var exp = new TestUnrecExp("Цефепим пор. д/приг. р-ра д/в/в и в/м введ. фл. 1г пач.карт. ", "Кентавр ХФК", price);
+			session.Save(exp);
+			session.Save(new TestUnrecExp("Цефепим пор. д/приг. р-ра д/в/в и в/м введ. фл. 1г пач.карт.", "Кентавр ХФК", price));
+
+			var product = Pharmacie().First();
+
+			Load();
+			Resolve(exp, product);
+			Save();
+		}
+
 		private IQueryable<TestProduct> Pharmacie()
 		{
 			return session.Query<TestProduct>().Where(p => p.CatalogProduct.Pharmacie

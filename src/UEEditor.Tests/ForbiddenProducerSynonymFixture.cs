@@ -12,6 +12,7 @@ namespace UEEditor.Tests
 	{
 		private DataTable table;
 
+
 		[SetUp]
 		public void Setup()
 		{
@@ -24,6 +25,16 @@ namespace UEEditor.Tests
 			table.Columns.Add(new DataColumn("UEProducerSynonymId"));
 			table.Columns.Add(new DataColumn("UEPriorProducerId"));
 			table.Columns.Add(new DataColumn("SynonymObject"));
+		}
+
+		[Test]
+		public void t()
+		{
+			table = new DataTable();
+			table.Columns.Add(new DataColumn("UEFirmCr"));
+			table.Constraints.Add("UnicNameCode", table.Columns["UEFirmCr"], false);
+			table.Rows.Add("Цефепим пор. д/приг. р-ра д/в/в и в/м введ. фл. 1г пач.карт. ");
+			table.Rows.Add("Цефепим пор. д/приг. р-ра д/в/в и в/м введ. фл. 1г пач.карт.");
 		}
 
 		[Test]

@@ -237,8 +237,6 @@ namespace UEEditor
 
 			formProgress.Status = "Применение изменений в базу данных...";
 			DataRow lastUpdateSynonym = null;
-			var debugString = new StringBuilder();
-
 			try {
 				With.DeadlockWraper(c => {
 					var humanName = GetHumanName(c, operatorName);
@@ -335,8 +333,6 @@ value (?Name);", c);
 			catch (Exception e) {
 				if (e.Message.Contains("Duplicate entry"))
 					Mailer.SendDebugLog(dtSynonymFirmCr, e, lastUpdateSynonym);
-				if (!String.IsNullOrEmpty(debugString.ToString()))
-					Mailer.SendMessageToService(e, debugString.ToString(), "a.tyutin@analit.net");
 				throw;
 			}
 
@@ -474,7 +470,7 @@ insert into logs.ForbiddenLogs (LogTime, OperatorName, OperatorHost, Operation, 
 				DelCount += UpDateUnrecExp(dtUnrecUpdate, dr, masterConnection, expression);
 
 				//Вставили новую запись в таблицу запрещённых выражений
-				var name = GetFullUnrecName(dr);
+				var name = dr["UEName1"].ToString().Trim();
 				if (!MarkForbidden(dr, "UEAlready") && MarkForbidden(dr, "UEStatus")) {
 					var newDR = dtForbidden.NewRow();
 
@@ -578,11 +574,6 @@ where Id = ?CatalogId", connection);
 			return (m & FormMask.NameForm) != FormMask.NameForm;
 		}
 
-
-		private string GetFullUnrecName(DataRow row)
-		{
-			return String.Format("{0}", row["UEName1"]);
-		}
 
 		private bool NotFirmForm(DataRow row, string FieldName)
 		{
