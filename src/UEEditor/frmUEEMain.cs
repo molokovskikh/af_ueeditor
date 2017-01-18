@@ -310,7 +310,8 @@ ProducerSynonymId As UEProducerSynonymId,
 Status As UEStatus,
 Already As UEAlready,
 Junk As UEJunk,
-HandMade As UEHandMade
+HandMade As UEHandMade,
+if(ManualDel=0,'Прайс','Автозаказ') As UESource
 FROM farm.UnrecExp
 left join Catalogs.Products p on p.Id = PriorProductId
 	left join Catalogs.Catalog c on c.Id = p.CatalogId
