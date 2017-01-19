@@ -100,7 +100,9 @@ namespace UEEditor
 		private DevExpress.XtraGrid.Columns.GridColumn colUEStatus;
 		private System.Data.DataColumn UEPriorProducerId;
 		private System.Data.DataColumn UEAlready;
+		private System.Data.DataColumn UESource;
 		private DevExpress.XtraGrid.Columns.GridColumn colUEAlready;
+		private DevExpress.XtraGrid.Columns.GridColumn colUESource;
 		private System.Data.DataColumn JParentSynonym;
 		private System.Data.DataColumn JPriceFMT;
 		private System.Windows.Forms.Panel pnlCenter1;
@@ -216,6 +218,7 @@ namespace UEEditor
 			this.UEPriorProductId = new System.Data.DataColumn();
 			this.UEPriorProducerId = new System.Data.DataColumn();
 			this.UEAlready = new System.Data.DataColumn();
+			this.UESource = new System.Data.DataColumn();
 			this.UERowID = new System.Data.DataColumn();
 			this.UEHandMade = new System.Data.DataColumn();
 			this.UEProductSynonymId = new System.Data.DataColumn();
@@ -305,6 +308,7 @@ namespace UEEditor
 			this.colUEJunk = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEStatus = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.colUEAlready = new DevExpress.XtraGrid.Columns.GridColumn();
+			this.colUESource = new DevExpress.XtraGrid.Columns.GridColumn();
 			this.pnlCenter2 = new System.Windows.Forms.Panel();
 			this.pnlLeft2 = new System.Windows.Forms.Panel();
 			this.grpBoxCatalog2 = new System.Windows.Forms.GroupBox();
@@ -593,7 +597,9 @@ namespace UEEditor
             this.UERowID,
             this.UEHandMade,
             this.UEProductSynonymId,
-            this.UEProducerSynonymId});
+            this.UEProducerSynonymId,
+						this.UESource
+			});
 			this.dtUnrecExp.TableName = "UnrecExpGrid";
 			//
 			// EUColumn1
@@ -672,6 +678,11 @@ namespace UEEditor
 			//
 			this.UEAlready.ColumnName = "UEAlready";
 			this.UEAlready.DataType = typeof(int);
+			//
+			// UESource
+			//
+			this.UESource.Caption = "Источник";
+			this.UESource.ColumnName = "UESource";
 			//
 			// UERowID
 			//
@@ -1347,7 +1358,9 @@ namespace UEEditor
             this.colUEPeriod,
             this.colUEJunk,
             this.colUEStatus,
-            this.colUEAlready});
+            this.colUEAlready,
+						this.colUESource
+			});
 			this.gvUnrecExp.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
 			this.gvUnrecExp.GridControl = this.UnrecExpGridControl;
 			this.gvUnrecExp.Name = "gvUnrecExp";
@@ -1494,6 +1507,16 @@ namespace UEEditor
 			this.colUEAlready.FieldName = "UEAlready";
 			this.colUEAlready.Name = "colUEAlready";
 			this.colUEAlready.SortMode = DevExpress.XtraGrid.ColumnSortMode.Custom;
+			//
+			// colUESource
+			//
+			this.colUESource.Caption = "Источник";
+			this.colUESource.FieldName = "UESource";
+			this.colUESource.Name = "colUESource";
+			this.colUESource.Visible = true;
+			this.colUESource.VisibleIndex = 11;
+			this.colUESource.Width = 55;
+			this.colUESource.OptionsColumn.AllowEdit = false;
 			//
 			// pnlCenter2
 			//
