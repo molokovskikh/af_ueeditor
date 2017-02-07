@@ -389,7 +389,7 @@ value (?Name);", c);
 				@"
 replace into farm.synonym (PriceCode, Synonym, Junk, ProductId, SupplierCode) values (?PriceCode, ?Synonym, ?Junk, ?ProductId, ?SupplierCode);
 set @LastSynonymID = last_insert_id();
-insert into farm.UsedSynonymLogs (SynonymCode) values (@LastSynonymID);
+insert into farm.UsedSynonymLogs (SynonymCode, OperatorName) values (@LastSynonymID, ?OperatorName);
 insert into logs.synonymlogs (LogTime, OperatorName, OperatorHost, Operation, SynonymCode, PriceCode, Synonym, Junk, ProductId, ChildPriceCode)
 	values (now(), ?OperatorName, ?OperatorHost, 0, @LastSynonymID, ?PriceCode, ?Synonym, ?Junk, ?ProductId, ?ChildPriceCode);
 select @LastSynonymID as SynonymCode;",
